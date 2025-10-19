@@ -1,15 +1,53 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// --- PP Cirka ---
+const ppCirka = localFont({
+  src: [
+    {
+      path: "../public/fonts/ppcirka/PPCirka-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/ppcirka/PPCirka-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/ppcirka/PPCirka-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/ppcirka/PPCirka-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-ppcirka",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// --- Helvetica Neue ---
+const helveticaNeue = localFont({
+  src: [
+    {
+      path: "../public/fonts/helvetica/HelveticaNeueThin.otf",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/helvetica/HelveticaNeueLight.otf",
+      weight: "300",
+      style: "normal",
+    },
+   
+   
+  ],
+  variable: "--font-helvetica",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${ppCirka.variable} ${helveticaNeue.variable} antialiased font-cirka`}
       >
         {children}
       </body>
