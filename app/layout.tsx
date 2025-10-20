@@ -2,52 +2,114 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-// --- PP Cirka ---
+// PP Cirka Font (note the correct spelling: Cirka, not Circa)
 const ppCirka = localFont({
   src: [
     {
-      path: "../public/fonts/ppcirka/PPCirka-Light.woff2",
+      path: "./fonts/ppcirka/PPCirka-Light.otf",
       weight: "300",
       style: "normal",
     },
     {
-      path: "../public/fonts/ppcirka/PPCirka-Regular.woff2",
+      path: "./fonts/ppcirka/PPCirka-Regular.otf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/ppcirka/PPCirka-Medium.woff2",
+      path: "./fonts/ppcirka/PPCirka-Medium.otf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../public/fonts/ppcirka/PPCirka-Semibold.woff2",
+      path: "./fonts/ppcirka/PPCirka-Semibold.otf",
       weight: "600",
       style: "normal",
     },
   ],
-  variable: "--font-ppcirka",
-  display: "swap",
+  variable: "--font-pp-cirka",
 });
 
-// --- Helvetica Neue ---
-const helveticaNeue = localFont({
+// Helvetica Font
+const helvetica = localFont({
   src: [
     {
-      path: "../public/fonts/helvetica/HelveticaNeueThin.otf",
+      path: "./fonts/helvetica/HelveticaNeueUltralight.otf",
       weight: "200",
       style: "normal",
     },
     {
-      path: "../public/fonts/helvetica/HelveticaNeueLight.otf",
+      path: "./fonts/helvetica/HelveticaNeueThin.otf",
       weight: "300",
       style: "normal",
     },
-   
-   
+    {
+      path: "./fonts/helvetica/HelveticaNeueLight.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueRoman.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueMedium.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueBold.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueHeavy.otf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueBlackItalic.otf",
+      weight: "900",
+      style: "italic",
+    },
+    // Italic variants
+    {
+      path: "./fonts/helvetica/HelveticaNeueItalic.ttf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueLightItalic.otf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueMediumItalic.otf",
+      weight: "600",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueBoldItalic.otf",
+      weight: "700",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueHeavyItalic.otf",
+      weight: "800",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueThinitalic.otf",
+      weight: "200",
+      style: "italic",
+    },
+    {
+      path: "./fonts/helvetica/HelveticaNeueUltralightItalic.otf",
+      weight: "100",
+      style: "italic",
+    },
   ],
   variable: "--font-helvetica",
-  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -56,6 +118,7 @@ export const metadata: Metadata = {
     "Celerey is an advanced wealth planning platform that helps you grow, protect, and optimize your assets through personalized strategies, tax-aware guidance, and secure, intuitive tools. Build your financial future with clarity and confidence.",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,9 +126,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${ppCirka.variable} ${helveticaNeue.variable} antialiased font-cirka`}
-      >
+      <body className={`${ppCirka.variable} ${helvetica.variable} antialiased`}>
         {children}
       </body>
     </html>

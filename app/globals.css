@@ -1,17 +1,31 @@
 @import "tailwindcss";
 
-@theme {
-  --font-cirka: var(--font-ppcirka), serif;
-  --font-helvetica: var(--font-helvetica), sans-serif;
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* Optional base setup */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-helvetica);
+  --font-heading: var(--font-pp-cirka);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
-  font-family: var(--font-helvetica);
-  color: #111;
-  background: #fff;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-helvetica), Arial, sans-serif;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-family-ppcirka);
+/* Optional: Add a global heading style */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-pp-cirka), sans-serif;
 }
