@@ -103,11 +103,6 @@ const helvetica = localFont({
       weight: "200",
       style: "italic",
     },
-    {
-      path: "./fonts/helvetica/HelveticaNeueUltralightItalic.otf",
-      weight: "100",
-      style: "italic",
-    },
   ],
   variable: "--font-helvetica",
 });
