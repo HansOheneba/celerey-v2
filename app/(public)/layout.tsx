@@ -14,7 +14,7 @@ export default function PublicLayout({
       <Header />
       <div className="h-10"></div>
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-4 pt-8 ">{children}</main>
+      <main className="max-w-6xl mx-auto  md:pt-8 ">{children}</main>
 
       {/* Footer*/}
       <Footer />

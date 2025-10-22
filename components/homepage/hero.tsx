@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-[90vh]  text-white px-6 pt-32 pb-20 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-center text-center min-h-[90vh]  text-white px-6 md:pt-32 pb-20 overflow-hidden">
       {/* Decorative gradient or backdrop */}
       <div className="absolute inset-0  pointer-events-none" />
 
