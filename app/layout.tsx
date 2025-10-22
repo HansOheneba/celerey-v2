@@ -33,11 +33,6 @@ const ppCirka = localFont({
 const helvetica = localFont({
   src: [
     {
-      path: "./fonts/helvetica/HelveticaNeueUltralight.otf",
-      weight: "200",
-      style: "normal",
-    },
-    {
       path: "./fonts/helvetica/HelveticaNeueThin.otf",
       weight: "300",
       style: "normal",
