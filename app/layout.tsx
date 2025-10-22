@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Image from "next/image";
 
 // PP Cirka Font (note the correct spelling: Cirka, not Circa)
 const ppCirka = localFont({
@@ -112,6 +113,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${ppCirka.variable} ${helvetica.variable} antialiased`}>
+        <Image
+          src="/logos/logoDark.png"
+          alt=""
+          width={1}
+          height={1}
+          priority
+          className="hidden"
+        />
+
         {children}
       </body>
     </html>
