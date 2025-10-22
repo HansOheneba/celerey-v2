@@ -63,7 +63,7 @@ export default function Header() {
           </Button>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu */}
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -75,12 +75,23 @@ export default function Header() {
                 <Menu className="h-7 w-7" />
               </Button>
             </SheetTrigger>
+
+            {/* Fullscreen Mobile Menu */}
             <SheetContent
-              side="right"
-              className="bg-white/95 backdrop-blur-md p-6 flex flex-col justify-between"
+              side="top"
+              className={`
+                fixed inset-0 
+                bg-white text-gray-800 
+                backdrop-blur-2xl 
+                transition-all duration-300 ease-in-out
+                data-[state=open]:translate-y-0 
+                data-[state=closed]:-translate-y-full
+                flex flex-col justify-between p-8
+              `}
             >
               <div>
-                <div className="flex justify-between items-center mb-8">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-12">
                   <Image
                     src="/logos/logoDark.png"
                     alt="Celerey Logo"
@@ -88,7 +99,7 @@ export default function Header() {
                     height={30}
                   />
                   <SheetClose asChild>
-                    <button className="p-2 rounded-full hover:bg-gray-200">
+                    <button className="p-2 rounded-full hover:bg-gray-200 transition">
                       <X className="h-6 w-6 text-gray-700" />
                     </button>
                   </SheetClose>
@@ -96,13 +107,14 @@ export default function Header() {
 
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
-                <nav className="flex flex-col space-y-4">
+                {/* Navigation Links */}
+                <nav className="flex flex-col space-y-6 text-lg font-medium">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
                       onClick={() => setOpen(false)}
-                      className="text-gray-800 font-medium text-lg hover:text-blue-600 transition-colors"
+                      className="hover:text-blue-600 transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -110,13 +122,14 @@ export default function Header() {
                 </nav>
               </div>
 
+              {/* CTA Button */}
               <div className="pt-8">
                 <Button
                   asChild
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full py-3 rounded-full"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full py-3 rounded-full text-base"
                 >
                   <Link href="/free-scan" onClick={() => setOpen(false)}>
-                    Start Free Scan
+                    Start Your Free Wealth Scan
                   </Link>
                 </Button>
               </div>
