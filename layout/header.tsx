@@ -34,8 +34,8 @@ export default function Header() {
           <Image
             src="/logos/logoWhite.png"
             alt="Celerey Logo"
-            width={120}
-            height={30}
+            width={110}
+            height={20}
             priority
           />
         </Link>
