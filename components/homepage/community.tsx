@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { MessageSquare, Phone } from "lucide-react";
+import {  Phone } from "lucide-react";
 
 export default function Community() {
   const [email, setEmail] = useState("");

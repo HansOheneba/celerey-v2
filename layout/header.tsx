@@ -31,7 +31,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
-            src="/logos/Celerey_Logo_Light.png"
+            src="/logos/logoWhite.png"
             alt="Celerey Logo"
             width={110}
             height={10}

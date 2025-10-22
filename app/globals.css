@@ -1,10 +1,8 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @import "tailwindcss-animated";
+@import "tw-animate-css";
 
 
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
