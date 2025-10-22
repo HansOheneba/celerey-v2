@@ -18,12 +18,12 @@ export default function Header() {
 
   const navigation = [
     { name: "Home", href: "/" },
-    { name: "Advisors", href: "/advisors" },
-    { name: "Plans", href: "/plans" },
-    { name: "Insights", href: "/insights" },
-    { name: "Execution", href: "/execution" },
-    { name: "Partners", href: "/partners" },
-    { name: "Contact", href: "/contact" },
+    { name: "Advisors", href: "#" },
+    { name: "Plans", href: "#" },
+    { name: "Insights", href: "#" },
+    { name: "Execution", href: "#" },
+    { name: "Partners", href: "#" },
+    { name: "Contact", href: "#" },
   ];
 
   return (
