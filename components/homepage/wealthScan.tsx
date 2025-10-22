@@ -78,7 +78,7 @@ export default function WealthScan() {
 
   return (
     <section className="relative  text-white flex flex-col justify-center items-center px-6 py-12">
-      <h2 className="text-3xl font-bold mb-2">Discover Your Wealth Health</h2>
+      <h2 className="text-3xl font-bold mb-2 text-center">Discover Your Wealth Health</h2>
       <motion.div
         initial={{ opacity: 0, scaleX: 0 }}
         whileInView={{ opacity: 1, scaleX: 1 }}
