@@ -97,6 +97,7 @@ export default function Header() {
                     alt="Celerey Logo"
                     width={110}
                     height={30}
+                    priority
                   />
                   <SheetClose asChild>
                     <button className="p-2 rounded-full hover:bg-gray-200 transition">
