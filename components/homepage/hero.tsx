@@ -29,20 +29,35 @@ export default function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
-            asChild
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-6 rounded-2xl text-base"
-          >
-            <Link href="/free-scan">Start Your Free Wealth Scan</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="border-white/40 text-white hover:bg-white/10 font-semibold px-8 py-6 rounded-2xl text-base"
-          >
-            <Link href="/advisors">Book a Session with an Advisor</Link>
-          </Button>
+        <div className="w-full max-w-md mx-auto px-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Primary */}
+            <Button
+              asChild
+              className="flex-1 w-full p-0 bg-blue-600 hover:bg-blue-700 rounded-2xl"
+            >
+              <Link
+                href="/free-scan"
+                className="w-full block text-center text-white font-medium py-2 text-sm sm:text-base"
+              >
+                Start Your Free Wealth Scan
+              </Link>
+            </Button>
+
+            {/* Secondary */}
+            <Button
+              asChild
+              variant="outline"
+              className="flex-1 w-full p-0 border-white/30 rounded-2xl"
+            >
+              <Link
+                href="/advisors"
+                className="w-full block text-center text-white hover:bg-white/10 font-medium py-2  text-sm sm:text-base"
+              >
+                Book a Session with an Advisor
+              </Link>
+            </Button>
+          </div>
         </div>
       </motion.div>
 
