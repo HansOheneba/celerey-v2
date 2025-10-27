@@ -14,7 +14,7 @@ interface MoneyItem {
   category?: string;
 }
 
-interface MoneyCategory {
+interface MoneyCategoryType {
   id: string;
   name: string;
   color: string;
@@ -22,7 +22,7 @@ interface MoneyCategory {
   items: MoneyItem[];
 }
 
-const DEFAULT_CATEGORIES: MoneyCategory[] = [
+const DEFAULT_CATEGORIES: MoneyCategoryType[] = [
   {
     id: "money-in",
     name: "Money In",
@@ -91,7 +91,10 @@ const DEFAULT_CATEGORIES: MoneyCategory[] = [
 
 export default function MoneyManager() {
   const [categories, setCategories, isStorageEnabled, toggleStorage] =
-    useLocalStorage<MoneyCategory[]>("money-manager-data", DEFAULT_CATEGORIES);
+    useLocalStorage<MoneyCategoryType[]>(
+      "money-manager-data",
+      DEFAULT_CATEGORIES
+    );
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     "money-in"
   );
@@ -155,7 +158,7 @@ export default function MoneyManager() {
     }
   };
 
-  const getCategoryTotal = (category: MoneyCategory): number => {
+  const getCategoryTotal = (category: MoneyCategoryType): number => {
     return category.items.reduce((sum, item) => {
       const converted = convertToFrequency(
         item.amount,
@@ -231,46 +234,51 @@ export default function MoneyManager() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-50">Money Manager</h1>
-          <p className="text-slate-400 mt-2">Track your cash flow in and out</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-100 tracking-tight">
+            Money Manager
+          </h1>
+          <p className="text-slate-400 mt-2 text-sm">
+            Track your cash flow in and out
+          </p>
         </div>
-        <div className="flex items-center gap-4">
+
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {/* Storage Toggle */}
           <div className="flex items-center gap-2">
             <span className="text-slate-400 text-sm">Save Data</span>
             <button
               onClick={() => toggleStorage(!isStorageEnabled)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isStorageEnabled ? "bg-emerald-500" : "bg-slate-700"
+              className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${
+                isStorageEnabled ? "bg-slate-500" : "bg-slate-700"
               }`}
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  isStorageEnabled ? "translate-x-6" : "translate-x-1"
+                  isStorageEnabled ? "translate-x-5" : "translate-x-1"
                 }`}
               />
             </button>
           </div>
 
-          {/* Clear Data Button */}
+          {/* Clear Data */}
           <button
             onClick={handleClearData}
-            className="px-3 py-1 text-sm bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors"
+            className="px-3 py-1.5 text-xs sm:text-sm font-medium border border-slate-600 text-slate-300 rounded-md hover:bg-slate-800/60 transition-colors"
           >
             Clear Data
           </button>
 
           {/* Frequency Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-slate-400">View</span>
+            <span className="text-slate-400 text-sm">View</span>
             <select
               value={frequency}
               onChange={handleFrequencyChange}
-              className="px-4 py-2 bg-slate-800 text-slate-50 border border-slate-700 rounded-lg hover:bg-slate-700 transition-colors"
+              className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-slate-100 text-sm rounded-md focus:ring-1 focus:ring-slate-600 hover:bg-slate-800 transition-colors"
             >
               <option value="Weekly">Weekly</option>
               <option value="Fortnightly">Fortnightly</option>
@@ -283,24 +291,21 @@ export default function MoneyManager() {
 
       {/* Storage Status Indicator */}
       <div
-        className={`mb-6 p-3 rounded-lg text-sm ${
+        className={`mb-6 p-3 rounded-2xl text-sm border transition-all ${
           isStorageEnabled
-            ? "bg-emerald-900/30 text-emerald-400"
-            : "bg-slate-800 text-slate-400"
+            ? "bg-slate-800 border-slate-700 text-emerald-500"
+            : "bg-slate-900 border-slate-800 text-slate-500"
         }`}
       >
         {isStorageEnabled ? (
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-            <span>Your money data is being saved automatically</span>
+            <div className="w-2 h-2 bg-emerald-400 rounded animate-pulse" />
+            <span>Your data is being saved automatically</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
-            <span>
-              Data saving is disabled - changes will be lost when you close the
-              page
-            </span>
+            <div className="w-2 h-2 bg-slate-500 rounded-full" />
+            <span>Data saving is off — changes won&apos;t persist</span>
           </div>
         )}
       </div>
