@@ -101,7 +101,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                href="/tools/savings-goals"
+                href="/tools/savings-calculator"
                 className="hover:text-blue-400 transition-colors"
               >
                 Savings Goals Calculator

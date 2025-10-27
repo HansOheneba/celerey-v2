@@ -56,18 +56,11 @@ export default function MoneyManagerSummary({
 
   const expenseData =
     moneyOutCategory?.items
-      .map((item) => {
-        const amount = convertToFrequency(
-          item.amount,
-          item.frequency,
-          frequency
-        );
-        return {
-          name: item.label,
-          value: amount,
-          color: getChartColor(moneyOutCategory.color),
-        };
-      })
+      .map((item) => ({
+        name: item.label,
+        value: convertToFrequency(item.amount, item.frequency, frequency),
+        color: getChartColor(moneyOutCategory.color),
+      }))
       .filter((item) => item.value > 0) || [];
 
   const cashFlowData = [
@@ -75,56 +68,24 @@ export default function MoneyManagerSummary({
     { name: "Money Out", amount: totalMoneyOut, fill: "#ef4444" },
   ];
 
-  const getNetFlowMessage = () => {
-    if (netFlow > 0) {
-      return {
-        title: "Positive Cash Flow",
-        message: `You're saving $${netFlow.toFixed(2)} ${getFrequencyText(
-          frequency
-        )}. Great job!`,
-        color: "text-emerald-300",
-        bgColor: "bg-emerald-900/30",
-        borderColor: "border-emerald-500/30",
-      };
-    } else if (netFlow < 0) {
-      return {
-        title: "Negative Cash Flow",
-        message: `You're spending $${Math.abs(netFlow).toFixed(
-          2
-        )} more than you earn ${getFrequencyText(frequency)}.`,
-        color: "text-rose-300",
-        bgColor: "bg-rose-900/30",
-        borderColor: "border-rose-500/30",
-      };
-    } else {
-      return {
-        title: "Balanced",
-        message: `Your money in and out are equal ${getFrequencyText(
-          frequency
-        )}.`,
-        color: "text-blue-300",
-        bgColor: "bg-blue-900/30",
-        borderColor: "border-blue-500/30",
-      };
-    }
-  };
-
-  const netFlowMessage = getNetFlowMessage();
   const hasData = totalMoneyIn > 0 || totalMoneyOut > 0;
+  const netFlowMessage = getNetFlowMessage(netFlow, frequency);
 
+  // ---- EMPTY STATE ----
   if (!hasData) {
     return (
-      <Card className="p-8 bg-slate-900/70 border border-slate-700 rounded-2xl text-center">
-        <div className="max-w-md mx-auto">
-          <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">💰</span>
+      <Card className="p-10 bg-slate-900/70 border border-slate-700 rounded-2xl text-center">
+        <div className="max-w-md mx-auto space-y-3">
+          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto">
+            <span className="text-3xl text-slate-400">₵</span>
           </div>
-          <h3 className="text-xl font-semibold text-slate-100 mb-2">
-            Track Your Money Flow
+          <h3 className="text-xl font-semibold text-slate-100">
+            Start Tracking Your Cash Flow
           </h3>
-          <p className="text-slate-400">
-            Start by entering your income and expenses to see your cash flow
-            summary.
+          <p className="text-slate-400 leading-relaxed">
+            Enter your income and expenses to discover how your money moves each
+            {` ${frequency.toLowerCase()}`}. Celerey will visualize your balance
+            and offer personalized insights — find out how.
           </p>
         </div>
       </Card>
@@ -132,12 +93,14 @@ export default function MoneyManagerSummary({
   }
 
   return (
-    <div className="space-y-6 text-slate-200">
-      {/* Charts */}
+    <div className="space-y-8 text-slate-200">
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Cash Flow Bar Chart */}
+        {/* Cash Flow Chart */}
         <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl">
-          <h3 className="text-lg font-medium text-slate-100 mb-4">Cash Flow</h3>
+          <h3 className="text-lg font-medium text-slate-100 mb-4">
+            Cash Flow Overview
+          </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={cashFlowData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
@@ -147,15 +110,16 @@ export default function MoneyManagerSummary({
                 contentStyle={{
                   backgroundColor: "#1e293b",
                   border: "1px solid #334155",
+                  color: "#fff",
                 }}
                 formatter={(value) => [
                   `$${Number(value).toFixed(2)}`,
                   "Amount",
                 ]}
               />
-              <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
                 {cashFlowData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                  <Cell key={index} fill={entry.fill} />
                 ))}
               </Bar>
             </BarChart>
@@ -175,23 +139,22 @@ export default function MoneyManagerSummary({
                   cx="50%"
                   cy="50%"
                   labelLine={false}
+                  outerRadius={80}
+                  dataKey="value"
                   label={(props: PieLabelRenderProps) => {
-                    // The data is available in the payload property
                     const data = props.payload as ExpenseDataItem;
                     return `${data.name}: $${data.value.toFixed(0)}`;
                   }}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
                 >
-                  {expenseData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  {expenseData.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#1e293b",
                     border: "1px solid #334155",
+                    color: "#fff",
                   }}
                   formatter={(value) => [
                     `$${Number(value).toFixed(2)}`,
@@ -207,47 +170,35 @@ export default function MoneyManagerSummary({
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-4 bg-slate-900/70 border border-slate-700 rounded-xl">
-          <h4 className="text-sm font-semibold text-emerald-400 mb-1">
-            Total Income
-          </h4>
-          <div className="text-2xl font-bold text-emerald-300">
-            ${totalMoneyIn.toFixed(2)}
-          </div>
-          <p className="text-xs text-slate-400 mt-1">
-            per {frequency.toLowerCase()}
-          </p>
-        </Card>
-
-        <Card className="p-4 bg-slate-900/70 border border-slate-700 rounded-xl">
-          <h4 className="text-sm font-semibold text-rose-400 mb-1">
-            Total Expenses
-          </h4>
-          <div className="text-2xl font-bold text-rose-300">
-            ${totalMoneyOut.toFixed(2)}
-          </div>
-          <p className="text-xs text-slate-400 mt-1">
-            per {frequency.toLowerCase()}
-          </p>
-        </Card>
-
-        <Card className="p-4 bg-slate-900/70 border border-slate-700 rounded-xl">
-          <h4 className="text-sm font-semibold text-blue-400 mb-1">
-            Savings Rate
-          </h4>
-          <div className="text-2xl font-bold text-blue-300">
-            {totalMoneyIn > 0
+        <StatCard
+          title="Total Income"
+          value={`$${totalMoneyIn.toFixed(2)}`}
+          subtitle={`per ${frequency.toLowerCase()}`}
+          color="emerald"
+        />
+        <StatCard
+          title="Total Expenses"
+          value={`$${totalMoneyOut.toFixed(2)}`}
+          subtitle={`per ${frequency.toLowerCase()}`}
+          color="rose"
+        />
+        <StatCard
+          title="Savings Rate"
+          value={
+            totalMoneyIn > 0
               ? `${((netFlow / totalMoneyIn) * 100).toFixed(1)}%`
-              : "0%"}
-          </div>
-          <p className="text-xs text-slate-400 mt-1">of your income</p>
-        </Card>
+              : "0%"
+          }
+          subtitle="of your income"
+          color="blue"
+        />
       </div>
-      {/* Net Flow Summary */}
+
+      {/* Net Flow Insight */}
       <Card
         className={`p-6 ${netFlowMessage.bgColor} border ${netFlowMessage.borderColor} rounded-2xl`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h3
               className={`text-xl font-semibold ${netFlowMessage.color} mb-2`}
@@ -255,6 +206,13 @@ export default function MoneyManagerSummary({
               {netFlowMessage.title}
             </h3>
             <p className="text-slate-300">{netFlowMessage.message}</p>
+            <p className="text-slate-400 text-sm mt-2">
+              Celerey can help you make sense of your numbers —{" "}
+              <span className="text-sky-400 hover:underline cursor-pointer">
+                find out how
+              </span>
+              .
+            </p>
           </div>
           <div className="text-right">
             <div className={`text-3xl font-bold ${netFlowMessage.color}`}>
@@ -268,39 +226,78 @@ export default function MoneyManagerSummary({
   );
 }
 
-// Helper functions
+// ---- COMPONENTS ----
+function StatCard({
+  title,
+  value,
+  subtitle,
+  color,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  color: "emerald" | "rose" | "blue";
+}) {
+  const colorMap = {
+    emerald: { text: "text-emerald-400", value: "text-emerald-300" },
+    rose: { text: "text-rose-400", value: "text-rose-300" },
+    blue: { text: "text-blue-400", value: "text-blue-300" },
+  };
+  return (
+    <Card className="p-4 bg-slate-900/70 border border-slate-700 rounded-xl">
+      <h4 className={`text-sm font-semibold ${colorMap[color].text} mb-1`}>
+        {title}
+      </h4>
+      <div className={`text-2xl font-bold ${colorMap[color].value}`}>
+        {value}
+      </div>
+      <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
+    </Card>
+  );
+}
+
+// ---- HELPERS ----
+function getNetFlowMessage(netFlow: number, frequency: string) {
+  const period = getFrequencyText(frequency);
+  if (netFlow > 0) {
+    return {
+      title: "Positive Cash Flow",
+      message: `You’re saving about $${netFlow.toFixed(
+        2
+      )} ${period}. Keep it up — small gains compound fast.`,
+      color: "text-emerald-300",
+      bgColor: "bg-emerald-900/30",
+      borderColor: "border-emerald-500/30",
+    };
+  } else if (netFlow < 0) {
+    return {
+      title: "Negative Cash Flow",
+      message: `You’re spending $${Math.abs(netFlow).toFixed(
+        2
+      )} more than you earn ${period}. Let’s rebalance your budget.`,
+      color: "text-rose-300",
+      bgColor: "bg-rose-900/30",
+      borderColor: "border-rose-500/30",
+    };
+  }
+  return {
+    title: "Balanced",
+    message: `Your spending and income match perfectly ${period}. Let’s explore
+      smarter savings opportunities.`,
+    color: "text-blue-300",
+    bgColor: "bg-blue-900/30",
+    borderColor: "border-blue-500/30",
+  };
+}
+
 function convertToFrequency(
   amount: number,
   fromFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually",
   toFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
 ): number {
-  let annualAmount = amount;
-  switch (fromFreq) {
-    case "Weekly":
-      annualAmount = amount * 52;
-      break;
-    case "Fortnightly":
-      annualAmount = amount * 26;
-      break;
-    case "Monthly":
-      annualAmount = amount * 12;
-      break;
-    case "Annually":
-      annualAmount = amount;
-      break;
-  }
-  switch (toFreq) {
-    case "Weekly":
-      return annualAmount / 52;
-    case "Fortnightly":
-      return annualAmount / 26;
-    case "Monthly":
-      return annualAmount / 12;
-    case "Annually":
-      return annualAmount;
-    default:
-      return annualAmount;
-  }
+  const multipliers = { Weekly: 52, Fortnightly: 26, Monthly: 12, Annually: 1 };
+  const annualAmount = amount * multipliers[fromFreq];
+  return annualAmount / multipliers[toFreq];
 }
 
 function getChartColor(tailwindColor: string): string {
@@ -312,16 +309,11 @@ function getChartColor(tailwindColor: string): string {
 }
 
 function getFrequencyText(freq: string): string {
-  switch (freq) {
-    case "Weekly":
-      return "this week";
-    case "Fortnightly":
-      return "this fortnight";
-    case "Monthly":
-      return "this month";
-    case "Annually":
-      return "this year";
-    default:
-      return "this period";
-  }
+  const map: Record<string, string> = {
+    Weekly: "this week",
+    Fortnightly: "this fortnight",
+    Monthly: "this month",
+    Annually: "this year",
+  };
+  return map[freq] || "this period";
 }
