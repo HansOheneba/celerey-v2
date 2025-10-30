@@ -85,7 +85,7 @@ export default function InsightsSection() {
   const content: ContentItem[] = activeTab === "insights" ? insights : podcasts;
 
   return (
-    <section className="relative py-24 text-white overflow-hidden">
+    <section className="relative py-24 text-white overflow-hidden  bg-[#881600]">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" />
 
@@ -98,7 +98,7 @@ export default function InsightsSection() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl font-semibold mb-6"
         >
-          Insights <span className="text-blue-400">& Resources</span>
+          Insights <span className="text-[#6E8894]">& Resources</span>
         </motion.h2>
 
         {/* Tabs */}

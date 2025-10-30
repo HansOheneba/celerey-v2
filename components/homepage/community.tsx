@@ -20,7 +20,7 @@ export default function Community() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-black">
             Join <span className="text-blue-500">Celerey Insider</span>{" "}
             Community
           </h2>
@@ -44,7 +44,7 @@ export default function Community() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-full bg-[#111] border border-gray-700 text-white focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 rounded-full bg-gray-100 border border-gray-700 text-gray-500 focus:border-blue-500 outline-none"
               />
               <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-lg opacity-0 hover:opacity-30 transition-opacity pointer-events-none" />
             </div>
@@ -80,7 +80,6 @@ export default function Community() {
             </p>
 
             <div className="flex flex-wrap gap-4">
-            
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 transition-colors"

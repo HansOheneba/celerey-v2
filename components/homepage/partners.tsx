@@ -36,7 +36,7 @@ const partners = [
 
 export default function BuildWithBest() {
   return (
-    <section className="relative w-full py-28 overflow-hidden">
+    <section className="relative w-full py-28 overflow-hidden bg-black">
       {/* Subtle radial background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.08),transparent_70%)] pointer-events-none"></div>
 

@@ -12,11 +12,10 @@ export default function PublicLayout({
     <>
       {/* Header */}
       <Header />
-      <div className="h-10"></div>
       <link rel="preload" as="image" href="/logos/logoWhite.png" />
       <link rel="preload" as="image" href="/logos/logoDark.png" />
       {/* Main content */}
-      <main className="max-w-6xl mx-auto  md:pt-8 ">{children}</main>
+      <main className="mx-auto  ">{children}</main>
 
       {/* Footer*/}
       <Footer />

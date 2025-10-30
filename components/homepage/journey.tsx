@@ -44,7 +44,7 @@ const steps = [
 
 export default function Journey() {
   return (
-    <section className=" text-white py-24 relative overflow-hidden">
+    <section className=" text-white py-24 relative overflow-hidden bg-[#1B1856]">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

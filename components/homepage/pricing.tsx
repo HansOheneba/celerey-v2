@@ -33,7 +33,7 @@ const plans = [
 
 export default function Pricing() {
   return (
-    <section className="relative py-24 text-white overflow-hidden">
+    <section className="relative py-24 text-white overflow-hidden bg-[#040230]">
       {/* Background glow */}
       <div className="absolute inset-0   pointer-events-none" />
 

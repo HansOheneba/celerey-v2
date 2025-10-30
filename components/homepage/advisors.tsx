@@ -74,7 +74,7 @@ export default function Advisors() {
   return (
     <section className="relative py-24 text-white overflow-hidden">
       {/* Subtle background gradient */}
-      <div className="absolute inset-0  pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-gray-50 to-white" />
 
       <div className="relative z-10 max-w-6xl mx-auto text-center px-6">
         <motion.h2
@@ -82,10 +82,10 @@ export default function Advisors() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-semibold mb-6"
+          className="text-4xl md:text-5xl font-semibold mb-6 text-black"
         >
           Where Human Expertise Meets{" "}
-          <span className="text-blue-400">Machine Precision</span>
+          <span className="text-blue-600">Machine Precision</span>
         </motion.h2>
 
         <motion.p
@@ -93,7 +93,7 @@ export default function Advisors() {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-gray-400 max-w-2xl mx-auto mb-16"
+          className="text-gray-600 max-w-2xl mx-auto mb-16 leading-relaxed"
         >
           Our advisory team blends decades of market insight with data-driven
           intelligence to help you make confident, future-focused wealth
@@ -107,7 +107,7 @@ export default function Advisors() {
               key={advisor.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-            //   whileHover={{ scale: 1.03 }}
+              //   whileHover={{ scale: 1.03 }}
               transition={{ duration: 0.4, delay: index * 0.15 }}
               viewport={{ once: true }}
               className="relative group bg-gradient-to-b from-gray-900/70 to-gray-950 border border-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-blue-500/20 transition-all"

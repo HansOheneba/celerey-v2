@@ -27,7 +27,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="fixed top-0 w-full z-50 backdrop-blur-md bg-transparent">
+    <header className="fixed top-0 w-full z-50 bg-black/30 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
@@ -37,7 +37,7 @@ export default function Header() {
             width={110}
             height={20}
             priority
-            className="w-24 h-auto md:w-[110px]"
+            className="w-20 h-auto md:w-[110px]"
           />
         </Link>
 

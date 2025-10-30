@@ -71,14 +71,15 @@ export default function WealthScan() {
   const progress = ((step + 1) / questions.length) * 100;
 
   const calculateScore = () => {
-    // Simple scoring example
-    const score = Math.floor(Math.random() * 41) + 60; // random 60–100
+    const score = Math.floor(Math.random() * 41) + 60; // 60–100
     return score;
   };
 
   return (
-    <section className="relative  text-white flex flex-col justify-center items-center px-6 py-12">
-      <h2 className="text-3xl font-bold mb-2 text-center">Discover Your Wealth Health</h2>
+    <section className="relative bg-white text-gray-900 flex flex-col justify-center items-center px-6 py-20">
+      <h2 className="text-3xl font-bold mb-2 text-center">
+        Discover Your Wealth Health
+      </h2>
       <motion.div
         initial={{ opacity: 0, scaleX: 0 }}
         whileInView={{ opacity: 1, scaleX: 1 }}
@@ -88,28 +89,31 @@ export default function WealthScan() {
 
       {!showResults ? (
         <>
-          <Progress value={progress} className="w-full max-w-xl mb-8" />
+          <Progress value={progress} className="w-full max-w-xl mb-10 " />
 
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.4 }}
-              className="max-w-xl text-center"
+              className="max-w-xl w-full"
             >
-              <p className="text-gray-400 mb-8 text-xl">
-                {questions[step].question}
-              </p>
+              {/* Question Card */}
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl shadow-sm p-8 text-center mb-6">
+                <p className="text-lg font-medium text-gray-800">
+                  {questions[step].question}
+                </p>
+              </div>
 
+              {/* Options */}
               <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                 {questions[step].options.map((opt) => (
                   <Button
                     key={opt}
-                    variant="outline"
                     onClick={() => handleAnswer(opt)}
-                    className="py-6 text-lg border-white/20 hover:bg-blue-600/20 hover:text-blue-400 w-full"
+                    className="py-6 text-lg font-medium w-full bg-blue-800 hover:bg-blue-900 text-white rounded-full transition-all"
                   >
                     {opt}
                   </Button>
@@ -123,20 +127,22 @@ export default function WealthScan() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-md"
+          className="text-center max-w-md bg-gray-50 border border-gray-200 rounded-2xl shadow-sm p-8"
         >
-          <h2 className="text-2xl font-bold mb-4">Your Wealth Health Score</h2>
-          <p className="text-6xl font-extrabold text-blue-400 mb-6">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">
+            Your Wealth Health Score
+          </h2>
+          <p className="text-6xl font-extrabold text-[#1B1856] mb-6">
             {calculateScore()}
           </p>
-          <p className="text-gray-400 mb-8">
+          <p className="text-gray-600 mb-8">
             Based on your responses, we’ve analyzed your current wealth posture.
             You can improve your score by reviewing your investments and
             optimizing your risk balance.
           </p>
           <Button
             variant="default"
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full"
             onClick={() => {
               setShowResults(false);
               setStep(0);
