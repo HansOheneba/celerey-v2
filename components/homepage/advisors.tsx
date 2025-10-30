@@ -65,11 +65,11 @@ export default function Advisors() {
     const slideInterval = setInterval(() => {
       setIndex((prev) => (prev + 1) % advisors.length);
       setProgress(0);
-    }, 10000); // 10s per slide
+    }, 5000); // 10s per slide
 
     const progressInterval = setInterval(() => {
       setProgress((prev) => (prev >= 100 ? 100 : prev + 1));
-    }, 100); // progress fills every 100ms
+    }, 50); // progress fills every 100ms
 
     return () => {
       clearInterval(slideInterval);

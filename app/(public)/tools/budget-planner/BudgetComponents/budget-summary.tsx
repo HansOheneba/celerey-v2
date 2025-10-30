@@ -54,7 +54,6 @@ export default function BudgetSummary({
 }: BudgetSummaryProps) {
   const expenseCategories = categories.filter((cat) => cat.id !== "income");
 
-  // Check if user has entered any data
   const hasIncome = totalIncome > 0;
   const hasExpenses = expenseCategories.some((category) =>
     category.items.some((item) => item.amount > 0)
@@ -82,16 +81,16 @@ export default function BudgetSummary({
     .filter((item) => item.value > 0);
 
   const barChartData = [
-    { name: "Income", amount: totalIncome, fill: "#6EE7B7" },
+    { name: "Income", amount: totalIncome, fill: "#4ADE80" },
     {
       name: "Expenses",
       amount: totalExpenses,
-      fill: totalExpenses > totalIncome ? "#F87171" : "#4ADE80",
+      fill: totalExpenses > totalIncome ? "#F87171" : "#86EFAC",
     },
     {
       name: "Balance",
       amount: Math.abs(balance),
-      fill: balance >= 0 ? "#22C55E" : "#F43F5E",
+      fill: balance >= 0 ? "#22C55E" : "#EF4444",
     },
   ];
 
@@ -162,9 +161,9 @@ export default function BudgetSummary({
         description: `You have $${balance.toFixed(2)} left ${prettyFrequency(
           frequency
         )}.`,
-        color: "text-emerald-300",
-        bgColor: "bg-slate-900/60",
-        borderColor: "border-emerald-500/30",
+        color: "text-emerald-600",
+        bgColor: "bg-green-50",
+        borderColor: "border-emerald-300",
       };
     } else if (balance < 0) {
       return {
@@ -172,9 +171,9 @@ export default function BudgetSummary({
         description: `You're overspending by $${Math.abs(balance).toFixed(
           2
         )} ${prettyFrequency(frequency)}.`,
-        color: "text-rose-300",
-        bgColor: "bg-slate-900/60",
-        borderColor: "border-rose-500/30",
+        color: "text-rose-600",
+        bgColor: "bg-rose-50",
+        borderColor: "border-rose-300",
       };
     } else {
       return {
@@ -182,9 +181,9 @@ export default function BudgetSummary({
         description: `Your income and expenses are evenly matched ${prettyFrequency(
           frequency
         )}.`,
-        color: "text-blue-300",
-        bgColor: "bg-slate-900/60",
-        borderColor: "border-blue-500/30",
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-300",
       };
     }
   };
@@ -194,23 +193,21 @@ export default function BudgetSummary({
 
   if (!hasData) {
     return (
-      <div className="space-y-8 text-slate-200">
-        <Card className="p-8 bg-slate-900/70 border border-slate-700 rounded-2xl backdrop-blur text-center">
+      <div className="space-y-8 text-gray-700">
+        <Card className="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm text-center">
           <div className="max-w-md mx-auto">
-            <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">📊</span>
             </div>
-            <h3 className="text-xl font-semibold text-slate-100 mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
               Your Financial Summary Awaits
             </h3>
-            <p className="text-slate-400 mb-6">
+            <p className="text-gray-500 mb-6">
               Start by entering your income and expenses to see detailed
-              insights, charts, and personalized recommendations for your
-              budget.
+              insights, charts, and personalized recommendations.
             </p>
-            <div className="text-sm text-slate-500">
-              <strong>Tip:</strong> Begin with your income category to get
-              started
+            <div className="text-sm text-gray-400">
+              <strong>Tip:</strong> Begin with your income category
             </div>
           </div>
         </Card>
@@ -219,25 +216,25 @@ export default function BudgetSummary({
   }
 
   return (
-    <div className="space-y-8 text-slate-200">
-      {/* Charts - Only show if there's income */}
+    <div className="space-y-8 text-gray-700">
+      {/* Charts */}
       {hasIncome && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Income vs Expenses */}
-          <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl backdrop-blur">
-            <h3 className="text-lg font-medium text-slate-100 mb-4">
+          <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">
               Income vs Expenses
             </h3>
             {totalIncome > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={barChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-                  <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                  <YAxis stroke="#94a3b8" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
+                  <YAxis stroke="#6B7280" fontSize={12} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1e293b",
-                      border: "1px solid #334155",
+                      backgroundColor: "#FFFFFF",
+                      border: "1px solid #E5E7EB",
                     }}
                     formatter={(value) => [
                       `$${Number(value).toFixed(2)}`,
@@ -252,16 +249,16 @@ export default function BudgetSummary({
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-48 flex items-center justify-center text-slate-500">
+              <div className="h-48 flex items-center justify-center text-gray-400">
                 Enter your income to visualize your cash flow.
               </div>
             )}
           </Card>
 
-          {/* Expense Breakdown - Only show if there are expenses */}
+          {/* Expense Breakdown */}
           {hasExpenses && (
-            <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl backdrop-blur">
-              <h3 className="text-lg font-medium text-slate-100 mb-4">
+            <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">
                 Expense Breakdown
               </h3>
               {pieChartData.length > 0 ? (
@@ -287,8 +284,8 @@ export default function BudgetSummary({
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#1e293b",
-                        border: "1px solid #334155",
+                        backgroundColor: "#FFFFFF",
+                        border: "1px solid #E5E7EB",
                       }}
                       formatter={(value: number, name: string) => [
                         `$${value.toFixed(2)} (${(
@@ -302,8 +299,8 @@ export default function BudgetSummary({
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-48 flex items-center justify-center text-slate-500">
-                  Add your expenses to see how they&apos;re distributed.
+                <div className="h-48 flex items-center justify-center text-gray-400">
+                  Add your expenses to see how they’re distributed.
                 </div>
               )}
             </Card>
@@ -311,10 +308,10 @@ export default function BudgetSummary({
         </div>
       )}
 
-      {/* Category Insights - Only show if there are expenses */}
+      {/* Category Insights */}
       {hasExpenses && (
-        <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl backdrop-blur">
-          <h3 className="text-lg font-medium text-slate-100 mb-4">
+        <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <h3 className="text-lg font-medium text-gray-800 mb-4">
             Category Insights
           </h3>
           <div className="space-y-3">
@@ -331,28 +328,27 @@ export default function BudgetSummary({
               const percentage =
                 totalIncome > 0 ? (categoryTotal / totalIncome) * 100 : 0;
 
-              // Only show categories with actual expenses
               if (categoryTotal === 0) return null;
 
               return (
                 <div
                   key={category.id}
-                  className="flex items-center justify-between p-3 bg-slate-800/70 rounded-lg hover:bg-slate-700/50 transition"
+                  className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition"
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: getChartColor(category.color) }}
                     />
-                    <span className="font-medium text-slate-200">
+                    <span className="font-medium text-gray-700">
                       {category.name}
                     </span>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-slate-100">
+                    <div className="font-semibold text-gray-800">
                       ${categoryTotal.toFixed(2)}
                     </div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-gray-500">
                       {percentage.toFixed(1)}% of income
                     </div>
                   </div>
@@ -363,10 +359,10 @@ export default function BudgetSummary({
         </Card>
       )}
 
-      {/* Financial Overview - Only show if there's income */}
+      {/* Financial Overview */}
       {hasIncome && (
         <Card
-          className={`p-6 ${balanceMessage.bgColor} border ${balanceMessage.borderColor} rounded-2xl backdrop-blur-md`}
+          className={`p-6 ${balanceMessage.bgColor} border ${balanceMessage.borderColor} rounded-2xl shadow-sm`}
         >
           <div className="flex items-start justify-between">
             <div>
@@ -375,8 +371,8 @@ export default function BudgetSummary({
               >
                 {balanceMessage.title}
               </h3>
-              <p className="text-slate-300">{balanceMessage.description}</p>
-              <p className="text-slate-400 text-sm mt-2 leading-relaxed">
+              <p className="text-gray-600">{balanceMessage.description}</p>
+              <p className="text-gray-500 text-sm mt-2 leading-relaxed">
                 {financialStatus.message}
               </p>
             </div>
@@ -384,7 +380,7 @@ export default function BudgetSummary({
               <div className={`text-3xl font-bold ${balanceMessage.color}`}>
                 ${Math.abs(balance).toFixed(2)}
               </div>
-              <div className="text-sm text-slate-400">
+              <div className="text-sm text-gray-500">
                 {prettyFrequency(frequency)}
               </div>
             </div>
@@ -392,21 +388,19 @@ export default function BudgetSummary({
         </Card>
       )}
 
-      {/* Show encouragement message if only income is entered */}
+      {/* Encouragement */}
       {hasIncome && !hasExpenses && (
-        <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl backdrop-blur">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-slate-600 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-xl">💡</span>
-            </div>
-            <h3 className="text-lg font-medium text-slate-100 mb-2">
-              Great start! Now add your expenses
-            </h3>
-            <p className="text-slate-400">
-              You&apos;ve entered your income. Add your expenses to see how they
-              compare and get personalized budgeting insights.
-            </p>
+        <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm text-center">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <span className="text-xl">💡</span>
           </div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">
+            Great start! Now add your expenses
+          </h3>
+          <p className="text-gray-500">
+            You’ve entered your income. Add your expenses to see how they
+            compare and get personalized budgeting insights.
+          </p>
         </Card>
       )}
     </div>
@@ -450,13 +444,13 @@ function convertToFrequency(
 
 function getChartColor(tailwindColor: string): string {
   const colorMap: Record<string, string> = {
-    "bg-slate-700": "#475569",
+    "bg-slate-700": "#64748B",
     "bg-blue-600": "#3B82F6",
     "bg-emerald-600": "#10B981",
-    "bg-purple-500": "#8B5CF6",
+    "bg-purple-500": "#A855F7",
     "bg-cyan-500": "#06B6D4",
     "bg-sky-500": "#0EA5E9",
     "bg-pink-500": "#EC4899",
   };
-  return colorMap[tailwindColor] || "#94A3B8";
+  return colorMap[tailwindColor] || "#9CA3AF";
 }

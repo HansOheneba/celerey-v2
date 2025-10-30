@@ -78,13 +78,13 @@ export default function WealthScan() {
   return (
     <section className="relative bg-white text-gray-900 flex flex-col justify-center items-center px-6 py-20">
       <h2 className="text-3xl font-bold mb-2 text-center">
-        Discover Your Wealth Health
+        Discover Your Financial Health
       </h2>
       <motion.div
         initial={{ opacity: 0, scaleX: 0 }}
         whileInView={{ opacity: 1, scaleX: 1 }}
         transition={{ duration: 0.6 }}
-        className="h-[2px] w-full max-w-md bg-gradient-to-r from-transparent via-blue-500/40 to-transparent origin-left mb-10"
+        className="h-[2px] w-full max-w-md bg-gradient-to-r from-transparent via-blue-500/70 to-transparent origin-left mb-10"
       />
 
       {!showResults ? (

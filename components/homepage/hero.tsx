@@ -75,7 +75,7 @@ export default function Hero() {
                 href="/free-scan"
                 className="w-full block text-center text-white font-medium py-2 text-sm sm:text-base"
               >
-                Start Your Free Financial Wealth Scan
+                Start Your Free Financial Health Scan
               </Link>
             </Button>
 

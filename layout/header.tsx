@@ -60,7 +60,7 @@ export default function Header() {
             asChild
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 rounded-full transition-all"
           >
-            <Link href="/free-scan">Start Your Free Wealth Scan</Link>
+            <Link href="/free-scan">Start Your Free Health Scan</Link>
           </Button>
         </div>
 
@@ -131,7 +131,7 @@ export default function Header() {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full py-3 rounded-full text-base"
                 >
                   <Link href="/free-scan" onClick={() => setOpen(false)}>
-                    Start Your Free Wealth Scan
+                    Start Your Free Financial Health Scan
                   </Link>
                 </Button>
               </div>
