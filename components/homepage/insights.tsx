@@ -85,7 +85,7 @@ export default function InsightsSection() {
   const content: ContentItem[] = activeTab === "insights" ? insights : podcasts;
 
   return (
-    <section className="relative py-24 text-white overflow-hidden  bg-[#881600]">
+    <section className="relative py-24 text-white overflow-hidden  bg-[#00008B]">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none" />
 

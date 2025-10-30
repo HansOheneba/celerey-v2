@@ -21,7 +21,7 @@ export default function Hero() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideo((prev) => (prev + 1) % videoList.length);
-    }, 10000); // 10 seconds per video
+    }, 5000); // 10 seconds per video
     return () => clearInterval(interval);
   }, []);
 
