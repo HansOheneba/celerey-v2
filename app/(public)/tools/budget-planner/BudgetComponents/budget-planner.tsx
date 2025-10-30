@@ -20,7 +20,308 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  /* same as before */
+  {
+    id: "income",
+    name: "Income",
+    color: "bg-emerald-600",
+    items: [
+      {
+        id: "your-take-home-pay",
+        label: "Your take-home pay",
+        amount: 323,
+        frequency: "Weekly",
+      },
+      {
+        id: "partner-take-home-pay",
+        label: "Your partner's take-home pay",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "bonuses-overtime",
+        label: "Bonuses & overtime",
+        amount: 5556,
+        frequency: "Weekly",
+      },
+      {
+        id: "savings-investments-income",
+        label: "Income from savings & investments",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "family-benefits",
+        label: "Family benefit payments",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "child-support-received",
+        label: "Child support received",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "other-income",
+        label: "Other",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "home-utilities",
+    name: "Home & utilities",
+    color: "bg-blue-600",
+    items: [
+      {
+        id: "mortgage-rent",
+        label: "Mortgage & rent",
+        amount: 3232,
+        frequency: "Weekly",
+      },
+      {
+        id: "estate-maintenance",
+        label: "Estate maintenance fees",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "property-rates",
+        label: "Property rates",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "furniture-appliances",
+        label: "Furniture & appliances",
+        amount: 322,
+        frequency: "Weekly",
+      },
+      {
+        id: "renovations-maintenance",
+        label: "Renovations & maintenance",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "electricity",
+        label: "Electricity",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "gas",
+        label: "Gas",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "water",
+        label: "Water",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "internet",
+        label: "Internet",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "pay-tv",
+        label: "Pay TV",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "insurance-financial",
+    name: "Insurance & financial",
+    color: "bg-purple-500",
+    items: [
+      {
+        id: "home-insurance",
+        label: "Home & contents insurance",
+        amount: 323,
+        frequency: "Weekly",
+      },
+      {
+        id: "car-insurance",
+        label: "Car insurance",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "life-insurance",
+        label: "Life insurance",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "health-insurance",
+        label: "Health insurance",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "loan-repayments",
+        label: "Loan repayments",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "groceries",
+    name: "Groceries",
+    color: "bg-cyan-500",
+    items: [
+      {
+        id: "groceries",
+        label: "Groceries",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "personal-medical",
+    name: "Personal & medical",
+    color: "bg-pink-500",
+    items: [
+      {
+        id: "doctor-medical",
+        label: "Doctor & medical expenses",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "dentist",
+        label: "Dentist",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "pharmacy",
+        label: "Pharmacy",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "haircut-personal-care",
+        label: "Haircut & personal care",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "clothing",
+        label: "Clothing",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "entertainment-eat-out",
+    name: "Entertainment & eat-out",
+    color: "bg-sky-500",
+    items: [
+      {
+        id: "restaurants-takeaway",
+        label: "Restaurants & takeaway",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "movies-entertainment",
+        label: "Movies & entertainment",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "hobbies-sports",
+        label: "Hobbies & sports",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "subscriptions-memberships",
+        label: "Subscriptions & memberships",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "transport-auto",
+    name: "Transport & auto",
+    color: "bg-orange-500",
+    items: [
+      {
+        id: "car-payment",
+        label: "Car payment",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "fuel",
+        label: "Fuel",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "car-maintenance",
+        label: "Car maintenance & repairs",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "registration-roadside",
+        label: "Registration & roadside assist",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "public-transport",
+        label: "Public transport",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
+  {
+    id: "children",
+    name: "Children",
+    color: "bg-yellow-500",
+    items: [
+      {
+        id: "childcare",
+        label: "Childcare",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "education-school-fees",
+        label: "Education & school fees",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "activities-sports",
+        label: "Activities & sports",
+        amount: 0,
+        frequency: "Weekly",
+      },
+      {
+        id: "other-children",
+        label: "Other",
+        amount: 0,
+        frequency: "Weekly",
+      },
+    ],
+  },
 ];
 
 export default function BudgetPlanner() {
