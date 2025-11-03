@@ -27,7 +27,7 @@ export default function Header() {
   ];
 
   const handleScrollToWealthHealth = () => {
-    const el = document.getElementById("wealth-health");
+    const el = document.getElementById("wealth-scan");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     }
@@ -65,7 +65,7 @@ export default function Header() {
         <div className="hidden md:block">
           <Button
             onClick={handleScrollToWealthHealth}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-full text-sm"
+            className="bg-blue-900 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full text-sm"
           >
             Start Your Free Financial Health Scan
           </Button>

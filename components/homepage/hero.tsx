@@ -14,12 +14,12 @@ const videoList = [
   "/videos/vid6.mp4",
 ];
 
-const handleScrollToWealthHealth = () => {
-  const el = document.getElementById("wealth-health");
-  if (el) {
-    el.scrollIntoView({ behavior: "smooth" });
-  }
-};
+  const handleScrollToWealthHealth = () => {
+    const el = document.getElementById("wealth-scan");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
 export default function Hero() {
   const [currentVideo, setCurrentVideo] = useState(0);
