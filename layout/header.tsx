@@ -21,9 +21,8 @@ export default function Header() {
     { name: "Advisors", href: "/advisors" },
     { name: "Subscribe", href: "subscribe" },
     { name: "Insights", href: "#" },
-    { name: "Execution", href: "/partners" },
-    { name: "Partners", href: "#" },
-    { name: "Contact", href: "#" },
+    { name: "Execution Partners", href: "/partners" },
+    { name: "Contact", href: "/contact" },
   ];
 
   const handleScrollToWealthHealth = () => {
