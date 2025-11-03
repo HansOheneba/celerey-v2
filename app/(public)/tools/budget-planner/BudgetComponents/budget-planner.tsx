@@ -28,7 +28,7 @@ const CATEGORIES: Category[] = [
       {
         id: "your-take-home-pay",
         label: "Your take-home pay",
-        amount: 323,
+        amount: 0,
         frequency: "Weekly",
       },
       {
@@ -40,7 +40,7 @@ const CATEGORIES: Category[] = [
       {
         id: "bonuses-overtime",
         label: "Bonuses & overtime",
-        amount: 5556,
+        amount: 0,
         frequency: "Weekly",
       },
       {
@@ -77,7 +77,7 @@ const CATEGORIES: Category[] = [
       {
         id: "mortgage-rent",
         label: "Mortgage & rent",
-        amount: 3232,
+        amount: 0,
         frequency: "Weekly",
       },
       {
@@ -95,7 +95,7 @@ const CATEGORIES: Category[] = [
       {
         id: "furniture-appliances",
         label: "Furniture & appliances",
-        amount: 322,
+        amount: 0,
         frequency: "Weekly",
       },
       {
@@ -144,7 +144,7 @@ const CATEGORIES: Category[] = [
       {
         id: "home-insurance",
         label: "Home & contents insurance",
-        amount: 323,
+        amount: 0,
         frequency: "Weekly",
       },
       {
