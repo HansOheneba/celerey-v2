@@ -6,7 +6,46 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
 
-const questions = [
+interface Question {
+  question: string;
+  options: string[];
+  why: string;
+  insight: string;
+  pillar: string;
+  weight: number;
+}
+
+interface PillarScore {
+  score: number;
+  answer: string;
+}
+
+interface PillarScores {
+  [key: string]: PillarScore;
+}
+
+interface TopBottomPillars {
+  top: string[];
+  bottom: string[];
+}
+
+interface ScoreCategory {
+  label: string;
+  tone: string;
+  persona: string;
+}
+
+interface WealthHealthData {
+  score: number;
+  category: ScoreCategory;
+  answers: string[];
+  pillarScores: PillarScores;
+  recommendations: string[];
+  topPillars: string[];
+  bottomPillars: string[];
+}
+
+const questions: Question[] = [
   {
     question: "How predictable is your monthly income?",
     options: [
@@ -17,6 +56,8 @@ const questions = [
     ],
     why: "A stable income enables forward planning; variability increases the need for stronger liquidity.",
     insight: "Insight Generated: Cash-flow stability and planning capacity.",
+    pillar: "Income Stability",
+    weight: 0.15,
   },
   {
     question:
@@ -29,6 +70,8 @@ const questions = [
     ],
     why: "This reveals whether short-term lifestyle is crowding out long-term goals.",
     insight: "Insight Generated: Savings rate and discipline score.",
+    pillar: "Spending & Saving",
+    weight: 0.2,
   },
   {
     question:
@@ -41,6 +84,8 @@ const questions = [
     ],
     why: "This measures how prepared you are for shocks — the foundation of financial wellbeing.",
     insight: "Insight Generated: Liquidity and emergency-fund strength.",
+    pillar: "Resilience",
+    weight: 0.2,
   },
   {
     question: "How would you describe your current debt or credit position?",
@@ -53,6 +98,8 @@ const questions = [
     why: "Debt affects freedom and long-term growth potential.",
     insight:
       "Insight Generated: Debt-to-income comfort ratio and stress level.",
+    pillar: "Debt & Credit Health",
+    weight: 0.15,
   },
   {
     question:
@@ -66,6 +113,8 @@ const questions = [
     why: "Determines whether users are on track for future milestones.",
     insight:
       "Insight Generated: Investment readiness and goal-progress indicator.",
+    pillar: "Growth Readiness",
+    weight: 0.15,
   },
   {
     question:
@@ -78,8 +127,11 @@ const questions = [
     ],
     why: "Captures strategic maturity — whether someone is proactive or reactive about money.",
     insight: "Insight Generated: Planning maturity and confidence index.",
+    pillar: "Planning & Direction",
+    weight: 0.15,
   },
 ];
+
 export default function WealthScan() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -94,60 +146,153 @@ export default function WealthScan() {
     setAnswers(updated);
   };
 
+  const calculateScore = (): number => {
+    let totalScore = 0;
+
+    answers.forEach((answer, index) => {
+      const question = questions[index];
+      const optionIndex = question.options.indexOf(answer);
+      const answerValue = optionIndex + 1; // 1-4 scale
+      const weightedScore = answerValue * question.weight;
+      totalScore += weightedScore;
+    });
+
+    return Math.min(Math.floor(totalScore * 25), 100); // Scale to 0-100
+  };
+
+  const getPillarScores = (): PillarScores => {
+    const pillarScores: PillarScores = {};
+
+    answers.forEach((answer, index) => {
+      const question = questions[index];
+      const optionIndex = question.options.indexOf(answer);
+      const answerValue = (optionIndex + 1) * 25; // Convert to 25-100 scale
+      pillarScores[question.pillar] = {
+        score: answerValue,
+        answer: answer,
+      };
+    });
+
+    return pillarScores;
+  };
+
+  const getScoreCategory = (score: number): ScoreCategory => {
+    if (score >= 80)
+      return {
+        label: "Strategic Planner",
+        tone: "Empowering",
+        persona: "Strategist",
+      };
+    if (score >= 60)
+      return {
+        label: "Structured Achiever",
+        tone: "Balanced",
+        persona: "Planner",
+      };
+    if (score >= 40)
+      return {
+        label: "Building Confidence",
+        tone: "Encouraging",
+        persona: "Builder",
+      };
+    return {
+      label: "Foundation Builder",
+      tone: "Supportive",
+      persona: "Groundbreaker",
+    };
+  };
+
+  const generateRecommendations = (pillarScores: PillarScores): string[] => {
+    const recommendations: string[] = [];
+    const lowScoreThreshold = 50;
+
+    // Check each pillar and generate recommendations for low scores
+    Object.entries(pillarScores).forEach(([pillar, data]) => {
+      if (data.score < lowScoreThreshold) {
+        switch (pillar) {
+          case "Income Stability":
+            recommendations.push(
+              "Build a larger emergency fund to handle income variability"
+            );
+            break;
+          case "Spending & Saving":
+            recommendations.push(
+              "Gradually increase your savings rate by 1–2% each month"
+            );
+            break;
+          case "Resilience":
+            recommendations.push(
+              "Build an emergency fund covering 3–6 months of essential expenses"
+            );
+            break;
+          case "Debt & Credit Health":
+            recommendations.push(
+              "Develop a debt management strategy to reduce financial stress"
+            );
+            break;
+          case "Growth Readiness":
+            recommendations.push(
+              "Create a clear investment plan aligned with your long-term goals"
+            );
+            break;
+          case "Planning & Direction":
+            recommendations.push(
+              "Establish a proactive financial planning routine"
+            );
+            break;
+        }
+      }
+    });
+
+    // If all scores are good, provide maintenance recommendations
+    if (recommendations.length === 0) {
+      return [
+        "Maintain your current healthy financial habits",
+        "Consider periodic reviews to optimize your strategy",
+        "Explore advanced investment opportunities",
+      ];
+    }
+
+    return recommendations.slice(0, 3); // Return top 3 recommendations
+  };
+
+  const getTopAndBottomPillars = (
+    pillarScores: PillarScores
+  ): TopBottomPillars => {
+    const sortedPillars = Object.entries(pillarScores).sort(
+      ([, a], [, b]) => b.score - a.score
+    );
+
+    return {
+      top: sortedPillars.slice(0, 2).map(([pillar]) => pillar),
+      bottom: sortedPillars.slice(-2).map(([pillar]) => pillar),
+    };
+  };
+
   const handleNext = () => {
     if (step < questions.length - 1) setStep(step + 1);
     else {
       const score = calculateScore();
-      const data = {
+      const pillarScores = getPillarScores();
+      const category = getScoreCategory(score);
+      const { top, bottom } = getTopAndBottomPillars(pillarScores);
+
+      const data: WealthHealthData = {
         score,
+        category,
         answers,
-        recommendations: generateRecommendations(answers),
+        pillarScores,
+        recommendations: generateRecommendations(pillarScores),
+        topPillars: top,
+        bottomPillars: bottom,
       };
+
       sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
       router.push("/wealth-health");
     }
   };
 
   const handlePrev = () => setStep((s) => Math.max(0, s - 1));
-
-  const calculateScore = () => {
-    let score = 60;
-    answers.forEach((answer, index) => {
-      const optionIndex = questions[index].options.indexOf(answer);
-      const points = [0, 10, 20, 30][optionIndex] || 0;
-      score += points / questions.length;
-    });
-    return Math.min(Math.floor(score), 100);
-  };
-
-  const generateRecommendations = (answers: string[]) => {
-    const recs: string[] = [];
-    if (answers[0]?.includes("Irregular") || answers[0]?.includes("Unstable"))
-      recs.push("Build a larger emergency fund to handle income variability.");
-    if (answers[1]?.includes("None") || answers[1]?.includes("Less than 10%"))
-      recs.push("Gradually increase your savings rate by 1–2% each month.");
-    if (
-      answers[2]?.includes("Less than a month") ||
-      answers[2]?.includes("1–3 months")
-    )
-      recs.push("Build an emergency fund covering 3–6 months of expenses.");
-    if (answers[3]?.includes("difficult") || answers[3]?.includes("tight"))
-      recs.push("Develop a debt management strategy to reduce stress.");
-    if (
-      answers[4]?.includes("Not confident") ||
-      answers[4]?.includes("Not very confident")
-    )
-      recs.push("Create a clear investment plan for your long-term goals.");
-    if (answers[5]?.includes("reactive") || answers[5]?.includes("avoid"))
-      recs.push("Adopt a proactive routine for financial planning.");
-    return recs.length
-      ? recs
-      : [
-          "Maintain your strong financial habits.",
-          "Review and optimize your strategy periodically.",
-          "Explore advanced investment opportunities.",
-        ];
-  };
 
   if (questions.length === 0)
     return (
@@ -157,7 +302,7 @@ export default function WealthScan() {
     );
 
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-gray-900 px-6 py-16">
+    <section id="wealth-scan" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-gray-900 px-6 py-16">
       <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-blue-950">
         Discover Your Financial Health
       </h2>
@@ -169,7 +314,8 @@ export default function WealthScan() {
       <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
         {/* Header */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-          This questionaire will take about 3 minutes, after you are done you can view your results and recommendations.
+          This questionaire will take about 3 minutes, after you are done you
+          can view your results and recommendations.
         </p>
         {/* Progress */}
         <Progress
