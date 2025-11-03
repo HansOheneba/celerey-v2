@@ -209,7 +209,7 @@ export default function PartnersPage() {
             professionals at the right time.
           </p>
         <Link href="/advisors">
-          <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-semibold">
+          <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-light">
             Connect with an Advisor
           </Button>
         </Link>

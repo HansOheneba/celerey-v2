@@ -151,7 +151,7 @@ export default function PricingPage() {
             You can always upgrade later — no pressure, just progress.
           </p>
          <Link href="https://celerey.app">
-           <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-semibold">
+           <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-light">
              Get Started
            </Button>
          </Link>
