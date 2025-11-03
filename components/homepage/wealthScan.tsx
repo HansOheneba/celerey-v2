@@ -18,6 +18,7 @@ interface Question {
 interface PillarScore {
   score: number;
   answer: string;
+  rawValue: number; // 1-4 scale
 }
 
 interface PillarScores {
@@ -49,10 +50,10 @@ const questions: Question[] = [
   {
     question: "How predictable is your monthly income?",
     options: [
-      "Very stable – I can plan ahead confidently",
-      "Somewhat stable – it varies but manageable",
-      "Irregular – my income changes month to month",
-      "Unstable – I can't plan reliably",
+      "Very stable – I can plan ahead confidently", // 4
+      "Somewhat stable – it varies but manageable", // 3
+      "Irregular – my income changes month to month", // 2
+      "Unstable – I can't plan reliably", // 1
     ],
     why: "A stable income enables forward planning; variability increases the need for stronger liquidity.",
     insight: "Insight Generated: Cash-flow stability and planning capacity.",
@@ -63,10 +64,10 @@ const questions: Question[] = [
     question:
       "Roughly what portion of your income do you manage to save or invest each month?",
     options: [
-      "None – I use most of what I earn",
-      "Less than 10%",
-      "Between 10–25%",
-      "Over 25%",
+      "Over 25%", // 4
+      "Between 10–25%", // 3
+      "Less than 10%", // 2
+      "None – I use most of what I earn", // 1
     ],
     why: "This reveals whether short-term lifestyle is crowding out long-term goals.",
     insight: "Insight Generated: Savings rate and discipline score.",
@@ -77,10 +78,10 @@ const questions: Question[] = [
     question:
       "If your main income stopped today, how long could you comfortably maintain your current lifestyle?",
     options: [
-      "Less than a month",
-      "1–3 months",
-      "3–6 months",
-      "More than 6 months",
+      "More than 6 months", // 4
+      "3–6 months", // 3
+      "1–3 months", // 2
+      "Less than a month", // 1
     ],
     why: "This measures how prepared you are for shocks — the foundation of financial wellbeing.",
     insight: "Insight Generated: Liquidity and emergency-fund strength.",
@@ -90,10 +91,10 @@ const questions: Question[] = [
   {
     question: "How would you describe your current debt or credit position?",
     options: [
-      "I have no debt",
-      "I manage my debts easily",
-      "I manage but it sometimes feels tight",
-      "It's difficult or stressful to manage",
+      "I have no debt", // 4
+      "I manage my debts easily", // 3
+      "I manage but it sometimes feels tight", // 2
+      "It's difficult or stressful to manage", // 1
     ],
     why: "Debt affects freedom and long-term growth potential.",
     insight:
@@ -105,10 +106,10 @@ const questions: Question[] = [
     question:
       "How confident are you that you're saving or investing enough for future goals (retirement, business, home, etc.)?",
     options: [
-      "Very confident – I have a clear plan",
-      "Fairly confident – I'm doing something but unsure if it's enough",
-      "Not very confident – I've started but need direction",
-      "Not confident – I haven't started planning yet",
+      "Very confident – I have a clear plan", // 4
+      "Fairly confident – I'm doing something but unsure if it's enough", // 3
+      "Not very confident – I've started but need direction", // 2
+      "Not confident – I haven't started planning yet", // 1
     ],
     why: "Determines whether users are on track for future milestones.",
     insight:
@@ -120,10 +121,10 @@ const questions: Question[] = [
     question:
       "Which best describes how you currently approach your finances overall?",
     options: [
-      "I have a structured plan I follow",
-      "I have ideas but no written plan",
-      "I'm reactive – I deal with things as they come",
-      "I avoid thinking about it until I have to",
+      "I have a structured plan I follow", // 4
+      "I have ideas but no written plan", // 3
+      "I'm reactive – I deal with things as they come", // 2
+      "I avoid thinking about it until I have to", // 1
     ],
     why: "Captures strategic maturity — whether someone is proactive or reactive about money.",
     insight: "Insight Generated: Planning maturity and confidence index.",
@@ -152,7 +153,7 @@ export default function WealthScan() {
     answers.forEach((answer, index) => {
       const question = questions[index];
       const optionIndex = question.options.indexOf(answer);
-      const answerValue = optionIndex + 1; // 1-4 scale
+      const answerValue = 4 - optionIndex; // 4 for first option, 1 for last option
       const weightedScore = answerValue * question.weight;
       totalScore += weightedScore;
     });
@@ -166,10 +167,17 @@ export default function WealthScan() {
     answers.forEach((answer, index) => {
       const question = questions[index];
       const optionIndex = question.options.indexOf(answer);
-      const answerValue = (optionIndex + 1) * 25; // Convert to 25-100 scale
+      const answerValue = 4 - optionIndex; // 4 for best, 1 for worst
+
+      // Calculate pillar score as percentage (0-100)
+      const maxPossibleScore = 4 * question.weight * 25; // Maximum possible for this pillar
+      const actualScore = answerValue * question.weight * 25; // Actual score for this pillar
+      const pillarPercentage = (actualScore / maxPossibleScore) * 100;
+
       pillarScores[question.pillar] = {
-        score: answerValue,
+        score: Math.round(pillarPercentage),
         answer: answer,
+        rawValue: answerValue,
       };
     });
 
@@ -287,6 +295,7 @@ export default function WealthScan() {
         bottomPillars: bottom,
       };
 
+      console.log("Final Results:", data); // For debugging
       sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
       router.push("/wealth-health");
     }
@@ -302,7 +311,10 @@ export default function WealthScan() {
     );
 
   return (
-    <section id="wealth-scan" className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-gray-900 px-6 py-16">
+    <section
+      id="wealth-scan"
+      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-gray-900 px-6 py-16"
+    >
       <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-blue-950">
         Discover Your Financial Health
       </h2>

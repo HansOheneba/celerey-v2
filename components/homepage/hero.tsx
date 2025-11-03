@@ -14,6 +14,13 @@ const videoList = [
   "/videos/vid6.mp4",
 ];
 
+const handleScrollToWealthHealth = () => {
+  const el = document.getElementById("wealth-health");
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
 export default function Hero() {
   const [currentVideo, setCurrentVideo] = useState(0);
   const videoRefs = useRef<HTMLVideoElement[]>([]);
@@ -89,11 +96,12 @@ export default function Hero() {
         <div className="w-full max-w-md mx-auto px-4">
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
             <Button
+              onClick={handleScrollToWealthHealth}
               asChild
               className="flex-1 w-full p-5 bg-blue-600 hover:bg-blue-700 rounded-2xl"
             >
               <Link
-                href="/free-scan"
+                href="/#wealth-scan"
                 className="w-full block text-center text-white font-medium py-2 text-sm sm:text-base"
               >
                 Start Your Free Financial Health Scan

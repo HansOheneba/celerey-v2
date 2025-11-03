@@ -26,8 +26,15 @@ export default function Header() {
     { name: "Contact", href: "#" },
   ];
 
+  const handleScrollToWealthHealth = () => {
+    const el = document.getElementById("wealth-health");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <header className="fixed top-0 w-full z-50 bg-black/30 backdrop-blur-md">
+    <header className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
@@ -57,10 +64,10 @@ export default function Header() {
         {/* CTA Button (Desktop) */}
         <div className="hidden md:block">
           <Button
-            asChild
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 rounded-full transition-all"
+            onClick={handleScrollToWealthHealth}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-full text-sm"
           >
-            <Link href="/free-scan">Start Your Free Health Scan</Link>
+            Start Your Free Financial Health Scan
           </Button>
         </div>
 
@@ -127,10 +134,11 @@ export default function Header() {
               {/* CTA Button */}
               <div className="pt-8">
                 <Button
+                  onClick={handleScrollToWealthHealth}
                   asChild
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full py-3 rounded-full text-base"
                 >
-                  <Link href="/free-scan" onClick={() => setOpen(false)}>
+                  <Link href="#" onClick={() => setOpen(false)}>
                     Start Your Free Financial Health Scan
                   </Link>
                 </Button>
