@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useAnimation, useInView } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
+import { ArrowLeft, ArrowRight, } from "lucide-react";
+import Link from "next/link";
 
 const advisors = [
   {
@@ -49,48 +50,35 @@ const advisors = [
       "Helps leaders build high-impact teams, align people with purpose, and lead with clarity across Africa and beyond.",
     image: "/advisors/liz.jpg",
   },
+  {
+    name: "Lady-Ann Essuman",
+    title: "Corporate Lawyer & Legal Strategist",
+    experience:
+      "Founder and Managing Attorney of VINT & Aletheia; serves on national boards including the Office of the Registrar of Companies and the Council on Foreign Relations, Ghana.",
+    image: "/advisors/ladyann.jpg",
+  },
 ];
 
 export default function Advisors() {
-  const ref = useRef(null);
-  const inView = useInView(ref);
   const [index, setIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  // Auto-scroll logic
+  // Auto-scroll every 6s when not paused
   useEffect(() => {
-    if (!inView || paused) return;
-
-    const slideInterval = setInterval(() => {
+    if (paused) return;
+    const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % advisors.length);
-      setProgress(0);
-    }, 5000); // 10s per slide
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [paused]);
 
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 100 : prev + 1));
-    }, 50); // progress fills every 100ms
-
-    return () => {
-      clearInterval(slideInterval);
-      clearInterval(progressInterval);
-    };
-  }, [inView, paused]);
-
-  const next = () => {
-    setIndex((prev) => (prev + 1) % advisors.length);
-    setProgress(0);
-  };
-
-  const prev = () => {
+  const next = () => setIndex((prev) => (prev + 1) % advisors.length);
+  const prev = () =>
     setIndex((prev) => (prev - 1 + advisors.length) % advisors.length);
-    setProgress(0);
-  };
 
   return (
     <section
-      ref={ref}
-      className="relative py-24 bg-white text-black overflow-hidden"
+      className="relative py-24 bg-gradient-to-b from-white to-gray-50 text-black overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -104,7 +92,7 @@ export default function Advisors() {
           className="text-4xl md:text-5xl font-semibold mb-6"
         >
           Where Human Expertise Meets{" "}
-          <span className="text-blue-600">Machine Precision</span>
+          <span className="text-blue-700">Machine Precision</span>
         </motion.h2>
 
         <motion.p
@@ -120,16 +108,16 @@ export default function Advisors() {
         </motion.p>
 
         {/* Carousel */}
-        <div className="relative overflow-hidden">
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center"
-          >
-            <div className="bg-gray-50 border border-gray-200 rounded-2xl shadow-md w-full sm:w-[450px] overflow-hidden">
+        <div className="relative overflow-hidden flex justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -60 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white border border-gray-200 rounded-2xl shadow-md w-full sm:w-[450px] overflow-hidden"
+            >
               <div className="relative h-64 w-full">
                 <Image
                   src={advisors[index].image}
@@ -139,28 +127,28 @@ export default function Advisors() {
                 />
               </div>
               <div className="p-6 text-left">
-                <h3 className="text-xl font-semibold mb-1">
+                <h3 className="text-xl font-semibold mb-1 text-[#1B1856]">
                   {advisors[index].name}
                 </h3>
-                <p className="text-blue-600 text-sm mb-2">
+                <p className="text-blue-700 text-sm mb-2">
                   {advisors[index].title}
                 </p>
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
                   {advisors[index].experience}
                 </p>
-                <Button className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full">
+                <Button className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full text-sm">
                   Book Session
                 </Button>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </AnimatePresence>
 
           {/* Controls */}
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full bg-white/80 hover:bg-blue-50 border border-gray-300"
+              className="rounded-full bg-white/80 hover:bg-blue-50 border border-gray-300 shadow-sm"
               onClick={prev}
             >
               <ArrowLeft className="h-5 w-5 text-[#1B1856]" />
@@ -170,40 +158,16 @@ export default function Advisors() {
             <Button
               size="icon"
               variant="outline"
-              className="rounded-full bg-white/80 hover:bg-blue-50 border border-gray-300"
+              className="rounded-full bg-white/80 hover:bg-blue-50 border border-gray-300 shadow-sm"
               onClick={next}
             >
               <ArrowRight className="h-5 w-5 text-[#1B1856]" />
             </Button>
           </div>
-
-          {/* Pause/Play Button */}
-          <div className="absolute bottom-4 right-1/2 translate-x-1/2">
-            <Button
-              size="icon"
-              onClick={() => setPaused((prev) => !prev)}
-              className="rounded-full bg-white/90 border border-gray-300 hover:bg-gray-100"
-            >
-              {paused ? (
-                <Play className="h-5 w-5 text-[#1B1856]" />
-              ) : (
-                <Pause className="h-5 w-5 text-[#1B1856]" />
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full max-w-md mx-auto mt-8 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-[#1B1856]"
-            animate={{ width: `${progress}%` }}
-            transition={{ ease: "linear", duration: 0.1 }}
-          />
         </div>
 
         {/* Indicators */}
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center gap-2 mt-6">
           {advisors.map((_, i) => (
             <div
               key={i}
@@ -214,6 +178,21 @@ export default function Advisors() {
             />
           ))}
         </div>
+
+        {/* View All Advisors CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <Link href="/advisors">
+            <Button className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full px-8 py-3 text-base font-light shadow-md hover:shadow-lg transition-all">
+              Meet the Full Advisory Team
+            </Button>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
