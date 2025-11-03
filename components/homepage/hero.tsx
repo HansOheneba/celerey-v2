@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -16,27 +16,49 @@ const videoList = [
 
 export default function Hero() {
   const [currentVideo, setCurrentVideo] = useState(0);
+  const videoRefs = useRef<HTMLVideoElement[]>([]);
 
-  // Cycle through videos every 10 seconds
+  // Cycle through videos every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideo((prev) => (prev + 1) % videoList.length);
-    }, 5000); // 10 seconds per video
+    }, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Force Safari autoplay
+  useEffect(() => {
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.muted = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Safari may block autoplay — try again silently
+            setTimeout(() => video.play().catch(() => {}), 500);
+          });
+        }
+      }
+    });
   }, []);
 
   return (
     <section className="relative flex flex-col items-center justify-center text-center min-h-[95vh] text-white px-6 md:pt-32 pb-20 overflow-hidden">
-      {/* Video Background with fade transition */}
+      {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         {videoList.map((video, index) => (
           <video
             key={index}
+            ref={(el) => {
+              videoRefs.current[index] = el!;
+            }}
             src={video}
-            autoPlay
             muted
-            loop
             playsInline
+            loop
+            preload="auto"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ${
               index === currentVideo ? "opacity-100" : "opacity-0"
             }`}
@@ -44,10 +66,10 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Dark overlay for contrast */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/50 pointer-events-none" />
 
-      {/* Main content */}
+      {/* Text and Buttons */}
       <motion.div
         className="relative max-w-3xl mx-auto z-10"
         initial={{ opacity: 0, y: 30 }}
@@ -64,7 +86,6 @@ export default function Hero() {
           finances simple — so life feels lighter and your goals feel closer.
         </p>
 
-        {/* CTA Buttons */}
         <div className="w-full max-w-md mx-auto px-4">
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
             <Button
