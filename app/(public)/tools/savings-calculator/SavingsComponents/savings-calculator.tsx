@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 type SaveType = "as-much-as-possible" | "specific-amount";
 type TimeUnit = "months" | "years";
@@ -376,12 +377,12 @@ export default function SavingsCalculator() {
                <span className="text-blue-400">•</span>
                <span>
                  Get tailored guidance from a{" "}
-                 <a
+                 <Link
                    href="/advisors"
                    className="text-blue-400 hover:text-blue-300 font-medium underline underline-offset-2"
                  >
                    Celerey advisor
-                 </a>{" "}
+                 </Link>{" "}
                  to reach your goals faster — speak to one today for{" "}
                  <span className="text-slate-200 font-semibold">free</span>.
                </span>
