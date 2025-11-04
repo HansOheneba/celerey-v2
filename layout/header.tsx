@@ -20,7 +20,7 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Advisors", href: "/advisors" },
     { name: "Subscribe", href: "subscribe" },
-    { name: "Insights", href: "#" },
+    { name: "Insights", href: "/insights" },
     { name: "Execution Partners", href: "/partners" },
     { name: "Contact", href: "/contact" },
   ];
