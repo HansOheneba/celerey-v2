@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 interface Question {
   question: string;
@@ -44,6 +45,8 @@ interface WealthHealthData {
   recommendations: string[];
   topPillars: string[];
   bottomPillars: string[];
+  email: string;
+  submittedAt: string;
 }
 
 const questions: Question[] = [
@@ -136,6 +139,9 @@ const questions: Question[] = [
 export default function WealthScan() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [email, setEmail] = useState("");
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const progress = ((step + 1) / questions.length) * 100;
@@ -277,9 +283,23 @@ export default function WealthScan() {
     };
   };
 
-  const handleNext = () => {
-    if (step < questions.length - 1) setStep(step + 1);
-    else {
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email || !validateEmail(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Calculate results
       const score = calculateScore();
       const pillarScores = getPillarScores();
       const category = getScoreCategory(score);
@@ -293,11 +313,55 @@ export default function WealthScan() {
         recommendations: generateRecommendations(pillarScores),
         topPillars: top,
         bottomPillars: bottom,
+        email,
+        submittedAt: new Date().toISOString(),
       };
 
-      console.log("Final Results:", data); // For debugging
+      // Optional: Send email to your backend
+      await fetch("/api/save-results", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      // Store in session storage and redirect
       sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
       router.push("/wealth-health");
+    } catch (error) {
+      console.error("Error saving results:", error);
+      // Fallback: still store locally even if API call fails
+      const score = calculateScore();
+      const pillarScores = getPillarScores();
+      const category = getScoreCategory(score);
+      const { top, bottom } = getTopAndBottomPillars(pillarScores);
+
+      const data: WealthHealthData = {
+        score,
+        category,
+        answers,
+        pillarScores,
+        recommendations: generateRecommendations(pillarScores),
+        topPillars: top,
+        bottomPillars: bottom,
+        email,
+        submittedAt: new Date().toISOString(),
+      };
+
+      sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
+      router.push("/wealth-health");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNext = () => {
+    if (step < questions.length - 1) {
+      setStep(step + 1);
+    } else {
+      // Show email form instead of immediately redirecting
+      setShowEmailForm(true);
     }
   };
 
@@ -323,12 +387,77 @@ export default function WealthScan() {
         Take a quick self-assessment to understand your financial strengths and
         opportunities for growth.
       </p>
+
+      {/* Email Form Overlay */}
+      <AnimatePresence>
+        {showEmailForm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl max-w-md w-full p-8"
+            >
+              <h3 className="text-2xl font-semibold text-[#1B1856] mb-4 text-center">
+                Almost There!
+              </h3>
+              <p className="text-gray-600 mb-6 text-center">
+                Enter your email to receive your personalized financial health
+                report and track your progress over time.
+              </p>
+
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <div>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    onClick={() => setShowEmailForm(false)}
+                    className="flex-1 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-100"
+                    disabled={isSubmitting}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 rounded-xl bg-blue-950 hover:bg-blue-950/80 text-white"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Processing..." : "See My Results"}
+                  </Button>
+                </div>
+
+                <p className="text-xs text-gray-500 text-center">
+                  We respect your privacy. Your email will only be used to send
+                  your results and occasional financial insights.
+                </p>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
         {/* Header */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-          This questionaire will take about 3 minutes, after you are done you
+          This questionnaire will take about 3 minutes, after you are done you
           can view your results and recommendations.
         </p>
+
         {/* Progress */}
         <Progress
           value={progress}

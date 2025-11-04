@@ -47,25 +47,60 @@ interface WealthHealthResults {
   recommendations: string[];
   topPillars: string[];
   bottomPillars: string[];
+  email: string; // ✅ ADD THIS
+  submittedAt: string; // ✅ ADD THIS
 }
 
 export default function WealthHealthPage() {
   const [results, setResults] = useState<WealthHealthResults | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // ✅ ADD LOADING STATE
   const router = useRouter();
 
   useEffect(() => {
     const storedResults = sessionStorage.getItem("wealthHealthResults");
     if (storedResults) {
-      setResults(JSON.parse(storedResults));
+      try {
+        const parsedResults = JSON.parse(storedResults);
+        // ✅ CHECK IF EMAIL EXISTS IN RESULTS
+        if (parsedResults.email) {
+          setResults(parsedResults);
+        } else {
+          // ✅ REDIRECT BACK TO SCAN IF NO EMAIL FOUND
+          router.push("/#wealth-scan");
+        }
+      } catch (error) {
+        // ✅ REDIRECT IF JSON PARSING FAILS
+        router.push("/#wealth-scan");
+      }
     } else {
-      router.push("/");
+      // ✅ REDIRECT IF NO RESULTS FOUND
+      router.push("/#wealth-scan");
     }
+    setIsLoading(false); // ✅ SET LOADING TO FALSE AFTER CHECK
   }, [router]);
 
-  if (!results) {
+  // ✅ SHOW LOADING STATE
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-lg text-gray-600">Loading your results...</p>
+      </div>
+    );
+  }
+
+  // ✅ SHOW ERROR STATE IF NO RESULTS (after loading)
+  if (!results) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600 mb-4">No results found</p>
+          <Button
+            onClick={() => router.push("/#wealth-scan")}
+            className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white"
+          >
+            Take the Assessment
+          </Button>
+        </div>
       </div>
     );
   }
@@ -487,8 +522,8 @@ export default function WealthHealthPage() {
                       const end = new Date(start);
                       end.setHours(end.getHours() + 1);
 
-                    //   const formatDate = (d: Date) =>
-                    //     d.toISOString().replace(/[-:]|\.\d{3}/g, "");
+                      //   const formatDate = (d: Date) =>
+                      //     d.toISOString().replace(/[-:]|\.\d{3}/g, "");
 
                       const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(
                         title
