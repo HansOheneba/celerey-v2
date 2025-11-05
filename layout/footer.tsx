@@ -70,7 +70,7 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                href="/advisory"
+                href="/advisors"
                 className="hover:text-blue-400 transition-colors"
               >
                 Advisory Services
@@ -127,7 +127,7 @@ export default function Footer() {
                 href="/about"
                 className="hover:text-blue-400 transition-colors"
               >
-                About Us
+                Who we are
               </Link>
             </li>
             <li>
@@ -140,20 +140,13 @@ export default function Footer() {
             </li>
             <li>
               <Link
-                href="/press"
+                href="/insights"
                 className="hover:text-blue-400 transition-colors"
               >
-                Press
+                Resources
               </Link>
             </li>
-            <li>
-              <Link
-                href="/blog"
-                className="hover:text-blue-400 transition-colors"
-              >
-                Blog
-              </Link>
-            </li>
+    
           </ul>
         </div>
       </div>

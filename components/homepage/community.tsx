@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import {  Phone } from "lucide-react";
+import Link from "next/link";
 
 export default function Community() {
   const [email, setEmail] = useState("");
@@ -79,15 +80,17 @@ export default function Community() {
               your screen, or connect directly our Client Success team.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 transition-colors"
-              >
-                <Phone className="w-5 h-5" />
-                WhatsApp
-              </motion.button>
-            </div>
+            <Link href={"https://wa.me/12272296921"} target="_blank">
+              <div className="flex flex-wrap gap-4">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 transition-colors"
+                >
+                  <Phone className="w-5 h-5" />
+                  WhatsApp
+                </motion.button>
+              </div>
+            </Link>
           </div>
         </motion.div>
       </div>

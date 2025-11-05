@@ -454,8 +454,8 @@ export default function WealthScan() {
       <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
         {/* Header */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-          This questionnaire will take about 3 minutes, after you are done you
-          can view your results and recommendations.
+          This quick 3-minute checkup gives you a picture of your
+          financial wellbeing.
         </p>
 
         {/* Progress */}
