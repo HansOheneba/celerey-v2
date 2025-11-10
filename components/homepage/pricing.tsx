@@ -6,27 +6,27 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "Lite",
-    price: "Free",
+    name: "Essentials",
+    price: "$99 (One-Time Access)",
     description:
-      "Essential wealth tracking and basic insights to get you started on your financial journey.",
-    cta: "Start Free",
+      "Personalized Financial Health Scan™, interactive dashboard access, and a 45-minute strategy session with follow-up support.",
+    cta: "Get Started",
     highlight: false,
   },
   {
     name: "Core",
-    price: "$29/mo",
+    price: "$299.99 / Year",
     description:
-      "Advanced analytics, personalized recommendations, and quarterly advisor check-ins.",
-    cta: "Upgrade",
+      "Two yearly advisory sessions, quarterly progress reviews, and access to member webinars, accountability calls, and partner perks.",
+    cta: "Upgrade Plan",
     highlight: true,
   },
   {
     name: "Concierge",
-    price: "$199/mo",
+    price: "$1,499 / Year",
     description:
-      "Full-service wealth management with dedicated advisor and premium execution partners.",
-    cta: "Book Consultation",
+      "Comprehensive wealth management with six annual sessions, strategic planning, dedicated liaison, and access to Celerey’s Global Advisory Network.",
+    cta: "Join Concierge",
     highlight: false,
   },
 ];

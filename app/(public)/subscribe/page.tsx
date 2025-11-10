@@ -7,56 +7,59 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "Lite",
-    price: "Free",
-    tagline: "Your Wealth Journey Starts Here",
+    name: "Essentials",
+    price: "$99 (One-Time Access)",
+    tagline: "Your Financial Clarity Starts Here",
     description:
-      "Get started on your financial journey with essential tools to organize your finances, understand your wealth health, and take your first confident steps.",
+      "Get a complete snapshot of your financial health and a personalized roadmap to build stronger money habits with expert guidance.",
     features: [
-      "Personalized Financial Health Check",
-      "Access to Private Wealth Dashboard",
-      "AI-Powered Smart Insights",
-      "Free Intro Session with a Celerey Advisor",
-      "100% Confidential & Judgment-Free",
+      "Personalized Financial Health Scan™",
+      "Access to Celerey Dashboard",
+      "45-Minute One-on-One Strategy Session",
+      "Custom Financial Strategy Document",
+      "30-Day Post-Session Support",
     ],
-    cta: "Start Free",
+    cta: "Get Started",
     highlight: false,
   },
   {
     name: "Core",
-    price: "$29/mo",
-    tagline: "Best Value for Growing Professionals",
+    price: "$299.99 / Year",
+    tagline: "Smart Wealth Growth for Professionals",
     description:
-      "Gain structure, accountability, and personalized insights to help you plan, grow, and protect your wealth with expert guidance and powerful tools.",
+      "Stay on track with expert-led reviews, personalized insights, and accountability check-ins designed to accelerate your financial progress.",
     features: [
-      "Quarterly sessions with a Celerey Advisor",
-      "Personalized financial roadmap",
-      "Cashflow & expense planning",
-      "Savings & investment allocation strategy",
-      "2 Masterclasses per year",
-      "Market Outlook briefings",
-      "Full access to Celerey Dashboard",
+      "Two Advisory Sessions per Year",
+      "Quarterly Progress Reports",
+      "Monthly Accountability Touchpoints",
+      "Annual Portfolio & Health Review",
+      "Member Webinars & Global Masterclasses",
+      "Advisor-on-Demand Credits",
+      "Email & WhatsApp Support",
+      "Exclusive Partner Perks",
     ],
-    cta: "Upgrade to Core",
+    cta: "Upgrade Plan",
     highlight: true,
   },
   {
     name: "Concierge",
-    price: "$199/mo",
-    tagline: "A Virtual Family Office Experience",
+    price: "$1,499 / Year",
+    tagline: "A Private Family Office Experience",
     description:
-      "Exclusive access for executives and entrepreneurs who want hands-on advisory, global strategy, and full-service wealth management support.",
+      "Access full-service wealth management with a dedicated team, personalized strategy, and connections to global financial specialists.",
     features: [
-      "Dedicated Celerey Wealth Advisor",
-      "Monthly strategy check-ins",
-      "Advanced portfolio structuring",
-      "Retirement & succession planning",
-      "Tax efficiency optimization",
-      "Unlimited access to Masterclasses",
-      "Exclusive Celerey Circles & Events",
-      "Premium AI-Powered Dashboard",
+      "Six Advisory Sessions Annually",
+      "Monthly Check-Ins with Lead Advisor",
+      "Quarterly Strategic Planning Meetings",
+      "Dedicated Client Success Liaison",
+      "Access to Global Advisory Network",
+      "Comprehensive Wealth Blueprint",
+      "Private Advisory Desk Access",
+      "Investment & Legacy Planning Support",
+      "Custom Dashboard Integration",
+      "Quarterly Market & Investment Briefings",
     ],
-    cta: "Book Consultation",
+    cta: "Join Concierge",
     highlight: false,
   },
 ];
@@ -77,10 +80,10 @@ export default function PricingPage() {
             Fits You
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            At Celerey, wealth is more than money — it’s clarity, control, and
-            confidence at every stage of your journey. Every plan gives you
-            access to tools and insights designed to help you build your
-            financial future with purpose.
+            From foundational clarity to advanced wealth management, Celerey’s
+            plans are built to match your goals. Whether you’re just starting or
+            expanding your financial strategy, we’ve got the right level of
+            support for you.
           </p>
         </motion.div>
 
@@ -145,16 +148,18 @@ export default function PricingPage() {
           </h2>
           <p className="text-gray-600 mb-8 leading-relaxed">
             Start with{" "}
-            <span className="font-medium text-[#D4AF37]">Celerey Free</span> to
-            get your personalized wealth health scan, explore your dashboard,
-            and discover how small steps can transform your financial future.
-            You can always upgrade later — no pressure, just progress.
+            <span className="font-medium text-[#D4AF37]">
+              Celerey Essentials
+            </span>{" "}
+            to uncover your financial health, get your custom strategy, and take
+            the first confident step toward your goals. You can upgrade anytime
+            as your needs grow.
           </p>
-         <Link href="https://celerey.app">
-           <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-light">
-             Get Started
-           </Button>
-         </Link>
+          <Link href="https://celerey.app">
+            <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-light">
+              Get Started
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
