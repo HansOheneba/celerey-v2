@@ -16,13 +16,13 @@ const webinarData = {
       name: "Jude Addo",
       title: "CEO, JA Group",
       image:
-        "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?q=80&w=600",
+        "/advisors/jude.jpg",
     },
     {
       name: "Francis Gill",
       title: "CEO, Humboldt Financial",
       image:
-        "https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=600",
+        "/advisors/francis.jpg",
     },
   ],
   expectations: [
@@ -56,7 +56,7 @@ export default function WebinarPage() {
 //   };
 
   return (
-    <section className="bg-gradient-to-b from-white to-slate-50 text-[#1B1856] pb-32">
+    <section className="bg-gradient-to-b from-white to-slate-50 text-[#1B1856] py-32">
       <div className="max-w-6xl mx-auto px-6 text-center pt-20">
         <p className="uppercase tracking-wide text-sm text-[#6B5DCC] mb-2">
           Celerey Webinar Series
