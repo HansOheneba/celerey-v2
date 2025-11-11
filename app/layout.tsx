@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Image from "next/image";
+import { ClerkProvider } from "@clerk/nextjs";
 
 // PP Cirka Font (note the correct spelling: Cirka, not Circa)
 const ppCirka = localFont({
@@ -111,19 +112,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${ppCirka.variable} ${helvetica.variable} antialiased`}>
-        <Image
-          src="/logos/logoDark.png"
-          alt=""
-          width={1}
-          height={1}
-          priority
-          className="hidden"
-        />
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${ppCirka.variable} ${helvetica.variable} antialiased`}
+        >
+          <Image
+            src="/logos/logoDark.png"
+            alt=""
+            width={1}
+            height={1}
+            priority
+            className="hidden"
+          />
 
-        {children}
-      </body>
-    </html>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

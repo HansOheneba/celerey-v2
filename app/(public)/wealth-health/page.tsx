@@ -238,7 +238,7 @@ export default function WealthHealthPage() {
             {results.category.label}
           </h2>
           <p className="text-6xl font-bold text-[#1B1856] mb-4">
-            {results.score}
+            {results.score}%
           </p>
           <p className="text-gray-700 mb-4">{narrative.summary}</p>
           <p className="text-gray-600 italic">{narrative.insight}</p>
