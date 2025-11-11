@@ -30,7 +30,7 @@ export default function PodcastModal({ podcast, onClose, onSave }: Props) {
     }
   );
 
-  const handleChange = (field: keyof Podcast, value: any) => {
+  const handleChange = (field: keyof Podcast, value: string | string[]) => {
     setForm({ ...form, [field]: value });
   };
 
