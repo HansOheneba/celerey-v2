@@ -1,9 +1,26 @@
 "use client";
 
-import { Podcast } from "@/lib/podcasts";
+// import { Podcast } from "@/lib/podcasts";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+
+
+
+
+interface Podcast {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  host: string;
+  duration: string;
+  date: string;
+  image: string;
+  spotify_link: string;
+  spotify_embed_url: string;
+  tags: string[];
+}
 
 interface Props {
   podcast: Podcast;
@@ -42,10 +59,10 @@ export default function PodcastDetails({ podcast, onClose }: Props) {
           {podcast.description}
         </p>
 
-        {podcast.spotifyEmbedUrl && (
+        {podcast.spotify_embed_url && (
           <div className="mb-4">
             <iframe
-              src={podcast.spotifyEmbedUrl}
+              src={podcast.spotify_embed_url}
               width="100%"
               height="152"
               frameBorder="0"

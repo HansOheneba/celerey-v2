@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Podcast } from "@/lib/podcasts";
+// import { Podcast } from "@/lib/podcasts";
 import PodcastTable from "./podcastTable";
 import PodcastModal from "./podcastModal";
 import PodcastDetails from "./podcastDetails";
@@ -9,6 +9,20 @@ import { Button } from "@/components/ui/button";
 
 const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+
+interface Podcast {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  host: string;
+  duration: string;
+  date: string;
+  image: string;
+  spotify_link: string;
+  spotify_embed_url: string;
+  tags: string[];
+}
 export default function PodcastsPage() {
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [selected, setSelected] = useState<Podcast | null>(null);

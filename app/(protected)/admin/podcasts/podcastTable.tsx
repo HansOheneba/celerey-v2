@@ -1,9 +1,24 @@
 "use client";
 
-import { Podcast } from "@/lib/podcasts";
+// import { Podcast } from "@/lib/podcasts";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+
+
+interface Podcast {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  host: string;
+  duration: string;
+  date: string;
+  image: string;
+  spotify_link: string;
+  spotify_embed_url: string;
+  tags: string[];
+}
 interface Props {
   podcasts: Podcast[];
   onView: (podcast: Podcast) => void;
@@ -47,7 +62,7 @@ export default function PodcastTable({ podcasts, onView, onEdit, onDelete }: Pro
                 <Button variant="secondary" size="sm" onClick={() => onEdit(p)}>
                   Edit
                 </Button>
-                <Button variant="destructive" size="sm" onClick={() => onDelete(p.id)}>
+                <Button variant="destructive" size="sm" onClick={() => onDelete(p.id.toString())}>
                   Delete
                 </Button>
               </td>
