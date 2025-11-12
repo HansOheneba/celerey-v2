@@ -4,9 +4,86 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { advisors } from "@/lib/advisors"; // ✅ import shared advisor data
+import { useState, useEffect } from "react";
+
+interface Advisor {
+  id: number;
+  slug: string;
+  name: string;
+  title: string;
+  bio: string;
+  experience: string;
+  expertise: string[];
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export default function AdvisorsPage() {
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    const fetchAdvisors = async () => {
+      try {
+        const res = await fetch(`${apiBase}/advisors/`);
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch advisors: ${res.status}`);
+        }
+
+        const data = await res.json();
+        setAdvisors(data);
+      } catch (err) {
+        console.error("Error fetching advisors:", err);
+        setError("Failed to load advisors. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAdvisors();
+  }, [apiBase]);
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-gray-600">Loading advisors...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-red-600">{error}</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (advisors.length === 0) {
+    return (
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-gray-600">No advisors found.</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
       <div className="max-w-6xl mx-auto text-center">
@@ -44,10 +121,13 @@ export default function AdvisorsPage() {
               {/* Image */}
               <div className="relative h-64 w-full">
                 <Image
-                  src={advisor.image}
+                  src={advisor.image || "/placeholder-avatar.png"}
                   alt={advisor.name}
                   fill
                   className="object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder-avatar.png";
+                  }}
                 />
               </div>
 

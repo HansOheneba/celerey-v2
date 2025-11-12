@@ -1,29 +1,78 @@
 "use client";
 
-import { use } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { advisors } from "@/lib/advisors";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+interface Advisor {
+  id: number;
+  slug: string;
+  name: string;
+  title: string;
+  bio: string;
+  experience: string;
+  expertise: string[];
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 interface AdvisorPageProps {
-  params: Promise<{ slug: string }>; // params is now a Promise
+  params: Promise<{ slug: string }>;
 }
 
 export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
-  // unwrap params
-  const { slug } = use(params);
-
-  const advisor = advisors.find((a) => a.slug === slug);
+  const [advisor, setAdvisor] = useState<Advisor | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  if (!advisor) {
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const slug = use(params).slug;
+
+  useEffect(() => {
+    const fetchAdvisor = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch(`${apiBase}/advisors/${slug}`);
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            setError("Advisor not found");
+            return;
+          }
+          throw new Error(`Failed to fetch advisor: ${res.status}`);
+        }
+
+        const data = await res.json();
+        setAdvisor(data);
+      } catch (err) {
+        console.error("Error fetching advisor:", err);
+        setError("Failed to load advisor details. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAdvisor();
+  }, [slug, apiBase]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+        <div className="text-lg text-gray-600">Loading advisor details...</div>
+      </div>
+    );
+  }
+
+  if (error || !advisor) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
         <p className="text-gray-600 text-lg mb-4">
-          Advisor not found or unavailable.
+          {error || "Advisor not found or unavailable."}
         </p>
         <Button
           onClick={() => router.push("/advisors")}
@@ -46,10 +95,13 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
           className="relative h-80 w-full rounded-2xl overflow-hidden shadow-md"
         >
           <Image
-            src={advisor.image}
+            src={advisor.image || "/placeholder-avatar.png"}
             alt={advisor.name}
             fill
             className="object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "/placeholder-avatar.png";
+            }}
           />
         </motion.div>
 
@@ -70,9 +122,9 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
               Areas of Expertise
             </h3>
             <ul className="flex flex-wrap gap-2">
-              {advisor.expertise.map((skill) => (
+              {advisor.expertise.map((skill, index) => (
                 <li
-                  key={skill}
+                  key={index}
                   className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
                 >
                   {skill}
@@ -92,9 +144,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
         <p className="text-gray-600 text-lg">{advisor.experience}</p>
         <div className="mt-8">
           <Link href="/advisors">
-            <Button
-              className="border border-[#1B1856] text-[#1B1856] hover:bg-[#1B1856] bg-transparent hover:text-white rounded-full"
-            >
+            <Button className="border border-[#1B1856] text-[#1B1856] hover:bg-[#1B1856] bg-transparent hover:text-white rounded-full">
               Back to All Advisors
             </Button>
           </Link>

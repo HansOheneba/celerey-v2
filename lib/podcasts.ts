@@ -1,20 +1,19 @@
 export interface Podcast {
-  id: string;
+  id: number;
   slug: string;
   title: string;
+  description: string;
   host: string;
   duration: string;
   date: string;
   image: string;
-  description: string;
-  spotifyLink: string;
-  spotifyEmbedUrl: string;
-  transcript?: string; 
+  spotify_link: string;
+  spotify_embed_url: string;
   tags: string[];
 }
 export const podcasts: Podcast[] = [
   {
-    id: "1",
+    id: 1,
     slug: "ai-in-investing",
     title: "AI in Investing — Smarter Portfolios",
     host: "Celerey Talk Series",
@@ -24,8 +23,8 @@ export const podcasts: Podcast[] = [
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
     description:
       "Explore how AI and machine learning are transforming investment management — from predictive analytics to intelligent asset allocation.",
-    spotifyLink: "https://open.spotify.com/show/4rbTr3QpQ6PoGvblp214lw", // Sample show link :contentReference[oaicite:0]{index=0}
-    spotifyEmbedUrl:
+    spotify_link: "https://open.spotify.com/show/4rbTr3QpQ6PoGvblp214lw", // Sample show link :contentReference[oaicite:0]{index=0}
+    spotify_embed_url:
       "https://open.spotify.com/embed/show/4rbTr3QpQ6PoGvblp214lw",
     tags: ["AI", "Finance", "Innovation"],
   },
@@ -46,7 +45,7 @@ export const podcasts: Podcast[] = [
     tags: ["Behavioral Finance", "Mindset", "Wealth"],
   },
   {
-    id: "3",
+    id: 3,
     slug: "global-markets-deep-dive",
     title: "Global Markets Deep Dive",
     host: "Celerey Global Team",
