@@ -95,6 +95,7 @@ export default function MoneyManager() {
       "money-manager-data",
       DEFAULT_CATEGORIES
     );
+
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     "money-in"
   );
@@ -158,8 +159,8 @@ export default function MoneyManager() {
     }
   };
 
-  const getCategoryTotal = (category: MoneyCategoryType): number => {
-    return category.items.reduce((sum, item) => {
+  const getCategoryTotal = (category: MoneyCategoryType): number =>
+    category.items.reduce((sum, item) => {
       const converted = convertToFrequency(
         item.amount,
         item.frequency,
@@ -167,17 +168,16 @@ export default function MoneyManager() {
       );
       return sum + converted;
     }, 0);
-  };
 
-  const getTotalMoneyIn = (): number => {
-    const moneyInCategory = categories.find((c) => c.type === "in");
-    return moneyInCategory ? getCategoryTotal(moneyInCategory) : 0;
-  };
+  const getTotalMoneyIn = (): number =>
+    categories.find((c) => c.type === "in")
+      ? getCategoryTotal(categories.find((c) => c.type === "in")!)
+      : 0;
 
-  const getTotalMoneyOut = (): number => {
-    const moneyOutCategory = categories.find((c) => c.type === "out");
-    return moneyOutCategory ? getCategoryTotal(moneyOutCategory) : 0;
-  };
+  const getTotalMoneyOut = (): number =>
+    categories.find((c) => c.type === "out")
+      ? getCategoryTotal(categories.find((c) => c.type === "out")!)
+      : 0;
 
   const totalMoneyIn = getTotalMoneyIn();
   const totalMoneyOut = getTotalMoneyOut();
@@ -190,11 +190,7 @@ export default function MoneyManager() {
   };
 
   const handleClearData = () => {
-    if (
-      confirm(
-        "Are you sure you want to clear all money manager data? This cannot be undone."
-      )
-    ) {
+    if (confirm("Are you sure you want to clear all data?")) {
       setCategories(DEFAULT_CATEGORIES);
     }
   };
@@ -224,24 +220,21 @@ export default function MoneyManager() {
     setCategories(
       categories.map((cat) =>
         cat.id === categoryId
-          ? {
-              ...cat,
-              items: cat.items.filter((item) => item.id !== itemId),
-            }
+          ? { ...cat, items: cat.items.filter((item) => item.id !== itemId) }
           : cat
       )
     );
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto px-4 py-32 sm:px-6 lg:px-8 bg-white text-slate-800">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-800">
             Money Manager
           </h1>
-          <p className="text-slate-400 mt-2 text-sm">
+          <p className="text-slate-500 mt-2 text-sm">
             Track your cash flow in and out
           </p>
         </div>
@@ -249,15 +242,15 @@ export default function MoneyManager() {
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {/* Storage Toggle */}
           <div className="flex items-center gap-2">
-            <span className="text-slate-400 text-sm">Save Data</span>
+            <span className="text-slate-600 text-sm">Save Data</span>
             <button
               onClick={() => toggleStorage(!isStorageEnabled)}
               className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors duration-300 ${
-                isStorageEnabled ? "bg-slate-500" : "bg-slate-700"
+                isStorageEnabled ? "bg-emerald-500" : "bg-slate-300"
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
                   isStorageEnabled ? "translate-x-5" : "translate-x-1"
                 }`}
               />
@@ -267,18 +260,18 @@ export default function MoneyManager() {
           {/* Clear Data */}
           <button
             onClick={handleClearData}
-            className="px-3 py-1.5 text-xs sm:text-sm font-medium border border-slate-600 text-slate-300 rounded-md hover:bg-slate-800/60 transition-colors"
+            className="px-3 py-1.5 text-xs sm:text-sm font-medium border border-slate-300 text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
           >
             Clear Data
           </button>
 
           {/* Frequency Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-slate-400 text-sm">View</span>
+            <span className="text-slate-600 text-sm">View</span>
             <select
               value={frequency}
               onChange={handleFrequencyChange}
-              className="px-3 py-1.5 bg-slate-900 border border-slate-700 text-slate-100 text-sm rounded-md focus:ring-1 focus:ring-slate-600 hover:bg-slate-800 transition-colors"
+              className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-sm rounded-md focus:ring-1 focus:ring-slate-400 hover:bg-slate-50 transition-colors"
             >
               <option value="Weekly">Weekly</option>
               <option value="Fortnightly">Fortnightly</option>
@@ -289,23 +282,23 @@ export default function MoneyManager() {
         </div>
       </div>
 
-      {/* Storage Status Indicator */}
+      {/* Storage Status */}
       <div
         className={`mb-6 p-3 rounded-2xl text-sm border transition-all ${
           isStorageEnabled
-            ? "bg-slate-800 border-slate-700 text-emerald-500"
-            : "bg-slate-900 border-slate-800 text-slate-500"
+            ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+            : "bg-slate-50 border-slate-200 text-slate-500"
         }`}
       >
         {isStorageEnabled ? (
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-400 rounded animate-pulse" />
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
             <span>Your data is being saved automatically</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-slate-500 rounded-full" />
-            <span>Data saving is off — changes won&apos;t persist</span>
+            <div className="w-2 h-2 bg-slate-400 rounded-full" />
+            <span>Data saving is off — changes won’t persist</span>
           </div>
         )}
       </div>

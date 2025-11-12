@@ -1,15 +1,56 @@
-import { advisors } from "@/lib/advisors";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-export default function AdvisorDetailPage({
+interface Advisor {
+  id: number;
+  slug: string;
+  name: string;
+  title: string;
+  bio: string;
+  experience: string;
+  expertise: string[];
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface AdvisorDetailPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+async function getAdvisor(slug: string): Promise<Advisor | null> {
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const res = await fetch(`${apiBase}/advisors/${slug}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch advisor: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching advisor:", error);
+    return null;
+  }
+}
+
+export default async function AdvisorDetailPage({
   params,
-}: {
-  params: { slug: string };
-}) {
-  const advisor = advisors.find((a) => a.slug === params.slug);
-  if (!advisor) return notFound();
+}: AdvisorDetailPageProps) {
+  const advisor = await getAdvisor(params.slug);
+
+  if (!advisor) {
+    return notFound();
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -25,11 +66,12 @@ export default function AdvisorDetailPage({
       {/* Info */}
       <div className="flex gap-8">
         <Image
-          src={advisor.image}
+          src={advisor.image || "/placeholder-avatar.png"}
           alt={advisor.name}
           className="w-48 h-48 rounded-xl object-cover shadow"
-            width={192}
-            height={192}
+          width={192}
+          height={192}
+          // REMOVE the onError handler
         />
         <div className="space-y-3">
           <h2 className="text-lg font-semibold">{advisor.title}</h2>

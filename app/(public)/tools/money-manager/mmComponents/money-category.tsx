@@ -57,11 +57,11 @@ export default function MoneyCategory({
       "bg-emerald-500": "bg-emerald-500",
       "bg-rose-500": "bg-rose-500",
     };
-    return colorMap[color] || "bg-slate-600";
+    return colorMap[color] || "bg-gray-400";
   };
 
   const getTextColor = (type: "in" | "out"): string => {
-    return type === "in" ? "text-emerald-300" : "text-rose-300";
+    return type === "in" ? "text-emerald-600" : "text-rose-600";
   };
 
   const handleAmountChange = (
@@ -87,11 +87,11 @@ export default function MoneyCategory({
   };
 
   return (
-    <div className="border border-slate-800 rounded-2xl overflow-hidden bg-[#0b0b0b]/90 backdrop-blur-sm shadow-sm">
+    <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition">
       {/* Header */}
       <button
         onClick={onToggle}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-800/60 transition-colors"
+        className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
           <div
@@ -99,7 +99,7 @@ export default function MoneyCategory({
               category.color
             )}`}
           />
-          <span className="text-slate-100 font-medium tracking-tight">
+          <span className="text-gray-800 font-medium tracking-tight">
             {category.name}
           </span>
         </div>
@@ -109,7 +109,7 @@ export default function MoneyCategory({
           </span>
           <ChevronDown
             size={18}
-            className={`text-slate-500 transition-transform duration-200 ${
+            className={`text-gray-400 transition-transform duration-200 ${
               isExpanded ? "rotate-180" : ""
             }`}
           />
@@ -118,17 +118,17 @@ export default function MoneyCategory({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-slate-800 bg-[#111]/90">
+        <div className="border-t border-gray-200 bg-gray-50">
           {category.items.map((item, index) => (
             <div
               key={item.id}
               className={`px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 ${
                 index !== category.items.length - 1
-                  ? "border-b border-slate-800"
+                  ? "border-b border-gray-200"
                   : ""
               }`}
             >
-              <label className="text-slate-300 text-sm font-medium">
+              <label className="text-gray-700 text-sm font-medium">
                 {item.label}
               </label>
 
@@ -140,14 +140,14 @@ export default function MoneyCategory({
                     handleAmountChange(e, item.id, item.frequency)
                   }
                   placeholder="0"
-                  className="w-full sm:w-28 px-3 py-2 bg-slate-900/70 text-slate-50 border border-slate-700 rounded-lg text-right placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  className="w-full sm:w-28 px-3 py-2 bg-white text-gray-800 border border-gray-300 rounded-lg text-right placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
                 />
                 <select
                   value={item.frequency}
                   onChange={(e) =>
                     handleFrequencyChange(e, item.id, item.amount)
                   }
-                  className="w-full sm:w-auto px-3 py-2 bg-slate-900/70 text-slate-100 border border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  className="w-full sm:w-auto px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
                 >
                   <option value="Weekly">Weekly</option>
                   <option value="Fortnightly">Fortnightly</option>
@@ -156,7 +156,7 @@ export default function MoneyCategory({
                 </select>
                 <button
                   onClick={() => onDeleteItem(category.id, item.id)}
-                  className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-900/30 rounded-lg transition-colors self-end sm:self-auto"
+                  className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-100 rounded-lg transition-colors self-end sm:self-auto"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -165,18 +165,18 @@ export default function MoneyCategory({
           ))}
 
           {/* Add New Item */}
-          <div className="px-6 py-4 border-t border-slate-800 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+          <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white">
             <input
               type="text"
               value={newItemLabel}
               onChange={(e) => setNewItemLabel(e.target.value)}
               placeholder="Add custom item..."
-              className="flex-1 w-full px-3 py-2 bg-slate-900/70 text-slate-50 border border-slate-700 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+              className="flex-1 w-full px-3 py-2 bg-white text-gray-800 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
               onKeyPress={(e) => e.key === "Enter" && handleAddItem()}
             />
             <button
               onClick={handleAddItem}
-              className="px-4 py-2 bg-slate-800 text-slate-200 border border-slate-700 rounded-lg hover:bg-slate-700/60 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
             >
               <Plus className="w-4 h-4" />
               Add Item

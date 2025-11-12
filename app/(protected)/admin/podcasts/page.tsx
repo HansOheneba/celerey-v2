@@ -1,36 +1,103 @@
 "use client";
 
-import { useState } from "react";
-import { podcasts as initialPodcasts, Podcast } from "@/lib/podcasts";
+import { useState, useEffect } from "react";
+import { Podcast } from "@/lib/podcasts";
 import PodcastTable from "./podcastTable";
 import PodcastModal from "./podcastModal";
 import PodcastDetails from "./podcastDetails";
 import { Button } from "@/components/ui/button";
 
+const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function PodcastsPage() {
-  const [podcasts, setPodcasts] = useState<Podcast[]>(initialPodcasts);
+  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [selected, setSelected] = useState<Podcast | null>(null);
   const [editing, setEditing] = useState<Podcast | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch podcasts from API
+  const fetchPodcasts = async () => {
+    try {
+      const res = await fetch(`${apiBase}/podcasts/`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch podcasts: ${res.status}`);
+      }
+      const data = await res.json();
+      setPodcasts(data);
+    } catch (error) {
+      console.error("Error fetching podcasts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPodcasts();
+  }, []);
 
   const handleEdit = (podcast: Podcast) => {
     setEditing(podcast);
     setShowModal(true);
   };
 
-  const handleSave = (updated: Podcast) => {
-    setPodcasts((prev) =>
-      prev.some((p) => p.id === updated.id)
-        ? prev.map((p) => (p.id === updated.id ? updated : p))
-        : [...prev, { ...updated, id: String(Date.now()) }]
-    );
-    setShowModal(false);
-    setEditing(null);
+  const handleSave = async (updated: Podcast) => {
+    try {
+      const url = updated.id
+        ? `${apiBase}/podcasts/${updated.id}`
+        : `${apiBase}/podcasts/`;
+
+      const method = updated.id ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save podcast");
+      }
+
+      // Refresh the list
+      fetchPodcasts();
+      setShowModal(false);
+      setEditing(null);
+    } catch (error) {
+      console.error("Error saving podcast:", error);
+      alert("Failed to save podcast. Please try again.");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setPodcasts((prev) => prev.filter((p) => p.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this podcast?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiBase}/podcasts/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete podcast");
+      }
+
+      // Refresh the list
+      fetchPodcasts();
+    } catch (error) {
+      console.error("Error deleting podcast:", error);
+      alert("Failed to delete podcast. Please try again.");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-lg text-gray-600">Loading podcasts...</div>
+      </div>
+    );
+  }
 
   return (
     <section className="p-6">

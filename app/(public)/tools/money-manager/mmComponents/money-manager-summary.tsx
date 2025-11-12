@@ -74,18 +74,18 @@ export default function MoneyManagerSummary({
   // ---- EMPTY STATE ----
   if (!hasData) {
     return (
-      <Card className="p-10 bg-slate-900/70 border border-slate-700 rounded-2xl text-center">
+      <Card className="p-10 bg-white border border-gray-200 rounded-2xl text-center shadow-sm">
         <div className="max-w-md mx-auto space-y-3">
-          <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-3xl text-slate-400">₵</span>
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+            <span className="text-3xl text-gray-500">₵</span>
           </div>
-          <h3 className="text-xl font-semibold text-slate-100">
+          <h3 className="text-xl font-semibold text-gray-800">
             Start Tracking Your Cash Flow
           </h3>
-          <p className="text-slate-400 leading-relaxed">
-            Enter your income and expenses to discover how your money moves each
-            {` ${frequency.toLowerCase()}`}. Celerey will visualize your balance
-            and offer personalized insights — find out how.
+          <p className="text-gray-500 leading-relaxed">
+            Enter your money in and money out to discover how your money moves{" "}
+            {frequency.toLowerCase()}. Celerey will visualize your balance and
+            offer personalized insights.
           </p>
         </div>
       </Card>
@@ -93,27 +93,27 @@ export default function MoneyManagerSummary({
   }
 
   return (
-    <div className="space-y-8 text-slate-200">
+    <div className="space-y-8 text-gray-800">
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Cash Flow Chart */}
-        <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl">
-          <h3 className="text-lg font-medium text-slate-100 mb-4">
+        <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
             Cash Flow Overview
           </h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={cashFlowData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-              <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-              <YAxis stroke="#94a3b8" fontSize={12} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
+              <YAxis stroke="#6b7280" fontSize={12} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "1px solid #334155",
-                  color: "#fff",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  color: "#111827",
                 }}
                 formatter={(value) => [
-                  `$${Number(value).toFixed(2)}`,
+                  `₵${Number(value).toFixed(2)}`,
                   "Amount",
                 ]}
               />
@@ -128,8 +128,8 @@ export default function MoneyManagerSummary({
 
         {/* Expense Breakdown */}
         {expenseData.length > 0 && (
-          <Card className="p-6 bg-slate-900/70 border border-slate-700 rounded-2xl">
-            <h3 className="text-lg font-medium text-slate-100 mb-4">
+          <Card className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
               Spending Breakdown
             </h3>
             <ResponsiveContainer width="100%" height={200}>
@@ -143,7 +143,7 @@ export default function MoneyManagerSummary({
                   dataKey="value"
                   label={(props: PieLabelRenderProps) => {
                     const data = props.payload as ExpenseDataItem;
-                    return `${data.name}: $${data.value.toFixed(0)}`;
+                    return `${data.name}: ₵${data.value.toFixed(0)}`;
                   }}
                 >
                   {expenseData.map((entry, i) => (
@@ -152,12 +152,12 @@ export default function MoneyManagerSummary({
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1e293b",
-                    border: "1px solid #334155",
-                    color: "#fff",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    color: "#111827",
                   }}
                   formatter={(value) => [
-                    `$${Number(value).toFixed(2)}`,
+                    `₵${Number(value).toFixed(2)}`,
                     "Amount",
                   ]}
                 />
@@ -172,13 +172,13 @@ export default function MoneyManagerSummary({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Total Income"
-          value={`$${totalMoneyIn.toFixed(2)}`}
+          value={`₵${totalMoneyIn.toFixed(2)}`}
           subtitle={`per ${frequency.toLowerCase()}`}
           color="emerald"
         />
         <StatCard
           title="Total Expenses"
-          value={`$${totalMoneyOut.toFixed(2)}`}
+          value={`₵${totalMoneyOut.toFixed(2)}`}
           subtitle={`per ${frequency.toLowerCase()}`}
           color="rose"
         />
@@ -196,7 +196,7 @@ export default function MoneyManagerSummary({
 
       {/* Net Flow Insight */}
       <Card
-        className={`p-6 ${netFlowMessage.bgColor} border ${netFlowMessage.borderColor} rounded-2xl`}
+        className={`p-6 ${netFlowMessage.bgColor} border ${netFlowMessage.borderColor} rounded-2xl shadow-sm`}
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -205,10 +205,10 @@ export default function MoneyManagerSummary({
             >
               {netFlowMessage.title}
             </h3>
-            <p className="text-slate-300">{netFlowMessage.message}</p>
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-gray-600">{netFlowMessage.message}</p>
+            <p className="text-gray-500 text-sm mt-2">
               Celerey can help you make sense of your numbers —{" "}
-              <span className="text-sky-400 hover:underline cursor-pointer">
+              <span className="text-sky-600 hover:underline cursor-pointer">
                 find out how
               </span>
               .
@@ -216,9 +216,9 @@ export default function MoneyManagerSummary({
           </div>
           <div className="text-right">
             <div className={`text-3xl font-bold ${netFlowMessage.color}`}>
-              {netFlow >= 0 ? "+" : "-"}${Math.abs(netFlow).toFixed(2)}
+              {netFlow >= 0 ? "+" : "-"}₵{Math.abs(netFlow).toFixed(2)}
             </div>
-            <div className="text-sm text-slate-400">Net Flow</div>
+            <div className="text-sm text-gray-500">Net Flow</div>
           </div>
         </div>
       </Card>
@@ -239,19 +239,19 @@ function StatCard({
   color: "emerald" | "rose" | "blue";
 }) {
   const colorMap = {
-    emerald: { text: "text-emerald-400", value: "text-emerald-300" },
-    rose: { text: "text-rose-400", value: "text-rose-300" },
-    blue: { text: "text-blue-400", value: "text-blue-300" },
+    emerald: { text: "text-emerald-600", value: "text-emerald-500" },
+    rose: { text: "text-rose-600", value: "text-rose-500" },
+    blue: { text: "text-blue-600", value: "text-blue-500" },
   };
   return (
-    <Card className="p-4 bg-slate-900/70 border border-slate-700 rounded-xl">
+    <Card className="p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
       <h4 className={`text-sm font-semibold ${colorMap[color].text} mb-1`}>
         {title}
       </h4>
       <div className={`text-2xl font-bold ${colorMap[color].value}`}>
         {value}
       </div>
-      <p className="text-xs text-slate-400 mt-1">{subtitle}</p>
+      <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
     </Card>
   );
 }
@@ -262,31 +262,31 @@ function getNetFlowMessage(netFlow: number, frequency: string) {
   if (netFlow > 0) {
     return {
       title: "Positive Cash Flow",
-      message: `You’re saving about $${netFlow.toFixed(
+      message: `You’re saving about ₵${netFlow.toFixed(
         2
       )} ${period}. Keep it up — small gains compound fast.`,
-      color: "text-emerald-300",
-      bgColor: "bg-emerald-900/30",
-      borderColor: "border-emerald-500/30",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
     };
   } else if (netFlow < 0) {
     return {
       title: "Negative Cash Flow",
-      message: `You’re spending $${Math.abs(netFlow).toFixed(
+      message: `You’re spending ₵${Math.abs(netFlow).toFixed(
         2
       )} more than you earn ${period}. Let’s rebalance your budget.`,
-      color: "text-rose-300",
-      bgColor: "bg-rose-900/30",
-      borderColor: "border-rose-500/30",
+      color: "text-rose-600",
+      bgColor: "bg-rose-50",
+      borderColor: "border-rose-200",
     };
   }
   return {
     title: "Balanced",
     message: `Your spending and income match perfectly ${period}. Let’s explore
       smarter savings opportunities.`,
-    color: "text-blue-300",
-    bgColor: "bg-blue-900/30",
-    borderColor: "border-blue-500/30",
+    color: "text-blue-600",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
   };
 }
 
@@ -305,7 +305,7 @@ function getChartColor(tailwindColor: string): string {
     "bg-emerald-500": "#10b981",
     "bg-rose-500": "#ef4444",
   };
-  return colorMap[tailwindColor] || "#94a3b8";
+  return colorMap[tailwindColor] || "#6b7280";
 }
 
 function getFrequencyText(freq: string): string {
