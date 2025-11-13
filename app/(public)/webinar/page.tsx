@@ -2,58 +2,121 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
+interface Speaker {
+  name: string;
+  title: string;
+  image: string;
+}
 
-const webinarData = {
-  title: "Smart Money Moves Through Changing Times",
-  subtitle: "Navigating Your Financial Goals in a Rapidly Changing World",
-  description:
-    "Join us for a live conversation on how to stay financially grounded in times of rapid change. Hear from top leaders across finance and healthcare as they share practical steps, personal stories, and tools to help you build wealth with confidence.",
-  date: "Thursday, 16th October 2025 at 17:00 hrs GMT",
-  speakers: [
-    {
-      name: "Jude Addo",
-      title: "CEO, JA Group",
-      image:
-        "/advisors/jude.jpg",
-    },
-    {
-      name: "Francis Gill",
-      title: "CEO, Humboldt Financial",
-      image:
-        "/advisors/francis.jpg",
-    },
-  ],
-  expectations: [
-    "Insights on managing wealth in uncertain times",
-    "Personalized financial insights tailored to your goals",
-    "Real examples of perseverance from industry leaders",
-    "Live Q&A session",
-  ],
-  attendees: [
-    "Professionals seeking to raise their leadership game",
-    "Entrepreneurs and business owners",
-    "Anyone seeking to elevate their financial future",
-  ],
-};
+interface WebinarData {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  date: string;
+  formatted_date: string;
+  speakers: Speaker[];
+  expectations: string[];
+  attendees: string[];
+}
 
 export default function WebinarPage() {
+  const [webinarData, setWebinarData] = useState<WebinarData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    const fetchWebinar = async () => {
+      try {
+        const res = await fetch(`${apiBase}/webinars/active`);
+
+        if (!res.ok) {
+          if (res.status === 404) {
+            setError("No active webinar found");
+            return;
+          }
+          throw new Error(`Failed to fetch webinar: ${res.status}`);
+        }
+
+        const data = await res.json();
+        setWebinarData(data);
+      } catch (err) {
+        console.error("Error fetching webinar:", err);
+        setError("Failed to load webinar. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchWebinar();
+  }, [apiBase]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Thanks for registering, ${email}!`);
-    setEmail("");
+    setIsSubmitting(true);
+    setSubmitMessage("");
+
+    try {
+      const response = await fetch(`${apiBase}/webinars/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to register");
+      }
+
+      setSubmitMessage(
+        "Successfully registered! Check your email for confirmation."
+      );
+      setEmail("");
+    } catch (err) {
+      setSubmitMessage(
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-//   const addToCalendar = () => {
-//     const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-//       webinarData.title
-//     )}&dates=20251016T170000Z/20251016T180000Z&details=${encodeURIComponent(
-//       webinarData.description
-//     )}&location=Online`;
-//     window.open(calendarUrl, "_blank");
-//   };
+  if (isLoading) {
+    return (
+      <section className="bg-gradient-to-b from-white to-slate-50 text-[#1B1856] py-32">
+        <div className="max-w-6xl mx-auto px-6 text-center pt-20">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-gray-600">Loading webinar...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !webinarData) {
+    return (
+      <section className="bg-gradient-to-b from-white to-slate-50 text-[#1B1856] py-32">
+        <div className="max-w-6xl mx-auto px-6 text-center pt-20">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-lg text-red-600">
+              {error || "Webinar not found"}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-gradient-to-b from-white to-slate-50 text-[#1B1856] py-32">
@@ -82,11 +145,14 @@ export default function WebinarPage() {
               className="flex flex-col items-center bg-white rounded-2xl shadow-sm border p-6"
             >
               <Image
-                src={speaker.image}
+                src={speaker.image || "/placeholder-avatar.png"}
                 alt={speaker.name}
                 width={300}
                 height={300}
                 className="rounded-2xl object-cover h-64 w-64 mb-4"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder-avatar.png";
+                }}
               />
               <h3 className="text-lg font-semibold">{speaker.name}</h3>
               <p className="text-gray-500">{speaker.title}</p>
@@ -99,7 +165,7 @@ export default function WebinarPage() {
           <p className="uppercase tracking-widest text-sm opacity-80 mb-1">
             Date & Time
           </p>
-          <p className="text-xl font-medium">{webinarData.date}</p>
+          <p className="text-xl font-medium">{webinarData.formatted_date}</p>
         </div>
 
         {/* Expectations */}
@@ -151,24 +217,31 @@ export default function WebinarPage() {
               placeholder="Enter your email address"
               required
               className="flex-1 px-5 py-3.5 rounded-full text-[#1B1856] placeholder-gray-500 bg-white border border-transparent focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37] focus:outline-none transition-all"
+              disabled={isSubmitting}
             />
             <button
               type="submit"
-              className="bg-[#D4AF37] hover:bg-[#C29E2C] text-[#1B1856] px-8 py-3.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl"
+              disabled={isSubmitting}
+              className="bg-[#D4AF37] hover:bg-[#C29E2C] text-[#1B1856] px-8 py-3.5 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign Up
+              {isSubmitting ? "Signing Up..." : "Sign Up"}
             </button>
           </form>
 
-          {/* <button
-            onClick={addToCalendar}
-            className="mt-10 inline-flex items-center gap-2 text-sm font-medium text-[#D4AF37] hover:text-white transition-all"
-          >
-            <span className="text-lg"></span> Add to Calendar
-          </button> */}
+          {submitMessage && (
+            <div
+              className={`mt-4 text-sm ${
+                submitMessage.includes("Successfully")
+                  ? "text-green-400"
+                  : "text-red-400"
+              }`}
+            >
+              {submitMessage}
+            </div>
+          )}
 
           <p className="text-gray-400 text-xs mt-4">
-            You’ll receive a confirmation email with your access link.
+            You&apos;ll receive a confirmation email with your access link.
           </p>
         </div>
       </div>
