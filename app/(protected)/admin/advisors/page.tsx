@@ -44,8 +44,21 @@ export default function AdvisorsPage() {
     fetchAdvisors();
   }, []);
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get("edit");
+    if (editId && advisors.length > 0) {
+      const advisorToEdit = advisors.find((adv) => adv.id === parseInt(editId));
+      if (advisorToEdit) {
+        openEditForm(advisorToEdit);
+        // Clean up URL
+        window.history.replaceState({}, "", "/admin/advisors");
+      }
+    }
+  }, [advisors]);
+
   const handleAddSuccess = () => {
-    fetchAdvisors(); // Refresh the list
+    fetchAdvisors(); 
   };
 
   const openEditForm = (advisor: Advisor) => {
