@@ -67,7 +67,7 @@ export default function WebinarAdminPage() {
 
   useEffect(() => {
     fetchWebinar();
-  }, [apiBase]);
+  },);
 
   const fetchWebinar = async () => {
     try {
