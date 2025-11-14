@@ -6,10 +6,10 @@ import clsx from "clsx";
 import { UserButton, useUser } from "@clerk/nextjs";
 
 const navItems = [
-  { name: "Dashboard", icon: Home, href: "/admin/dashboard" },
+  // { name: "Dashboard", icon: Home, href: "/admin/dashboard" },
   { name: "Podcasts", icon: Mic, href: "/admin/podcasts" },
   { name: "Advisors", icon: Users, href: "/admin/advisors" },
-  { name: "Insights", icon: Lightbulb, href: "/admin/insights" },
+  // { name: "Insights", icon: Lightbulb, href: "/admin/insights" },
   { name: "Webinars", icon: Video, href: "/admin/webinars" },
   { name: "Messages", icon: Mail, href: "/admin/messages" },
 ];
