@@ -46,6 +46,7 @@ interface BlogFormProps {
 export default function BlogForm({ initialData, onSubmit }: BlogFormProps) {
   const [tagInput, setTagInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const form = useForm<BlogFormValues>({
     resolver: zodResolver(blogFormSchema),
@@ -93,6 +94,8 @@ export default function BlogForm({ initialData, onSubmit }: BlogFormProps) {
     formData.append("key", imgBBApiKey);
     formData.append("image", file);
 
+    console.log("🖼️ Starting image upload to ImgBB...");
+
     const response = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
       body: formData,
@@ -105,10 +108,42 @@ export default function BlogForm({ initialData, onSubmit }: BlogFormProps) {
     const result = await response.json();
 
     if (result.success) {
+      console.log("✅ Image uploaded successfully:", result.data.url);
       return result.data.url;
     } else {
       throw new Error("Upload failed - ImgBB returned success: false");
     }
+  };
+
+  const submitToAPI = async (blogPostData: BlogPost) => {
+    if (!apiBase) {
+      console.error("❌ API_BASE_URL is not defined");
+      throw new Error("API base URL is not configured");
+    }
+
+    const apiUrl = `${apiBase}/insights/`;
+    console.log("🚀 Sending POST request to:", apiUrl);
+    console.log("📦 Request payload:", blogPostData);
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(blogPostData),
+    });
+
+    console.log("📨 Response status:", response.status);
+    console.log("📨 Response ok:", response.ok);
+
+    const result = await response.json();
+    console.log("📨 Response data:", result);
+
+    if (!response.ok) {
+      throw new Error(result.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return result;
   };
 
   const handleSubmit = async (data: BlogFormValues) => {
@@ -119,9 +154,15 @@ export default function BlogForm({ initialData, onSubmit }: BlogFormProps) {
 
       // Upload cover image if provided
       if (data.coverImage) {
-        console.log("Uploading cover image...");
+        console.log("📤 Uploading cover image...");
+        console.log("📁 File details:", {
+          name: data.coverImage.name,
+          type: data.coverImage.type,
+          size: data.coverImage.size,
+        });
+
         coverImageUrl = await uploadImageToImgBB(data.coverImage);
-        console.log("Cover image uploaded:", coverImageUrl);
+        console.log("✅ Cover image uploaded:", coverImageUrl);
       }
 
       const blogPostData = {
@@ -132,24 +173,32 @@ export default function BlogForm({ initialData, onSubmit }: BlogFormProps) {
         content: data.content,
       };
 
-      console.log("Blog post data ready for API:", blogPostData);
+      console.log("📝 Blog post data ready for API:", blogPostData);
+      console.log(
+        "🎯 Final data structure:",
+        JSON.stringify(blogPostData, null, 2)
+      );
 
-      // For now, just log to console as requested
-      console.log("API would receive:", blogPostData);
-
-      // If we had an actual API endpoint, we would do:
-      // await fetch('/api/blog/posts', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(blogPostData),
-      // });
+      // Send to API
+      console.log("🔄 Starting API submission...");
+      const apiResult = await submitToAPI(blogPostData);
+      console.log("✅ API submission successful:", apiResult);
 
       // Call the onSubmit prop if provided
       if (onSubmit) {
         onSubmit(blogPostData);
       }
+
+      // Show success message
+      alert("🎉 Blog post created successfully!");
+
+      // Optional: Reset form after successful submission
+      form.reset();
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("❌ Error submitting form:", error);
+      alert(
+        `Error: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       setIsUploading(false);
     }
