@@ -1,5 +1,5 @@
 "use client";
-import { Home, Mic, Users, Lightbulb, Video, Mail } from "lucide-react";
+import {  Mic, Users, Video, Mail, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -9,7 +9,7 @@ const navItems = [
   // { name: "Dashboard", icon: Home, href: "/admin/dashboard" },
   { name: "Podcasts", icon: Mic, href: "/admin/podcasts" },
   { name: "Advisors", icon: Users, href: "/admin/advisors" },
-  // { name: "Insights", icon: Lightbulb, href: "/admin/insights" },
+  { name: "Insights", icon: Lightbulb, href: "/admin/insights" },
   { name: "Webinars", icon: Video, href: "/admin/webinars" },
   { name: "Messages", icon: Mail, href: "/admin/messages" },
 ];
