@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tailwindcss-animated";
 @import "tw-animate-css";
+@import '../styles/_variables.scss';
+@import '../styles/_keyframe-animations.scss';
 
 
 
@@ -38,10 +40,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
 }
 
 body {
@@ -97,12 +96,15 @@ h1, h2, h3, h4, h5, h6 {
     @apply bg-background text-foreground;
   }
   h1{
-    @apply text-2xl font-bold;
+    @apply text-3xl font-bold;
   }
   h2{
-    @apply text-xl font-bold;
+    @apply text-2xl font-bold;
   }
   h3{
+    @apply text-xl font-bold;
+  }
+  h4{
     @apply text-lg font-bold;
   }
 
