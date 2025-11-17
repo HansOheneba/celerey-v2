@@ -12,7 +12,8 @@ import { Typography } from "@tiptap/extension-typography";
 import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
-import { Selection } from "@tiptap/pm/state";
+import { Placeholder } from "@tiptap/extensions";
+// import { Selection } from "@tiptap/pm/state";
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
@@ -58,7 +59,7 @@ import { useWindowSize } from "@/hooks/use-window-size";
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 
 // --- Components ---
-import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle";
+// import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle";
 
 // --- Lib ---
 import { MAX_FILE_SIZE } from "@/lib/tiptap-utils";
@@ -69,7 +70,8 @@ import "@/components/tiptap-templates/simple/simple-editor.scss";
 interface SimpleEditorProps {
   onEditorReady?: (editor: Editor) => void;
   onContentChange?: (content: string) => void;
-  initialContent?: string;
+  // initialContent?: string;
+  placeholder?: string;
 }
 
 interface ImgBBResponse {
@@ -199,7 +201,7 @@ const MainToolbarContent = ({
       {isMobile && <ToolbarSeparator />}
 
       <ToolbarGroup>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </ToolbarGroup>
     </>
   );
@@ -237,7 +239,8 @@ const MobileToolbarContent = ({
 export function SimpleEditor({
   onEditorReady,
   onContentChange,
-  initialContent = "<p>Start writing your content here...</p>",
+  // initialContent = "<p>Start writing your content here...</p>",
+  placeholder = "Start writing your content here...",
 }: SimpleEditorProps) {
   const isMobile = useIsBreakpoint();
   const { height } = useWindowSize();
@@ -271,6 +274,10 @@ export function SimpleEditor({
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Image.configure({
+        resize: {
+          enabled: true,
+          alwaysPreserveAspectRatio: true,
+        },
         HTMLAttributes: {
           class: "rounded-lg max-w-full h-auto",
         },
@@ -278,6 +285,10 @@ export function SimpleEditor({
       Typography,
       Superscript,
       Subscript,
+      Placeholder.configure({
+        placeholder: placeholder,
+        emptyEditorClass: "is-editor-empty",
+      }),
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,
@@ -286,7 +297,7 @@ export function SimpleEditor({
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content: initialContent,
+    // content: initialContent,
     onUpdate: ({ editor }) => {
       onContentChange?.(editor.getHTML());
     },
