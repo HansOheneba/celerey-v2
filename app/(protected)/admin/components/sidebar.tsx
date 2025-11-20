@@ -1,5 +1,5 @@
 "use client";
-import {  Mic, Users, Video, Mail, Lightbulb } from "lucide-react";
+import {  Mic, Users, Video, Mail, Lightbulb, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -12,6 +12,7 @@ const navItems = [
   { name: "Insights", icon: Lightbulb, href: "/admin/insights" },
   { name: "Webinars", icon: Video, href: "/admin/webinars" },
   { name: "Messages", icon: Mail, href: "/admin/messages" },
+  { name: "plans", icon: DollarSign, href: "/admin/plans" },
 ];
 
 export default function Sidebar() {
@@ -27,7 +28,7 @@ export default function Sidebar() {
               key={href}
               href={href}
               className={clsx(
-                "flex items-center py-2  text-sm font-medium transition px-6",
+                "flex items-center py-2 ee text-sm font-medium transition px-6",
                 pathname === href
                   ? "bg-[#1B1856] text-white"
                   : "text-gray-600 hover:bg-gray-100"

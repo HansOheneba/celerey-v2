@@ -5,7 +5,6 @@ import { Editor, EditorContent, EditorContext, useEditor } from "@tiptap/react";
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit";
-import { Image } from "@tiptap/extension-image";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Typography } from "@tiptap/extension-typography";
@@ -13,7 +12,10 @@ import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
 import { Placeholder } from "@tiptap/extensions";
-// import { Selection } from "@tiptap/pm/state";
+import { Link } from "@tiptap/extension-link";
+
+// --- Image Resize Extension ---
+import ImageResize from "tiptap-extension-resize-image";
 
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button";
@@ -66,6 +68,7 @@ import { MAX_FILE_SIZE } from "@/lib/tiptap-utils";
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss";
+import Image from "@tiptap/extension-image";
 
 interface SimpleEditorProps {
   onEditorReady?: (editor: Editor) => void;
@@ -81,8 +84,12 @@ interface ImgBBResponse {
   success: boolean;
 }
 
-// Image upload function using your ImgBB approach
-const handleImageUpload = async (file: File): Promise<string> => {
+// Updated Image upload function with the correct signature
+const handleImageUpload = async (
+  file: File,
+  onProgress?: (event: { progress: number }) => void,
+  signal?: AbortSignal
+): Promise<string> => {
   const imgBBApiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
 
   if (!imgBBApiKey) {
@@ -102,9 +109,13 @@ const handleImageUpload = async (file: File): Promise<string> => {
       size: file.size,
     });
 
+    // Simulate progress
+    onProgress?.({ progress: 0 });
+
     const response = await fetch("https://api.imgbb.com/1/upload", {
       method: "POST",
       body: uploadFormData,
+      signal, // Pass the abort signal if provided
     });
 
     console.log("Response status:", response.status);
@@ -114,10 +125,14 @@ const handleImageUpload = async (file: File): Promise<string> => {
       throw new Error(`Upload failed with status: ${response.status}`);
     }
 
+    // Update progress
+    onProgress?.({ progress: 50 });
+
     const result: ImgBBResponse = await response.json();
 
     if (result.success) {
       console.log("Image uploaded successfully:", result.data.url);
+      onProgress?.({ progress: 100 });
       return result.data.url;
     } else {
       throw new Error("Upload failed - ImgBB returned success: false");
@@ -200,9 +215,7 @@ const MainToolbarContent = ({
 
       {isMobile && <ToolbarSeparator />}
 
-      <ToolbarGroup>
-        {/* <ThemeToggle /> */}
-      </ToolbarGroup>
+      <ToolbarGroup>{/* <ThemeToggle /> */}</ToolbarGroup>
     </>
   );
 };
@@ -263,10 +276,6 @@ export function SimpleEditor({
     extensions: [
       StarterKit.configure({
         horizontalRule: false,
-        link: {
-          openOnClick: false,
-          enableClickSelection: true,
-        },
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -274,12 +283,15 @@ export function SimpleEditor({
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Image.configure({
-        resize: {
-          enabled: true,
-          alwaysPreserveAspectRatio: true,
-        },
         HTMLAttributes: {
           class: "rounded-lg max-w-full h-auto",
+        },
+      }),
+      ImageResize.configure({
+        inline: false,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "rounded-lg max-w-full h-auto resize-image",
         },
       }),
       Typography,
@@ -289,10 +301,17 @@ export function SimpleEditor({
         placeholder: placeholder,
         emptyEditorClass: "is-editor-empty",
       }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-blue-500 underline",
+        },
+      }),
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,
         limit: 3,
+        type: "image", // This should match the node type used by ImageResize
         upload: handleImageUpload,
         onError: (error) => console.error("Upload failed:", error),
       }),

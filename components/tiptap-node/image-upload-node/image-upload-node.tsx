@@ -450,38 +450,37 @@ export const ImageUploadNode: React.FC<NodeViewProps> = (props) => {
   const { fileItems, uploadFiles, removeFileItem, clearAllFiles } =
     useFileUpload(uploadOptions)
 
-  const handleUpload = async (files: File[]) => {
-    const urls = await uploadFiles(files)
+const handleUpload = async (files: File[]) => {
+  const urls = await uploadFiles(files);
 
-    if (urls.length > 0) {
-      const pos = props.getPos()
+  if (urls.length > 0) {
+    const pos = props.getPos();
 
-      if (isValidPosition(pos)) {
-        const imageNodes = urls.map((url, index) => {
-          const filename =
-            files[index]?.name.replace(/\.[^/.]+$/, "") || "unknown"
-          return {
-            type: extension.options.type,
-            attrs: {
-              ...extension.options,
-              src: url,
-              alt: filename,
-              title: filename,
-            },
-          }
-        })
+    if (isValidPosition(pos)) {
+      // First delete the upload node
+      props.editor
+        .chain()
+        .focus()
+        .deleteRange({ from: pos, to: pos + props.node.nodeSize })
+        .run();
 
-        props.editor
-          .chain()
-          .focus()
-          .deleteRange({ from: pos, to: pos + props.node.nodeSize })
-          .insertContentAt(pos, imageNodes)
-          .run()
+      // Insert each image using the editor's commands
+      urls.forEach((url, index) => {
+        const filename =
+          files[index]?.name.replace(/\.[^/.]+$/, "") || "unknown";
 
-        focusNextNode(props.editor)
-      }
+        // Use the editor's setImage command which is more reliable
+        props.editor.commands.setImage({
+          src: url,
+          alt: filename,
+          title: filename,
+        });
+      });
+
+      focusNextNode(props.editor);
     }
   }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files

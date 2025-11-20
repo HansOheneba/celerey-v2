@@ -188,3 +188,45 @@ body,
 
 
 
+// Styles for image resize handles
+.resize-image {
+  position: relative;
+  
+  &.ProseMirror-selectednode {
+    outline: 2px solid #3b82f6;
+  }
+}
+
+// Resize handle styles
+.image-resizer {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  
+  &.top-left {
+    top: -4px;
+    left: -4px;
+    cursor: nw-resize;
+  }
+  
+  &.top-right {
+    top: -4px;
+    right: -4px;
+    cursor: ne-resize;
+  }
+  
+  &.bottom-left {
+    bottom: -4px;
+    left: -4px;
+    cursor: sw-resize;
+  }
+  
+  &.bottom-right {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+  }
+}
