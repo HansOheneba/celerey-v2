@@ -15,6 +15,7 @@ import {
   isExtensionAvailable,
 } from "@/lib/tiptap-utils"
 
+
 // --- Icons ---
 import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon"
 
@@ -147,7 +148,7 @@ export function canColorHighlight(
     if (!isExtensionAvailable(editor, ["nodeBackground"])) return false
 
     try {
-      return editor.can().toggleNodeBackgroundColor("test")
+      return false
     } catch {
       return false
     }
@@ -202,7 +203,7 @@ export function removeHighlight(
   if (mode === "mark") {
     return editor.chain().focus().unsetMark("highlight").run()
   } else {
-    return editor.chain().focus().unsetNodeBackgroundColor().run()
+    return false
   }
 }
 
@@ -294,7 +295,7 @@ export function useColorHighlight(config: UseColorHighlightConfig) {
       const success = editor
         .chain()
         .focus()
-        .toggleNodeBackgroundColor(highlightColor)
+        // .toggleNodeBackgroundColor(highlightColor)
         .run()
 
       if (success) {
