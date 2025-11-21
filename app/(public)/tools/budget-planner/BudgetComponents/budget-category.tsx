@@ -6,7 +6,7 @@ interface BudgetItem {
   id: string;
   label: string;
   amount: number;
-  frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually";
+  frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
 }
 
 interface Category {
@@ -24,10 +24,10 @@ interface BudgetCategoryProps {
     categoryId: string,
     itemId: string,
     amount: number,
-    frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
   ) => void;
   total: number;
-  frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually";
+  frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
 }
 
 export default function BudgetCategory({
@@ -54,7 +54,7 @@ export default function BudgetCategory({
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     itemId: string,
-    currentFrequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    currentFrequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
   ) => {
     const amount = Number.parseFloat(e.target.value) || 0;
     onUpdateItem(category.id, itemId, amount, currentFrequency);
@@ -67,7 +67,7 @@ export default function BudgetCategory({
   ) => {
     const newFrequency = e.target.value as
       | "Weekly"
-      | "Fortnightly"
+      | "Quarterly"
       | "Monthly"
       | "Annually";
     onUpdateItem(category.id, itemId, currentAmount, newFrequency);
@@ -137,8 +137,8 @@ export default function BudgetCategory({
                   className="w-full sm:w-auto px-3 py-2 bg-white text-gray-800 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500"
                 >
                   <option value="Weekly">Weekly</option>
-                  <option value="Fortnightly">Fortnightly</option>
                   <option value="Monthly">Monthly</option>
+                  <option value="Quarterly">Quarterly</option>
                   <option value="Annually">Annually</option>
                 </select>
               </div>

@@ -20,7 +20,7 @@ interface BudgetItem {
   id: string;
   label: string;
   amount: number;
-  frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually";
+  frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
 }
 
 interface Category {
@@ -32,7 +32,7 @@ interface Category {
 
 interface BudgetSummaryProps {
   categories: Category[];
-  frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually";
+  frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
   totalIncome: number;
   totalExpenses: number;
   balance: number;
@@ -410,16 +410,16 @@ export default function BudgetSummary({
 // --- Helpers ---
 function convertToFrequency(
   amount: number,
-  fromFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually",
-  toFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+  fromFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually",
+  toFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually"
 ): number {
   let annualAmount = amount;
   switch (fromFreq) {
     case "Weekly":
       annualAmount = amount * 52;
       break;
-    case "Fortnightly":
-      annualAmount = amount * 26;
+    case "Quarterly":
+      annualAmount = amount * 4;
       break;
     case "Monthly":
       annualAmount = amount * 12;
@@ -431,8 +431,8 @@ function convertToFrequency(
   switch (toFreq) {
     case "Weekly":
       return annualAmount / 52;
-    case "Fortnightly":
-      return annualAmount / 26;
+    case "Quarterly":
+      return annualAmount / 4;
     case "Monthly":
       return annualAmount / 12;
     case "Annually":
@@ -441,7 +441,6 @@ function convertToFrequency(
       return annualAmount;
   }
 }
-
 function getChartColor(tailwindColor: string): string {
   const colorMap: Record<string, string> = {
     "bg-slate-700": "#64748B",

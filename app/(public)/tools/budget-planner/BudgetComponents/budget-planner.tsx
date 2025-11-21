@@ -9,7 +9,7 @@ interface BudgetItem {
   id: string;
   label: string;
   amount: number;
-  frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually";
+  frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
 }
 
 interface Category {
@@ -332,14 +332,14 @@ export default function BudgetPlanner() {
     "income"
   );
   const [frequency, setFrequency] = useState<
-    "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    "Weekly" | "Quarterly" | "Monthly" | "Annually"
   >("Annually");
 
   const updateItem = (
     categoryId: string,
     itemId: string,
     amount: number,
-    itemFrequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    itemFrequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
   ) => {
     setCategories(
       categories.map((cat) =>
@@ -359,8 +359,8 @@ export default function BudgetPlanner() {
 
   const convertToFrequency = (
     amount: number,
-    fromFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually",
-    toFreq: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    fromFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually",
+    toFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually"
   ): number => {
     let annualAmount = amount;
 
@@ -368,8 +368,8 @@ export default function BudgetPlanner() {
       case "Weekly":
         annualAmount = amount * 52;
         break;
-      case "Fortnightly":
-        annualAmount = amount * 26;
+      case "Quarterly":
+        annualAmount = amount * 4;
         break;
       case "Monthly":
         annualAmount = amount * 12;
@@ -382,8 +382,8 @@ export default function BudgetPlanner() {
     switch (toFreq) {
       case "Weekly":
         return annualAmount / 52;
-      case "Fortnightly":
-        return annualAmount / 26;
+      case "Quarterly":
+        return annualAmount / 4;
       case "Monthly":
         return annualAmount / 12;
       case "Annually":
@@ -419,7 +419,7 @@ export default function BudgetPlanner() {
 
   const handleFrequencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFrequency(
-      e.target.value as "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+      e.target.value as "Weekly" | "Quarterly" | "Monthly" | "Annually"
     );
   };
 
@@ -476,8 +476,8 @@ export default function BudgetPlanner() {
               className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 text-sm rounded-md focus:ring-1 focus:ring-emerald-400 hover:bg-gray-50 transition-colors"
             >
               <option value="Weekly">Weekly</option>
-              <option value="Fortnightly">Fortnightly</option>
               <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
               <option value="Annually">Annually</option>
             </select>
           </div>
@@ -500,7 +500,7 @@ export default function BudgetPlanner() {
         ) : (
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-gray-400 rounded-full" />
-            <span>Data saving is off — changes won’t persist</span>
+            <span>Data saving is off — changes won&apos;t persist</span>
           </div>
         )}
       </div>
