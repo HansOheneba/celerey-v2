@@ -13,91 +13,93 @@ const steps = [
   {
     title: "Discover",
     icon: Search,
-    description:
-      "We start by understanding you — your goals, your priorities, and your current financial standing.",
+    description: "Understand your goals and financial priorities.",
   },
   {
     title: "Assess",
     icon: BarChart3,
-    description:
-      "Our tools evaluate your assets, income, and risk tolerance to uncover your true financial potential.",
+    description: "We analyze your assets, income, and risk profile.",
   },
   {
     title: "Plan",
     icon: ClipboardList,
-    description:
-      "Together, we craft a personalized strategy designed to grow your wealth efficiently and sustainably.",
+    description: "A personalized strategy designed for sustainable growth.",
   },
   {
     title: "Grow",
     icon: TrendingUp,
-    description:
-      "With smart technology and expert insight, your plan comes to life — tracking progress every step of the way.",
+    description: "Your wealth plan comes alive with smart insights.",
   },
   {
     title: "Review",
     icon: RotateCcw,
-    description:
-      "We regularly revisit your strategy to ensure it adapts to life’s changes and new opportunities.",
+    description: "We refine your strategy as your life evolves.",
   },
 ];
 
 export default function Journey() {
   return (
-    <section className=" text-white py-24 relative overflow-hidden bg-[#1B1856]">
+    <section className="relative py-28 overflow-hidden">
+      {/* Background Video/Image */}
+      <div className="absolute inset-0 -z-10">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="/videos/journey.mp4" type="video/mp4" />
+        </video>
+
+        {/* If you prefer an image: */}
+        {/* <img src="/images/finance-bg.jpg" className="w-full h-full object-cover" /> */}
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      </div>
+
+      {/* Heading */}
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className="text-3xl sm:text-4xl font-bold text-center mb-16"
+        className="text-white text-4xl sm:text-5xl font-bold text-center mb-20"
       >
         The Celerey Journey
       </motion.h2>
 
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="relative flex flex-col md:flex-row md:items-start md:justify-between gap-16">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.15,
-                  ease: "easeOut",
-                }}
-                viewport={{ once: true }}
-                // whileHover={{ scale: 1.05, y: -5 }}
-                className="flex flex-col items-center text-center relative"
-              >
-                {/* Icon */}
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/10 border border-white/10 shadow-md mb-4">
-                  <Icon className="h-7 w-7 text-blue-400" />
-                </div>
+      {/* Steps */}
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+        {steps.map((step, index) => {
+          const Icon = step.icon;
+          return (
+            <motion.div
+              key={step.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: "easeOut",
+              }}
+              viewport={{ once: true }}
+              className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 shadow-xl text-center"
+            >
+              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 border border-white/20 mx-auto mb-4">
+                <Icon className="h-7 w-7 text-blue-300" />
+              </div>
 
-                {/* Title */}
-                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+              <h3 className="text-white text-lg font-semibold mb-2">
+                {step.title}
+              </h3>
 
-                {/* Description */}
-                <p className="text-sm text-white/70 max-w-xs">
-                  {step.description}
-                </p>
-
-                {/* Connector Line (Desktop) */}
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-8 right-[-50%] w-full h-[2px] bg-gradient-to-r from-blue-500/30 to-transparent"></div>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+              <p className="text-white/75 text-sm">{step.description}</p>
+            </motion.div>
+          );
+        })}
       </div>
-
-      {/* Background Glow */}
-      {/* <div className="absolute inset-0 bg-gradient-to- from-transparent via-blue-500/5 to-transparent pointer-events-none"></div> */}
     </section>
   );
 }

@@ -287,6 +287,40 @@ export default function WealthScan() {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
+const saveLeadToDatabase = async (email: string): Promise<boolean> => {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/leads`;
+    console.log("Attempting to save lead to:", apiUrl);
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        source: "wealth_scan",
+      }),
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Server response error:", errorText);
+      throw new Error(
+        `Failed to save lead: ${response.status} ${response.statusText}`
+      );
+    }
+
+    const result = await response.json();
+    console.log("Lead saved successfully:", result);
+    return true;
+  } catch (error) {
+    console.error("Error saving lead to database:", error);
+    return false;
+  }
+};
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -299,6 +333,15 @@ export default function WealthScan() {
     setIsSubmitting(true);
 
     try {
+      // First, save the lead to the database
+      const leadSaved = await saveLeadToDatabase(email);
+
+      if (!leadSaved) {
+        console.warn(
+          "Failed to save lead to database, but continuing with results..."
+        );
+      }
+
       // Calculate results
       const score = calculateScore();
       const pillarScores = getPillarScores();
@@ -317,21 +360,15 @@ export default function WealthScan() {
         submittedAt: new Date().toISOString(),
       };
 
-      // Optional: Send email to your backend
-      await fetch("/api/save-results", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      // Optional: If you want to save the full results to another endpoint
+      // You can add that here if you have a separate results API
 
       // Store in session storage and redirect
       sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
       router.push("/wealth-health");
     } catch (error) {
-      console.error("Error saving results:", error);
-      // Fallback: still store locally even if API call fails
+      console.error("Error processing results:", error);
+      // Fallback: still store locally even if API calls fail
       const score = calculateScore();
       const pillarScores = getPillarScores();
       const category = getScoreCategory(score);
@@ -426,15 +463,16 @@ export default function WealthScan() {
                 <div className="flex gap-3">
                   <Button
                     type="button"
+                    variant={"outline"}
                     onClick={() => setShowEmailForm(false)}
-                    className="flex-1 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-100"
+                    className="flex-1 "
                     disabled={isSubmitting}
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 rounded-xl bg-blue-950 hover:bg-blue-950/80 text-white"
+                    className="flex-1 "
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Processing..." : "See My Results"}
@@ -454,8 +492,8 @@ export default function WealthScan() {
       <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
         {/* Header */}
         <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-          This quick 3-minute checkup gives you a picture of your
-          financial wellbeing.
+          This quick 3-minute checkup gives you a picture of your financial
+          wellbeing.
         </p>
 
         {/* Progress */}
@@ -509,7 +547,8 @@ export default function WealthScan() {
           <Button
             onClick={handlePrev}
             disabled={step === 0}
-            className="rounded-[12px] border-gray-300 text-gray-700 hover:bg-gray-100"
+            className=""
+            variant={"outline"}
           >
             Previous
           </Button>
@@ -517,7 +556,7 @@ export default function WealthScan() {
           <Button
             onClick={handleNext}
             disabled={!answers[step]}
-            className="rounded-[12px] bg-blue-950 hover:bg-blue-950/80 text-white"
+            className=""
           >
             {step === questions.length - 1 ? "Finish" : "Next"}
           </Button>

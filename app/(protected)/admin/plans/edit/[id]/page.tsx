@@ -13,7 +13,7 @@ export default function EditPlan() {
   const fetchPlan = async () => {
     if (!id) return; // safeguard
 
-    try {
+    try {   
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/plans/${id}`
       );
