@@ -3,7 +3,7 @@ import {  Mic, Users, Video, Mail, Lightbulb, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { UserButton, useUser } from "@clerk/nextjs";
+// import { UserButton, useUser } from "@clerk/nextjs";
 
 const navItems = [
   // { name: "Dashboard", icon: Home, href: "/admin/dashboard" },
@@ -41,7 +41,7 @@ export default function Sidebar() {
         </nav>
       </div>
       <div className="p-4 border-t text-sm text-gray-500 flex flex-row items-center gap-3">
-        <UserButton /> <span>{useUser().user?.fullName}</span>
+        {/* <UserButton /> <span>{useUser().user?.fullName}</span> */}
       </div>
     </aside>
   );
