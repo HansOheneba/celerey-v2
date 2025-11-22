@@ -98,7 +98,7 @@ export default function Hero() {
             <Button
               onClick={handleScrollToWealthHealth}
               asChild
-              className="flex-1 w-full p-5 bg-blue-600 hover:bg-blue-700 rounded-2xl"
+              className="flex-1"
             >
               <Link
                 href="/#wealth-scan"
@@ -111,11 +111,11 @@ export default function Hero() {
             <Button
               asChild
               variant="outline"
-              className="flex-1 w-full p-5 border-white/30 rounded-2xl"
+              className="flex-1"
             >
               <Link
                 href="/advisors"
-                className="w-full block text-center text-white hover:bg-white/10 font-medium py-2 text-sm sm:text-base"
+                className="w-full block text-center text-white hover:bg-white/10 hover:text-gray-100 font-medium py-2 text-sm sm:text-base"
               >
                 Book a Session with an Advisor
               </Link>

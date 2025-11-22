@@ -15,11 +15,43 @@ import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    setMounted(true);
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    const updateHeader = () => {
+      const currentScrollY = window.scrollY;
+      setVisible(currentScrollY < lastScrollY || currentScrollY < 100);
+      setIsScrolled(currentScrollY > 50);
+      lastScrollY = currentScrollY;
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(updateHeader);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    updateHeader(); // initial state
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  if (!mounted) return null;
 
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Advisors", href: "/advisors" },
-    { name: "Subscribe", href: "subscribe" },
+    { name: "Subscribe", href: "/subscribe" },
     { name: "Insights", href: "/insights" },
     { name: "Execution Partners", href: "/partners" },
     { name: "Contact", href: "/contact" },
@@ -29,21 +61,37 @@ export default function Header() {
     const el = document.getElementById("wealth-scan");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
+      setOpen(false);
     }
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+    <header
+      className={`
+        fixed top-0 left-0 right-0 z-50 
+        transition-all duration-500 ease-in-out
+        ${visible ? "translate-y-0" : "-translate-y-full"}
+        ${
+          isScrolled
+            ? "bg-black/40 backdrop-blur-sm py-2"
+            : "bg-black/40 backdrop-blur-sm py-6"
+        }
+      `}
+      style={{ willChange: "transform" }}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link
+          href="/"
+          className="flex items-center transition-opacity duration-300 hover:opacity-80"
+        >
           <Image
             src="/logos/logoWhite.png"
             alt="Celerey Logo"
             width={110}
-            height={20}
+            height={30}
             priority
-            className="w-20 h-auto md:w-[110px]"
+            className="w-20 md:w-[110px] h-auto"
           />
         </Link>
 
@@ -53,19 +101,17 @@ export default function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-medium text-white/90 hover:text-white transition-colors"
+              className="text-sm font-medium text-white/90 hover:text-white transition-all duration-300 relative group"
             >
               {item.name}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
             </Link>
           ))}
         </nav>
 
-        {/* CTA Button (Desktop) */}
+        {/* Desktop CTA */}
         <div className="hidden md:block">
-          <Button
-            onClick={handleScrollToWealthHealth}
-            className="bg-blue-900 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full text-sm"
-          >
+          <Button onClick={handleScrollToWealthHealth}>
             Start Your Free Financial Health Scan
           </Button>
         </div>
@@ -77,69 +123,61 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-white hover:bg-white/10 rounded-full p-2"
+                className="text-white hover:bg-white/10 rounded-full p-2 transition-all duration-300 hover:scale-110"
               >
                 <Menu className="h-7 w-7" />
               </Button>
             </SheetTrigger>
 
-            {/* Fullscreen Mobile Menu */}
             <SheetContent
               side="top"
-              className={`
-                fixed inset-0 
+              className="
                 bg-white text-gray-800 
-                backdrop-blur-2xl 
-                transition-all duration-300 ease-in-out
-                data-[state=open]:translate-y-0 
-                data-[state=closed]:-translate-y-full
-                flex flex-col justify-between p-8
-              `}
+                fixed inset-0 
+                data-[state=open]:animate-in 
+                data-[state=open]:slide-in-from-top 
+                data-[state=closed]:animate-out 
+                data-[state=closed]:slide-out-to-top 
+                duration-500
+                p-8
+                border-0
+                h-screen
+              "
             >
-              <div>
-                {/* Header */}
-                <div className="flex justify-between items-center mb-12">
-                  <Image
-                    src="/logos/logoDark.png"
-                    alt="Celerey Logo"
-                    width={110}
-                    height={30}
-                    priority
-                  />
-                  <SheetClose asChild>
-                    <button className="p-2 rounded-full hover:bg-gray-200 transition">
-                      <X className="h-6 w-6 text-gray-700" />
-                    </button>
-                  </SheetClose>
-                </div>
-
-                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-
-                {/* Navigation Links */}
-                <nav className="flex flex-col space-y-6 text-lg font-medium">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      className="hover:text-blue-600 transition-colors"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </nav>
+              <div className="flex justify-between items-center mb-12">
+                <Image
+                  src="/logos/logoDark.png"
+                  alt="Celerey Logo"
+                  width={110}
+                  height={30}
+                />
+                <SheetClose asChild>
+                  <button className="p-2 rounded-full hover:bg-gray-200 transition-all duration-300">
+                    <X className="h-6 w-6 text-gray-700" />
+                  </button>
+                </SheetClose>
               </div>
 
-              {/* CTA Button */}
-              <div className="pt-8">
-                <Button
-                  onClick={handleScrollToWealthHealth}
-                  asChild
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold w-full py-3 rounded-full text-base"
-                >
-                  <Link href="#" onClick={() => setOpen(false)}>
-                    Start Your Free Financial Health Scan
+              <SheetTitle className="sr-only">Navigation</SheetTitle>
+
+              {/* Mobile nav links */}
+              <nav className="flex flex-col space-y-6 text-lg font-medium">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className="text-gray-800 hover:text-blue-600 transition-all duration-300 py-2 border-b border-gray-100"
+                  >
+                    {item.name}
                   </Link>
+                ))}
+              </nav>
+
+              {/* Mobile CTA */}
+              <div className="pt-10">
+                <Button onClick={handleScrollToWealthHealth} className="w-full">
+                  Start Your Free Financial Health Scan
                 </Button>
               </div>
             </SheetContent>

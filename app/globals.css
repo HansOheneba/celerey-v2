@@ -1,8 +1,8 @@
 @import "tailwindcss";
 @import "tailwindcss-animated";
 @import "tw-animate-css";
-@import '../styles/_variables.scss';
-@import '../styles/_keyframe-animations.scss';
+/* @import '../styles/_variables.scss';
+@import '../styles/_keyframe-animations.scss'; */
 
 
 
@@ -109,3 +109,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
 }
+[data-state="open"] .accordion-chevron {
+  transform: rotate(180deg);
+}
+
