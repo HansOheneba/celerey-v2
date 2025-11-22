@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 const videoList = [
+  "/videos/vid9.mp4",
   "/videos/family.mp4",
+  "/videos/vid7.mp4",
+  "/videos/vid8.mp4",
   "/videos/vid2.mp4",
   "/videos/vid3.mp4",
   "/videos/vid4.mp4",

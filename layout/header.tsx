@@ -111,7 +111,8 @@ export default function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:block">
-          <Button onClick={handleScrollToWealthHealth}>
+          <Button onClick={handleScrollToWealthHealth}
+          className="cursor-pointer">
             Start Your Free Financial Health Scan
           </Button>
         </div>
