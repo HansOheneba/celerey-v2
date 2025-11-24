@@ -289,7 +289,7 @@ export default function WealthScan() {
   };
 const saveLeadToDatabase = async (email: string): Promise<boolean> => {
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/leads`;
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/leads/`;
     console.log("Attempting to save lead to:", apiUrl);
 
     const response = await fetch(apiUrl, {

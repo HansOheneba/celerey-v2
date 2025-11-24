@@ -17,7 +17,7 @@ const partners = [
   },
   {
     title: "Technology",
-    img: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1200&q=80",
+    img: "/partners/tech.jpg",
     desc: "Intelligent financial solutions.",
   },
   {

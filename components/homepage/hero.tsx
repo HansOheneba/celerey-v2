@@ -14,7 +14,6 @@ const videoList = [
   "/videos/vid3.mp4",
   "/videos/vid4.mp4",
   "/videos/vid5.mp4",
-  "/videos/vid6.mp4",
 ];
 
   const handleScrollToWealthHealth = () => {
