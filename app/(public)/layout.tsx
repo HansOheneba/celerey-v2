@@ -12,8 +12,7 @@ export default function PublicLayout({
     <>
       {/* Header */}
       <Header />
-      <link rel="preload" as="image" href="/logos/logoWhite.png" />
-      <link rel="preload" as="image" href="/logos/logoDark.png" />
+     
       {/* Main content */}
       <main className="mx-auto  ">{children}</main>
 
