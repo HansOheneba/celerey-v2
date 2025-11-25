@@ -83,9 +83,11 @@ export default function InsightsSection() {
   const content: ContentItem[] = activeTab === "insights" ? insights : podcasts;
 
   return (
-    <section className="relative py-24 text-white overflow-hidden bg-gradient-to-b from-[#0B0B2A] to-[#000]">
-      {/* Subtle background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.05),transparent_70%)] pointer-events-none" />
+    <section className="relative py-24 text-gray-900 overflow-hidden bg-gradient-to-b from-white to-blue-50">
+      {/* Top subtle glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.08),transparent_70%)] pointer-events-none" />
+
+     
 
       <div className="relative z-10 max-w-6xl mx-auto text-center px-6">
         {/* Header */}
@@ -94,9 +96,10 @@ export default function InsightsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-semibold mb-6"
+          className="text-4xl md:text-5xl font-semibold mb-6 text-gray-900"
         >
-          Insights <span className="text-[#FACC15]">& Resources</span>
+          Insights{" "}
+          <span className="text-blue-500 font-medium">& Resources</span>
         </motion.h2>
 
         <motion.p
@@ -104,9 +107,9 @@ export default function InsightsSection() {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed"
+          className="text-gray-600 max-w-2xl mx-auto mb-12 leading-relaxed"
         >
-          Explore powerful insights, expert commentary, and actionable tools to
+          Explore actionable insights, expert commentary, and elegant tools to
           guide your financial decisions with clarity and confidence.
         </motion.p>
 
@@ -118,22 +121,22 @@ export default function InsightsSection() {
               onClick={() => setActiveTab(tab as "insights" | "podcasts")}
               className={`relative text-lg font-medium pb-2 transition-all ${
                 activeTab === tab
-                  ? "text-[#FACC15]"
-                  : "text-gray-400 hover:text-gray-200"
+                  ? "text-blue-800"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               {tab === "insights" ? "Insights" : "Podcasts"}
               {activeTab === tab && (
                 <motion.div
                   layoutId="underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FACC15] rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-500 rounded-full"
                 />
               )}
             </button>
           ))}
         </div>
 
-        {/* Content */}
+        {/* Content Cards */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -150,7 +153,7 @@ export default function InsightsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.15, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="group bg-gradient-to-b from-gray-900/70 to-gray-950 border border-gray-800 rounded-2xl overflow-hidden hover:shadow-[0_0_30px_-10px_rgba(250,204,21,0.3)] transition-all hover:-translate-y-1"
+                className="group bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-md hover:shadow-xl"
               >
                 <div className="relative w-full h-56 overflow-hidden">
                   <Image
@@ -160,27 +163,24 @@ export default function InsightsSection() {
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   {"duration" in item && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition">
-                      <div className="w-14 h-14 bg-[#FACC15]/80 rounded-full flex items-center justify-center">
-                        <Play className="text-black w-6 h-6" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition">
+                      <div className="w-14 h-14 bg-yellow-500/70 rounded-full flex items-center justify-center">
+                        <Play className="text-white w-6 h-6" />
                       </div>
                     </div>
                   )}
                 </div>
 
                 <div className="p-6 text-left">
-                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-400 mb-6 text-sm">
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 mb-6 text-sm">
                     {item.description}
                   </p>
 
                   {"action" in item ? (
-                    <Button
-                      variant="outline"
-                      className="border-gray-700 text-gray-300 hover:text-[#FACC15] hover:border-[#FACC15] rounded-full"
-                    >
-                      {item.action}
-                    </Button>
+                    <Button variant="outline">{item.action}</Button>
                   ) : (
                     <div className="text-gray-500 text-sm">{item.duration}</div>
                   )}
@@ -199,9 +199,7 @@ export default function InsightsSection() {
           className="mt-16"
         >
           <Link href="/insights">
-            <Button className="bg-[#FACC15] hover:bg-[#FACC15]/90 text-black rounded-full px-8 py-3 text-lg font-light shadow-lg hover:shadow-[#FACC15]/30 transition">
-              View More Insights
-            </Button>
+            <Button className=" ">View More Insights</Button>
           </Link>
         </motion.div>
       </div>

@@ -100,39 +100,32 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Mobile Accordion */}
-        <div className="md:hidden mb-16">
-          <Accordion type="single" collapsible>
-            {/* Brand Section */}
-            <AccordionItem value="brand">
-              <AccordionTrigger className="text-white font-medium">
-                Celerey
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="py-4 space-y-4">
-                  <Image
-                    src="/logos/logoWhite.png"
-                    alt="Celerey Logo"
-                    width={120}
-                    height={40}
-                  />
-                  <p className="text-sm text-white/70">
-                    Empowering you through expert guidance and smart tools.
-                  </p>
-                  <div className="flex space-x-4 pt-2">
-                    <Link
-                      href="https://www.linkedin.com/company/celerey"
-                      target="_blank"
-                      className="hover:text-blue-500"
-                    >
-                      <Linkedin className="h-6 w-6" />
-                    </Link>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+        {/* Mobile */}
+        <div className="md:hidden mb-16 space-y-4">
+          {/* Brand Section - Always visible */}
+          <div className="py-4 space-y-4">
+            <Image
+              src="/logos/logoWhite.png"
+              alt="Celerey Logo"
+              width={120}
+              height={40}
+            />
+            <p className="text-sm text-white/70">
+              Empowering you through expert guidance and smart tools.
+            </p>
+            <div className="flex space-x-4 pt-2">
+              <Link
+                href="https://www.linkedin.com/company/celerey"
+                target="_blank"
+                className="hover:text-blue-500"
+              >
+                <Linkedin className="h-6 w-6" />
+              </Link>
+            </div>
+          </div>
 
-            {/* Sections */}
+          {/* Other Sections in Accordion */}
+          <Accordion type="single" collapsible>
             {sections.map((sec, index) => (
               <AccordionItem key={index} value={`sec-${index}`}>
                 <AccordionTrigger className="text-white font-medium flex justify-between items-center">
@@ -145,8 +138,7 @@ export default function Footer() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                  >
-                  </svg>
+                  />
                 </AccordionTrigger>
 
                 <AccordionContent>
@@ -168,7 +160,7 @@ export default function Footer() {
           </Accordion>
         </div>
 
-        {/* New Minimal CTA - Squarespace Style */}
+        {/* New Minimal CTA */}
         <div className="mt-10 bg-white/5 border border-white/10 rounded-3xl p-8 text-center backdrop-blur-sm">
           <h4 className="text-2xl font-semibold text-white mb-3">
             Discover{" "}

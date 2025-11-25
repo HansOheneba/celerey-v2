@@ -46,7 +46,7 @@ export default function Pricing() {
           viewport={{ once: true }}
           className="text-4xl md:text-5xl font-semibold mb-6"
         >
-          Choose Your <span className="text-[#D4AF37]">Celerey</span> Experience
+          Choose Your <span className="text-blue-600">Celerey</span> Experience
         </motion.h2>
 
         <motion.p
@@ -71,7 +71,7 @@ export default function Pricing() {
               viewport={{ once: true }}
               className={`relative p-[1px] rounded-2xl ${
                 plan.highlight
-                  ? "bg-gradient-to-r from-[#D4AF37] via-[#FDE68A] to-[#D4AF37]"
+                  ? "bg-gradient-to-r from-blue-700 via-blue-500 to-blue-400"
                   : "bg-gradient-to-r from-gray-700/50 via-gray-800 to-gray-900"
               }`}
             >
@@ -80,7 +80,7 @@ export default function Pricing() {
                   <h3 className="text-2xl font-semibold mb-2">{plan.name}</h3>
                   <p
                     className={`text-lg font-medium mb-4 ${
-                      plan.highlight ? "text-[#D4AF37]" : "text-blue-400"
+                      plan.highlight ? "text-blue-300" : "text-blue-500"
                     }`}
                   >
                     {plan.price}
@@ -90,10 +90,10 @@ export default function Pricing() {
 
                 <Button
                   variant={plan.highlight ? "default" : "outline"}
-                  className={`rounded-full px-6 py-2 transition-all ${
+                  className={` cursor-pointer ${
                     plan.highlight
-                      ? "bg-[#D4AF37] hover:bg-[#C29E2C] text-[#1B1856]"
-                      : "border-gray-600 text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                      ? "bg-blue-600 hover:bg-blue-900 text-white"
+                      : " "
                   }`}
                 >
                   {plan.cta}
@@ -122,7 +122,7 @@ export default function Pricing() {
           className="text-center mt-16"
         >
           <Link href="/subscribe">
-            <Button className="bg-[#D4AF37] hover:bg-[#C29E2C] text-[#1B1856] rounded-full px-8 py-3 text-base font-light shadow-md hover:shadow-lg transition-all">
+            <Button className="">
               Compare Plans & Explore Features
             </Button>
           </Link>
