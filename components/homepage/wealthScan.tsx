@@ -58,7 +58,7 @@ const questions: Question[] = [
       "Irregular – my income changes month to month", // 2
       "Unstable – I can't plan reliably", // 1
     ],
-    why: "A stable income enables forward planning; variability increases the need for stronger liquidity.",
+    why: "We ask this to understand how steady your cash flow feels, which helps shape guidance around planning and buffers.",
     insight: "Insight Generated: Cash-flow stability and planning capacity.",
     pillar: "Income Stability",
     weight: 0.15,
@@ -72,7 +72,7 @@ const questions: Question[] = [
       "Less than 10%", // 2
       "None – I use most of what I earn", // 1
     ],
-    why: "This reveals whether short-term lifestyle is crowding out long-term goals.",
+    why: "This helps gauge how comfortably you balance today’s needs with future plans.",
     insight: "Insight Generated: Savings rate and discipline score.",
     pillar: "Spending & Saving",
     weight: 0.2,
@@ -86,7 +86,7 @@ const questions: Question[] = [
       "1–3 months", // 2
       "Less than a month", // 1
     ],
-    why: "This measures how prepared you are for shocks — the foundation of financial wellbeing.",
+    why: "This gives a sense of how well you could handle unexpected changes without stress.",
     insight: "Insight Generated: Liquidity and emergency-fund strength.",
     pillar: "Resilience",
     weight: 0.2,
@@ -99,7 +99,7 @@ const questions: Question[] = [
       "I manage but it sometimes feels tight", // 2
       "It's difficult or stressful to manage", // 1
     ],
-    why: "Debt affects freedom and long-term growth potential.",
+    why: "This offers insight into how comfortably your current borrowing fits into your financial picture.",
     insight:
       "Insight Generated: Debt-to-income comfort ratio and stress level.",
     pillar: "Debt & Credit Health",
@@ -114,7 +114,7 @@ const questions: Question[] = [
       "Not very confident – I've started but need direction", // 2
       "Not confident – I haven't started planning yet", // 1
     ],
-    why: "Determines whether users are on track for future milestones.",
+    why: "This helps understand how confident you feel about the steps you're taking toward long-term goals.",
     insight:
       "Insight Generated: Investment readiness and goal-progress indicator.",
     pillar: "Growth Readiness",
@@ -129,7 +129,7 @@ const questions: Question[] = [
       "I'm reactive – I deal with things as they come", // 2
       "I avoid thinking about it until I have to", // 1
     ],
-    why: "Captures strategic maturity — whether someone is proactive or reactive about money.",
+    why: "This helps us understand your general style when managing money, so the guidance feels more personalised.",
     insight: "Insight Generated: Planning maturity and confidence index.",
     pillar: "Planning & Direction",
     weight: 0.15,
@@ -420,9 +420,9 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
         Discover Your Financial Health
       </h2>
 
-      <p className="text-gray-600 text-center mb-8 text-md sm:text-base">
-        Take a quick self-assessment to understand your financial strengths and
-        opportunities for growth.
+      <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
+        Take a quick 3-minute self-assessment to understand your financial
+        strengths <br /> and uncover opportunities for growth.
       </p>
 
       {/* Email Form Overlay */}
@@ -490,12 +490,6 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
       </AnimatePresence>
 
       <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
-        {/* Header */}
-        <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-          This quick 3-minute checkup gives you a picture of your financial
-          wellbeing.
-        </p>
-
         {/* Progress */}
         <Progress
           value={progress}
@@ -510,34 +504,38 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="text-center"
+            className="text-center px-2"
           >
-            <h3 className="text-lg font-medium mb-6 text-blue-950">
-              {current.question}
-            </h3>
+            <div className="min-h-[72px] flex items-center justify-center px-2">
+              <h3 className="text-base font-medium text-blue-950 text-center">
+                {current.question}
+              </h3>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+            <div className="flex flex-col gap-3 mb-6 w-full">
               {current.options.map((opt: string) => (
                 <button
                   key={opt}
                   onClick={() => handleSelect(opt)}
-                  className={`p-4 border rounded-2xl text-sm transition-all duration-150
-                    ${
-                      answers[step] === opt
-                        ? "border-blue-900 bg-blue-950 text-white shadow-sm"
-                        : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
-                    }`}
+                  className={`w-full p-4 border rounded-xl text-sm sm:text-base transition-all duration-150
+        ${
+          answers[step] === opt
+            ? "border-blue-900 bg-blue-950 text-white shadow-sm"
+            : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
+        }`}
                 >
                   {opt}
                 </button>
               ))}
             </div>
 
-            <div className="border-t border-gray-200 pt-4 mt-10 text-left text-sm text-gray-600">
-              <p>
-                <span className="font-medium text-blue-950">Why we ask:</span>{" "}
-                {current.why}
-              </p>
+            <div className="border-t border-gray-200 pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
+              <div className="min-h-[70px] flex items-start">
+                <p>
+                  <span className="font-medium text-blue-950">Why we ask:</span>{" "}
+                  {current.why}
+                </p>
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -553,11 +551,7 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
             Previous
           </Button>
 
-          <Button
-            onClick={handleNext}
-            disabled={!answers[step]}
-            className=""
-          >
+          <Button onClick={handleNext} disabled={!answers[step]} className="">
             {step === questions.length - 1 ? "Finish" : "Next"}
           </Button>
         </div>
