@@ -32,7 +32,7 @@ export default function PricingPage() {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${apiBase}/plans`);
+        const response = await fetch(`${apiBase}/plans/`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch plans: ${response.status}`);
