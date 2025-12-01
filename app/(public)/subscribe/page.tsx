@@ -56,18 +56,21 @@ export default function PricingPage() {
     if (plan.billing_cycle === "one_time") {
       return `$${plan.price} (One-Time Access)`;
     }
-    return `$${plan.price} / Year`;
+     return (
+       <span>
+         ${plan.price}{" "}
+         <span className="text-base font-normal text-gray-500">/ Year</span>
+       </span>
+     );
   };
+if (loading) {
+  return (
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-slate-50">
+      <div className="w-10 h-10 border-4 border-[#1B1856]/20 border-t-[#1B1856] rounded-full animate-spin" />
+    </section>
+  );
+}
 
-  if (loading) {
-    return (
-      <section className="relative min-h-screen py-42 px-6 bg-gradient-to-b from-white to-slate-50 text-[#1B1856]">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="animate-pulse">Loading plans...</div>
-        </div>
-      </section>
-    );
-  }
 
   if (error) {
     return (
@@ -105,6 +108,57 @@ export default function PricingPage() {
             you&apos;re just starting or expanding your financial strategy,
             we&apos;ve got the right level of support for you.
           </p>
+        </motion.div>
+
+     
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-6xl mx-auto mb-16"
+        >
+          <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              {/* Left Text Section */}
+              <div className="flex-1">
+                <h3 className="text-3xl font-semibold mb-2">
+                  Essentials (Pay-As-You-Go)
+                </h3>
+                <p className="text-[#D4AF37] font-medium mb-3">
+                  One-time financial clarity
+                </p>
+
+                <p className="text-4xl font-bold mb-4">$99.99</p>
+                <p className="text-gray-600 mb-4">
+                  Ideal for individuals seeking one-off support.
+                </p>
+
+                <ul className="space-y-2 text-gray-700">
+                  <li className="flex gap-2">
+                    <Check className="w-4 h-4 text-[#D4AF37] mt-1" />
+                    <span>1 dedicated 45-minute advisory call</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <Check className="w-4 h-4 text-[#D4AF37] mt-1" />
+                    <span>Post-session summary</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <Check className="w-4 h-4 text-[#D4AF37] mt-1" />
+                    <span>Personalized action roadmap</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Button */}
+              <div className="md:w-auto">
+                <Link href="https://your-payment-link.com" target="_blank">
+                  <Button className="w-full md:w-auto px-8 py-3 text-sm font-semibold bg-[#1B1856] hover:bg-[#1B1856]/90 text-white">
+                    Book Session
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Plans Grid */}
@@ -150,7 +204,7 @@ export default function PricingPage() {
                 rel="noopener noreferrer"
               >
                 <Button
-                  className={`w-full rounded-full px-6 py-2 text-sm font-semibold transition-all ${
+                  className={`w-full px-6 py-2 text-sm font-semibold transition-all ${
                     plan.popular
                       ? "bg-[#1B1856] hover:bg-[#1B1856]/90 text-white"
                       : "border border-[#1B1856] text-white hover:bg-[#1B1856] hover:text-white"
