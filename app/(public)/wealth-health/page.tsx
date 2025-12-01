@@ -172,31 +172,31 @@ export default function WealthHealthPage() {
     return weights[pillar] || 0.15;
   };
 
-  const getScoreColor = (score: number): string => {
-    if (score >= 80) return "text-green-600";
-    if (score >= 60) return "text-blue-600";
-    if (score >= 40) return "text-yellow-600";
-    return "text-orange-600";
-  };
+  // const getScoreColor = (score: number): string => {
+  //   if (score >= 80) return "text-green-600";
+  //   if (score >= 60) return "text-blue-600";
+  //   if (score >= 40) return "text-yellow-600";
+  //   return "text-orange-600";
+  // };
 
   // Fixed color functions for the chart
   const getPillarColor = (score: number): string => {
-    if (score >= 75) return "#080727"; // Dark blue for strong
-    if (score >= 50) return "#19647E"; // Medium blue for developing
-    return "#B3001B"; // Red for needs attention
+    if (score >= 75) return "#1B1856"; // Dark blue for strong
+    if (score >= 50) return "#7F7CAF"; // Medium blue for developing
+    return "#DD614A"; // Red for needs attention
   };
 
-  const getPillarColorClass = (score: number): string => {
-    if (score >= 75) return "text-[#080727]";
-    if (score >= 50) return "text-[#19647E]";
-    return "text-[#B3001B]";
-  };
+  // const getPillarColorClass = (score: number): string => {
+  //   if (score >= 75) return "text-[#080727]";
+  //   if (score >= 50) return "text-[#19647E]";
+  //   return "text-[#B3001B]";
+  // };
 
-  const getPillarBgColorClass = (score: number): string => {
-    if (score >= 75) return "bg-[#080727]";
-    if (score >= 50) return "bg-[#19647E]";
-    return "bg-[#B3001B]";
-  };
+  // const getPillarBgColorClass = (score: number): string => {
+  //   if (score >= 75) return "bg-[#080727]";
+  //   if (score >= 50) return "bg-[#19647E]";
+  //   return "bg-[#B3001B]";
+  // };
 
   // Prepare chart data with colors
   const chartData = Object.entries(results.pillarScores).map(
@@ -206,6 +206,21 @@ export default function WealthHealthPage() {
       color: getPillarColor(data.score),
     })
   );
+
+  const getBadgeClass = (score: number) => {
+    if (score >= 75)
+      return "bg-green-100 text-green-700 border border-green-200";
+    if (score >= 50)
+      return "bg-yellow-100 text-yellow-700 border border-yellow-200";
+    return "bg-red-100 text-red-700 border border-red-200";
+  };
+
+  const getBadgeLabel = (score: number) => {
+    if (score >= 75) return "Well-Anchored";
+    if (score >= 50) return "Developing Strength";
+    return "Needs Reinforcement";
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-16 px-4 mt-16">
@@ -244,7 +259,7 @@ export default function WealthHealthPage() {
           </div>
 
           <p className="text-gray-700 mb-4">{narrative.summary}</p>
-          <p className="text-gray-600 italic">{narrative.insight}</p>
+          {/* <p className="text-gray-600 italic">{narrative.insight}</p> */}
           {/* Debug info - remove in production */}
           <div className="mt-4 text-xs text-gray-400">
             Weighted Average: {calculateWeightedAverage().toFixed(1)} | Total
@@ -302,67 +317,103 @@ export default function WealthHealthPage() {
 
             <div className="flex justify-center gap-6 text-sm mt-6 text-gray-600">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#080727]"></span>{" "}
+                <span className="w-3 h-3 rounded-full bg-[#1B1856]"></span>{" "}
                 Strong (75-100%)
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#19647E]"></span>{" "}
+                <span className="w-3 h-3 rounded-full bg-[#7F7CAF]"></span>{" "}
                 Developing (50-74%)
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#B3001B]"></span>{" "}
+                <span className="w-3 h-3 rounded-full bg-[#DD614A]"></span>{" "}
                 Needs Attention (0-49%)
               </div>
             </div>
           </motion.div>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(results.pillarScores).map(([pillar, data], i) => {
-              // Personalized adaptive feedback per pillar — aligned with Data → Insight Logic
-              const feedback = (() => {
+              const { score } = data;
+
+              // --- Meaning / Interpretation based on score ---
+              const meaning = (() => {
                 switch (pillar) {
                   case "Income Stability":
-                    if (data.score >= 75)
-                      return "You have a reliable base for planning — steady income allows you to forecast and invest with confidence.";
-                    if (data.score >= 50)
-                      return "Your income is somewhat variable. Strengthen your budgeting and create a fallback buffer to smooth cash flow.";
-                    return "Income is inconsistent — focus on stabilizing inflows or building a 2–3-month cushion to absorb fluctuations.";
-
+                    if (score >= 75)
+                      return "Your income is predictable and dependable, giving you a strong base for long-term planning.";
+                    if (score >= 50)
+                      return "Your income is somewhat steady, but there are variations that could affect long-term commitments.";
+                    return "Your income fluctuates often, making it harder to plan or commit to long-term financial decisions.";
                   case "Spending & Saving":
-                    if (data.score >= 75)
-                      return "You're maintaining a healthy surplus each month — great job balancing spending and saving!";
-                    if (data.score >= 50)
-                      return "You're close to balance but living near your edge. Automate a small increase in savings to grow your margin.";
-                    return "Spending is outpacing savings — use a simple budget and set up automatic transfers to regain control.";
-
+                    if (score >= 75)
+                      return "You consistently keep expenses below income, showing strong financial discipline.";
+                    if (score >= 50)
+                      return "You balance spending and saving, though your margin for growth is limited.";
+                    return "Your spending habits reduce your capacity to save and build financial momentum.";
                   case "Resilience":
-                    if (data.score >= 75)
-                      return "Strong resilience — you have 6 + months of cover, giving you security and flexibility during shocks.";
-                    if (data.score >= 50)
-                      return "Moderate resilience — a few more months of reserves will strengthen your safety net.";
-                    return "Your current savings leave you vulnerable to shocks. Set an emergency fund goal covering 3–6 months of essentials.";
-
+                    if (score >= 75)
+                      return "You have solid financial protection and can comfortably handle unexpected events.";
+                    if (score >= 50)
+                      return "You have some buffer, but unexpected shocks could still affect your plans.";
+                    return "You are financially exposed to emergencies or income interruptions.";
                   case "Debt & Credit Health":
-                    if (data.score >= 75)
-                      return "Debt is under control — keep monitoring interest rates and maintaining timely payments.";
-                    if (data.score >= 50)
-                      return "You're managing debt, though some pressure exists. A repayment plan can help reduce stress.";
-                    return "Debt may be weighing heavily. Consider a structured repayment or consolidation review to regain freedom.";
-
+                    if (score >= 75)
+                      return "Your debt levels are controlled and manageable, with minimal financial stress.";
+                    if (score >= 50)
+                      return "Your debt is manageable, but requires active oversight to avoid pressure.";
+                    return "Debt may be limiting your flexibility and reducing your ability to save or invest.";
                   case "Growth Readiness":
-                    if (data.score >= 75)
-                      return "You're investing with purpose — continue reviewing and diversifying to stay aligned with goals.";
-                    if (data.score >= 50)
-                      return "You've begun planning for the future. Explore diversified portfolios to accelerate progress.";
-                    return "You're not investing yet — start small with consistent contributions to build long-term momentum.";
-
+                    if (score >= 75)
+                      return "You’re actively building wealth and positioned for long-term financial growth.";
+                    if (score >= 50)
+                      return "You’re preparing for growth, but there's room to strengthen your investment strategy.";
+                    return "You're currently missing out on long-term wealth-building opportunities.";
                   case "Planning & Direction":
-                    if (data.score >= 75)
-                      return "You have a clear written plan — revisit it annually to stay in sync with your evolving goals.";
-                    if (data.score >= 50)
-                      return "You're somewhat organized but reactive at times. A written plan will bring clarity and confidence.";
-                    return "You're mostly responding to events — scheduling a clarity session or mapping short-term goals will help you take control.";
+                    if (score >= 75)
+                      return "You have clear goals and structured plans guiding your decisions.";
+                    if (score >= 50)
+                      return "You have some structure, but you're likely reacting to situations rather than anticipating them.";
+                    return "Your financial approach may lack direction, making progress less predictable.";
+                  default:
+                    return "";
+                }
+              })();
 
+              // --- Insight: tell them something they DON'T know ---
+              const insight = (() => {
+                switch (pillar) {
+                  case "Income Stability":
+                    return "Stable income not only helps budgeting—it actually improves your borrowing power and lowers the interest rates you may qualify for.";
+                  case "Spending & Saving":
+                    return "Most people underestimate lifestyle creep. Increasing income doesn’t always improve savings unless spending is intentionally controlled.";
+                  case "Resilience":
+                    return "Even small unexpected expenses are the biggest cause of long-term financial derailment, not big emergencies.";
+                  case "Debt & Credit Health":
+                    return "Reducing just one high-interest debt can increase your net worth faster than most beginner investments can.";
+                  case "Growth Readiness":
+                    return "Time in the market matters more than the amount you start with—consistency beats timing every time.";
+                  case "Planning & Direction":
+                    return "People with written financial plans accumulate 2–3× more wealth than those without one, even at similar income levels.";
+                  default:
+                    return "";
+                }
+              })();
+
+              // --- Action step ---
+              const action = (() => {
+                switch (pillar) {
+                  case "Income Stability":
+                    return "Consider diversifying income streams or stabilizing irregular earnings with a buffer fund.";
+                  case "Spending & Saving":
+                    return "Increase automated savings by even 5–10%—small consistent boosts compound massively over time.";
+                  case "Resilience":
+                    return "Start building a 3–6-month emergency fund to reduce vulnerability to financial shocks.";
+                  case "Debt & Credit Health":
+                    return "Target the highest-interest debt first using a snowball or avalanche method.";
+                  case "Growth Readiness":
+                    return "Start or expand a simple diversified investment plan—consistency beats complexity.";
+                  case "Planning & Direction":
+                    return "Document short and long-term goals and review them every quarter to stay aligned.";
                   default:
                     return "";
                 }
@@ -373,39 +424,47 @@ export default function WealthHealthPage() {
                   key={pillar}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.5 + i * 0.1 }}
-                  className="p-5 bg-gray-50 rounded-xl border border-gray-100"
+                  transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
+                  className="p-5 bg-gray-50 rounded-xl border border-gray-100 h-full"
                 >
-                  <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-1">
-                      <div
-                        className={`w-5 h-5 rounded-full ${getPillarBgColorClass(
-                          data.score
-                        )}`}
-                      ></div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-semibold text-[#1B1856]">
-                          {pillar}
-                        </h3>
+                  <div className="mb-3">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="font-semibold text-[#1B1856] leading-snug break-words">
+                        {pillar}
+                      </h3>
+
+                      <div className="flex flex-wrap items-center gap-2">
                         <span
-                          className={`text-sm font-bold ${getPillarColorClass(
-                            data.score
+                          className={`text-xs px-2 py-1 rounded-md font-semibold whitespace-nowrap ${getBadgeClass(
+                            score
                           )}`}
                         >
-                          {data.score}%
+                          {getBadgeLabel(score)}
                         </span>
                       </div>
-                      <p className="text-gray-700 text-sm leading-relaxed mb-1">
-                        <span className="font-medium text-[#1B1856]/80">
-                          Your response:
-                        </span>{" "}
-                        {data.answer}
-                      </p>
-                      <p className="text-gray-500 text-sm italic">{feedback}</p>
                     </div>
                   </div>
+
+                  <p className="text-gray-700 text-sm leading-relaxed mb-2">
+                    <span className="font-medium text-[#1B1856]/80">
+                      What this means:
+                    </span>{" "}
+                    {meaning}
+                  </p>
+
+                  <p className="text-gray-600 text-sm leading-relaxed mb-2 italic">
+                    <span className="font-medium not-italic text-[#1B1856]/80">
+                      Insight:
+                    </span>{" "}
+                    {insight}
+                  </p>
+
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    <span className="font-medium text-[#1B1856]/80">
+                      Next step:
+                    </span>{" "}
+                    {action}
+                  </p>
                 </motion.div>
               );
             })}
@@ -437,6 +496,42 @@ export default function WealthHealthPage() {
                 ))}
               </ul>
             </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="bg-white rounded-2xl shadow-md p-8 border border-gray-100"
+        >
+          <h2 className="text-2xl font-semibold text-[#1B1856] mb-6">
+            Your Personalized Action Plan
+          </h2>
+
+          <div className="space-y-5">
+            {results.recommendations.map((rec, i) => (
+              <div
+                key={i}
+                className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+              >
+                <Lightbulb className="text-[#1B1856] mt-1 flex-shrink-0" />
+                <p className="text-gray-700">{rec}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex items-center justify-between bg-blue-50 rounded-xl p-5">
+            <div>
+              <h3 className="font-semibold text-[#1B1856] mb-1">
+                Next Step Forward
+              </h3>
+              <p className="text-gray-700">
+                {narrative.insight ||
+                  "Keep tracking your progress and revisiting your goals each quarter."}
+              </p>
+            </div>
+            <ArrowRight className="text-[#1B1856]" />
           </div>
         </motion.div>
 
@@ -507,7 +602,7 @@ export default function WealthHealthPage() {
 
                     window.open(googleUrl, "_blank");
                   }}
-                  className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full px-6 py-2 text-sm font-semibold"
+                  className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white px-6 py-2 text-sm font-semibold"
                 >
                   Add to Google Calendar
                 </Button>
@@ -587,47 +682,12 @@ END:VCALENDAR`;
         </motion.div>
 
         {/* Recommendations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="bg-white rounded-2xl shadow-md p-8 border border-gray-100"
-        >
-          <h2 className="text-2xl font-semibold text-[#1B1856] mb-6">
-            Your Personalized Action Plan
-          </h2>
-
-          <div className="space-y-5">
-            {results.recommendations.map((rec, i) => (
-              <div
-                key={i}
-                className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
-              >
-                <Lightbulb className="text-[#1B1856] mt-1 flex-shrink-0" />
-                <p className="text-gray-700">{rec}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex items-center justify-between bg-blue-50 rounded-xl p-5">
-            <div>
-              <h3 className="font-semibold text-[#1B1856] mb-1">
-                Next Step Forward
-              </h3>
-              <p className="text-gray-700">
-                {narrative.insight ||
-                  "Keep tracking your progress and revisiting your goals each quarter."}
-              </p>
-            </div>
-            <ArrowRight className="text-[#1B1856]" />
-          </div>
-        </motion.div>
 
         {/* Action Buttons */}
         <div className="text-center space-y-4 flex flex-col ">
           <Button
             onClick={() => router.push("/#wealth-scan")}
-            className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-semibold"
+            className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white px-8 py-3 text-lg font-semibold w-fit mx-auto"
           >
             Retake Assessment
           </Button>
