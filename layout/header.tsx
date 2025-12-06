@@ -12,12 +12,14 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation"; // for Next.js 13+ App Router
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [visible, setVisible] = React.useState(true);
+  const router = useRouter();
 
   React.useEffect(() => {
     setMounted(true);
@@ -58,9 +60,15 @@ export default function Header() {
   ];
 
   const handleScrollToWealthHealth = () => {
+    const isHome = window.location.pathname === "/";
     const el = document.getElementById("wealth-scan");
-    if (el) {
+
+    if (isHome && el) {
       el.scrollIntoView({ behavior: "smooth" });
+      setOpen(false);
+    } else {
+      // navigate to homepage with hash
+      router.push("/#wealth-scan");
       setOpen(false);
     }
   };
@@ -111,8 +119,10 @@ export default function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:block">
-          <Button onClick={handleScrollToWealthHealth}
-          className="cursor-pointer">
+          <Button
+            onClick={handleScrollToWealthHealth}
+            className="cursor-pointer"
+          >
             Start Your Free Financial Health Scan
           </Button>
         </div>

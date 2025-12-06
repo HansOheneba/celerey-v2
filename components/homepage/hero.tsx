@@ -92,7 +92,7 @@ export default function Hero() {
 
         <p className="text-md sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
           We blend intelligent tools with human expertise to make managing your
-          finances simple — so life feels lighter and your goals feel closer.
+          finances simple, so life feels lighter and your goals feel closer.
         </p>
 
         <div className="w-full max-w-md mx-auto px-4">

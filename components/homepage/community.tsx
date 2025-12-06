@@ -55,7 +55,7 @@ export default function Community() {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-gray-900">
-            Join <span className="text-blue-600">The Celerey Insider</span>{" "}
+            Join <span className="text-blue-800">The Celerey Insider</span>{" "}
             Community
           </h2>
           <p className="text-gray-700 mb-8">
@@ -96,7 +96,7 @@ export default function Community() {
             </h3>
             <p className="text-gray-700 mb-6">
               Chat with our{" "}
-              <span className="text-blue-600 font-medium">AI assistant</span> or
+              <span className="text-blue-800 font-medium">AI assistant</span> or
               connect directly with our Client Success team.
             </p>
 

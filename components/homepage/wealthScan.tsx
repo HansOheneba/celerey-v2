@@ -49,6 +49,8 @@ interface WealthHealthData {
   submittedAt: string;
 }
 
+
+
 const questions: Question[] = [
   {
     question: "How predictable is your monthly income?",
@@ -136,6 +138,8 @@ const questions: Question[] = [
   },
 ];
 
+
+
 export default function WealthScan() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -143,6 +147,8 @@ export default function WealthScan() {
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const [started, setStarted] = useState(false);
+
 
   const progress = ((step + 1) / questions.length) * 100;
   const current = questions[step];
@@ -489,73 +495,96 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
         )}
       </AnimatePresence>
 
-      <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
-        {/* Progress */}
-        <Progress
-          value={progress}
-          className="w-full mb-8 h-2 bg-gray-200 [&>div]:bg-blue-900"
-        />
-
-        {/* Question container */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-            className="text-center px-2"
+      {!started ? (
+        // Intro screen
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8 flex flex-col items-center justify-center"
+        >
+     
+          <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
+            Answer a few simple questions to see where you stand financially and
+            uncover opportunities to grow your wealth and confidence.
+          </p>
+          <Button
+            onClick={() => setStarted(true)}
+            className=""
           >
-            <div className="min-h-[72px] flex items-center justify-center px-2">
-              <h3 className="text-base font-medium text-blue-950 text-center">
-                {current.question}
-              </h3>
-            </div>
+            Begin Assessment
+          </Button>
+        </motion.div>
+      ) : (
+        <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
+          {/* Progress */}
+          <Progress
+            value={progress}
+            className="w-full mb-8 h-2 bg-gray-200 [&>div]:bg-blue-900"
+          />
 
-            <div className="flex flex-col gap-3 mb-6 w-full">
-              {current.options.map((opt: string) => (
-                <button
-                  key={opt}
-                  onClick={() => handleSelect(opt)}
-                  className={`w-full p-4 border rounded-xl text-sm sm:text-base transition-all duration-150
+          {/* Question container */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="text-center px-2"
+            >
+              <div className="min-h-[72px] flex items-center justify-center px-2">
+                <h3 className="text-base font-medium text-blue-950 text-center">
+                  {current.question}
+                </h3>
+              </div>
+
+              <div className="flex flex-col gap-3 mb-6 w-full">
+                {current.options.map((opt: string) => (
+                  <button
+                    key={opt}
+                    onClick={() => handleSelect(opt)}
+                    className={`w-full p-4 border rounded-xl text-sm sm:text-base transition-all duration-150
         ${
           answers[step] === opt
             ? "border-blue-900 bg-blue-950 text-white shadow-sm"
             : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
         }`}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
-
-            <div className="border-t border-gray-200 pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
-              <div className="min-h-[70px] flex items-start">
-                <p>
-                  <span className="font-medium text-blue-950">Why we ask:</span>{" "}
-                  {current.why}
-                </p>
+                  >
+                    {opt}
+                  </button>
+                ))}
               </div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
 
-        {/* Navigation buttons */}
-        <div className="flex justify-between mt-10">
-          <Button
-            onClick={handlePrev}
-            disabled={step === 0}
-            className=""
-            variant={"outline"}
-          >
-            Previous
-          </Button>
+              <div className="border-t border-gray-200 pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
+                <div className="min-h-[70px] flex items-start">
+                  <p>
+                    <span className="font-medium text-blue-950">
+                      Why we ask:
+                    </span>{" "}
+                    {current.why}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
 
-          <Button onClick={handleNext} disabled={!answers[step]} className="">
-            {step === questions.length - 1 ? "Finish" : "Next"}
-          </Button>
+          {/* Navigation buttons */}
+          <div className="flex justify-between mt-10">
+            <Button
+              onClick={handlePrev}
+              disabled={step === 0}
+              className=""
+              variant={"outline"}
+            >
+              Previous
+            </Button>
+
+            <Button onClick={handleNext} disabled={!answers[step]} className="">
+              {step === questions.length - 1 ? "Finish" : "Next"}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

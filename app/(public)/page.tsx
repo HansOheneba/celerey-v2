@@ -1,6 +1,6 @@
 import Hero from "@/components/homepage/hero";
 import FeaturesSection from "@/components/homepage/featuresSection";
-import Journey from "@/components/homepage/journey";
+import {Journey} from "@/components/homepage/journey";
 import Partners from "@/components/homepage/partners";
 import WealthScan from "@/components/homepage/wealthScan";
 import Pricing from "@/components/homepage/pricing";

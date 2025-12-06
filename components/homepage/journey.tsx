@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   TrendingUp,
   ClipboardList,
@@ -9,7 +8,23 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-const steps = [
+interface RoadmapStep {
+  title: string;
+  icon: any;
+  description: string;
+}
+
+export default function CircleDivider() {
+  return (
+    <div className="w-full relative flex items-center my-3">
+      <span className="h-2 w-2 rounded-full bg-amber-600 z-10" />
+      <span className="-mx-[6px] flex-1 h-[1px] bg-amber-600" />
+      <span className="h-2 w-2 -mr-[30px] rounded-full bg-amber-600 z-10" />
+    </div>
+  );
+}
+
+const steps: RoadmapStep[] = [
   {
     title: "Discover",
     icon: Search,
@@ -37,68 +52,114 @@ const steps = [
   },
 ];
 
-export default function Journey() {
+export function Journey() {
   return (
-    <section className="relative py-28 overflow-hidden">
-      {/* Background Video/Image */}
-      <div className="absolute inset-0 -z-10">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          <source src="/videos/journey.mp4" type="video/mp4" />
-        </video>
+    <section className="w-full relative bg-slate-950 px-4 py-16  overflow-x-auto">
+      {/* Image background */}
+      <div
+        className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        style={{
+          backgroundImage: "url('/journey.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div className="absolute top-0 left-0 w-full h-full bg-black/70 z-5 backdrop-blur-md" />
 
-        {/* If you prefer an image: */}
-        {/* <img src="/images/finance-bg.jpg" className="w-full h-full object-cover" /> */}
+      {/* Content wrapper */}
+      <div className="relative mx-auto max-w-6xl flex flex-col justify-center w-fit z-10 bg-gray-500/20 rounded-4xl p-10">
+        {/* Section Title */}
+        <h2 className="text-center text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-12">
+          The Celerey Journey
+        </h2>
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-      </div>
-
-      {/* Heading */}
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-        className="text-white text-4xl sm:text-5xl font-bold text-center mb-20"
-      >
-        The Celerey Journey
-      </motion.h2>
-
-      {/* Steps */}
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
-        {steps.map((step, index) => {
-          const Icon = step.icon;
-          return (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: "easeOut",
-              }}
-              viewport={{ once: true }}
-              className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 shadow-xl text-center"
-            >
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 border border-white/20 mx-auto mb-4">
-                <Icon className="h-7 w-7 text-blue-300" />
+        {/* Desktop Staircase Waterfall */}
+        <div className="hidden md:block w-[700px] lg:w-[900px] xl:w-[1100px] 2xl:w-[1300px] mb-12 pl-20">
+          <div className="relative" style={{ minHeight: "400px" }}>
+            {/* Step nodes and content */}
+            <div className="relative">
+              {/* Header row */}
+              <div className="absolute top-0 left-0 w-full">
+                {steps.map((step, index) => {
+                  const leftPositions = ["0%", "15%", "30%", "45%", "60%"];
+                  return (
+                    <div
+                      key={index}
+                      className=" absolute"
+                      style={{ left: leftPositions[index] }}
+                    >
+                      <div className="text-xs font-medium text-slate-200 mb-2">
+                        Step {index + 1}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              <h3 className="text-white text-lg font-semibold mb-2">
-                {step.title}
-              </h3>
+              {/* Step boxes */}
+              {steps.map((step, index) => {
+                const leftPositions = ["0%", "15%", "30%", "45%", "60%"];
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      position: "absolute",
+                      top: `${60 + index * 60}px`,
+                      left: leftPositions[index],
+                      width: "140px",
+                    }}
+                  >
+                    <div className="relative space-y-2">
+                      <div className="flex flex-col items-baseline gap-2">
+                        <span className="text-xs font-semibold text-amber-500">
+                          {step.title}
+                        </span>
+                        <CircleDivider />
+                      </div>
+                      <ul className="space-y-1">
+                        <li className="flex gap-2 text-xs text-slate-100 leading-relaxed">
+                          <span className="text-amber-600 flex-shrink-0">
+                            •
+                          </span>
+                          <span>{step.description}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
-              <p className="text-white/75 text-sm">{step.description}</p>
-            </motion.div>
-          );
-        })}
+        {/* Mobile vertical timeline */}
+        <div className="md:hidden space-y-8">
+          {steps.map((item, index) => (
+            <div key={index} className="relative pl-8">
+              <div className="absolute left-1 top-6 bottom-0 w-0.5 bg-gradient-to-b from-amber-600 to-amber-600/30" />
+              <div className="absolute left-0 top-1 w-3 h-3 rounded-full bg-amber-600 shadow-lg shadow-amber-600/50" />
+
+              <div>
+                <div className="text-xs font-medium text-slate-500 mb-2">
+                  Step {index + 1}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xs font-semibold text-amber-500">
+                      {item.title}
+                    </span>
+                  </div>
+                  <ul className="space-y-1">
+                    <li className="flex gap-2 text-xs text-slate-400 leading-relaxed">
+                      <span className="text-amber-600">•</span>
+                      <span>{item.description}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -7,23 +7,23 @@ import Link from "next/link";
 const partners = [
   {
     title: "Investments",
-    img: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=1200&q=80",
-    desc: "Smart wealth growth.",
+    img: "https://images.unsplash.com/photo-1633158829875-e5316a358c6f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    desc: "Partners helping you grow your wealth wisely.",
   },
   {
     title: "Insurance",
     img: "https://images.unsplash.com/photo-1509043759401-136742328bb3?auto=format&fit=crop&w=1200&q=80",
-    desc: "Protection that matters.",
+    desc: "Protection solutions provided by trusted insurers.",
   },
   {
     title: "Technology",
     img: "/partners/tech.jpg",
-    desc: "Intelligent financial solutions.",
+    desc: "Innovative tech partners enabling smarter finance.",
   },
   {
     title: "Advisory",
     img: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
-    desc: "Experts by your side.",
+    desc: "Expert advisors supporting your financial decisions.",
   },
 ];
 
@@ -40,10 +40,11 @@ export default function BuildWithBest() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-white">
-            We Build with the Best
+            Our Trusted Partners
           </h2>
           <p className="text-gray-400 max-w-xl mx-auto mt-3">
-            Trusted partners powering your financial future.
+            We work with top institutions that specialize in these areas to
+            support your financial journey.
           </p>
         </motion.div>
 
@@ -59,8 +60,8 @@ export default function BuildWithBest() {
           >
             <div className="relative h-full w-full min-h-[400px]">
               <Image
-                src="/partners/trust.jpg"
-                alt="Global Partners"
+                src="/partners/global.jpg"
+                alt="Global Partners Network"
                 fill
                 className="object-cover transition duration-700"
               />
@@ -70,10 +71,11 @@ export default function BuildWithBest() {
 
             <div className="absolute bottom-6 left-6">
               <h3 className="text-2xl font-semibold text-white mb-1">
-                Global Partners
+                Global Network
               </h3>
               <p className="text-gray-300 text-sm">
-                The most trusted institutions worldwide.
+                Connecting with world-class institutions across finance,
+                insurance, and technology.
               </p>
             </div>
           </motion.div>
@@ -118,7 +120,7 @@ export default function BuildWithBest() {
             viewport={{ once: true }}
             className="px-8 py-3 rounded-full bg-blue-950 text-white text-sm font-medium hover:bg-blue-950/40 transition-all shadow-sm cursor-pointer"
           >
-            Learn More About Our Partners
+            Explore All Partners
           </motion.button>
         </Link>
       </div>

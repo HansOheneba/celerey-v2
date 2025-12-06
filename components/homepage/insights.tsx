@@ -99,7 +99,7 @@ export default function InsightsSection() {
           className="text-4xl md:text-5xl font-semibold mb-6 text-gray-900"
         >
           Insights{" "}
-          <span className="text-blue-500 font-medium">& Resources</span>
+          <span className="text-blue-800 font-medium">& Resources</span>
         </motion.h2>
 
         <motion.p

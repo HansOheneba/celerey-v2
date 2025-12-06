@@ -82,7 +82,7 @@ export default function InsightsPage() {
           transition={{ duration: 0.6 }}
           className="text-4xl md:text-5xl font-semibold text-[#1B1856] mb-4"
         >
-          Insights & <span className="text-blue-600">Resources</span>
+          Insights & <span className="text-blue-800">Resources</span>
         </motion.h1>
 
         <p className="text-gray-600 max-w-3xl mx-auto mb-10">
@@ -99,7 +99,7 @@ export default function InsightsPage() {
               onClick={() => setActiveTab(tab as "insights" | "podcasts")}
               className={`relative text-lg font-medium pb-2 transition-all ${
                 activeTab === tab
-                  ? "text-blue-600"
+                  ? "text-blue-800"
                   : "text-gray-400 hover:text-blue-400"
               }`}
             >
