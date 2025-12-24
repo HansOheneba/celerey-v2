@@ -53,7 +53,10 @@ export default function AdvisorsPage() {
       <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex items-center justify-center h-64">
-            <div className="text-lg text-gray-600">Loading advisors...</div>
+            <div
+              className="h-10 w-10 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"
+              aria-label="Loading"
+            />
           </div>
         </div>
       </section>
