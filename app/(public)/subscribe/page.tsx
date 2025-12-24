@@ -110,7 +110,6 @@ if (loading) {
           </p>
         </motion.div>
 
-     
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -170,12 +169,20 @@ if (loading) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2, duration: 0.6 }}
               viewport={{ once: true }}
-              className={`rounded-3xl shadow-sm border ${
+              className={`relative rounded-3xl shadow-sm border ${
                 plan.popular
                   ? "border-[#D4AF37] shadow-md bg-gradient-to-b from-white via-amber-50/20 to-white"
                   : "border-gray-200 bg-white"
               } p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-md`}
             >
+              {plan.popular && (
+                <div className="absolute -top-4 right-6">
+                  <span className="inline-block rounded-full bg-[#D4AF37] px-4 py-1 text-xs font-semibold text-white shadow-sm">
+                    Recommended
+                  </span>
+                </div>
+              )}
+
               <div>
                 <h3 className="text-2xl font-semibold mb-1">{plan.name}</h3>
                 <p className="text-[#D4AF37] font-medium mb-3">
