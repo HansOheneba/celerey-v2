@@ -19,7 +19,7 @@ export default function Footer() {
       links: [
         { href: "/wealth", label: "Wealth Management" },
         { href: "/career", label: "Career Navigation" },
-        { href: "/tools", label: "Investment Tools" },
+        // { href: "/tools", label: "Investment Tools" },
         { href: "/advisors", label: "Advisory Services" },
       ],
     },

@@ -11,7 +11,7 @@ const videoList = [
   "/videos/vid7.mp4",
   "/videos/vid8.mp4",
   "/videos/vid2.mp4",
-  "/videos/vid3.mp4",
+  // "/videos/vid3.mp4",
   "/videos/vid4.mp4",
   "/videos/vid5.mp4",
 ];
