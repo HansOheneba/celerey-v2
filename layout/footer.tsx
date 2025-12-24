@@ -39,7 +39,7 @@ export default function Footer() {
       title: "Company",
       links: [
         { href: "/about", label: "Who we are" },
-        { href: "/careers", label: "Careers" },
+        // { href: "/careers", label: "Careers" },
         { href: "/insights", label: "Resources" },
       ],
     },
