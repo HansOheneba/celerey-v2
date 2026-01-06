@@ -6,6 +6,9 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import Services from "./components/services";
+
+
 interface Plan {
   id: number;
   name: string;
@@ -223,6 +226,8 @@ if (loading) {
             </motion.div>
           ))}
         </div>
+
+        <Services />
 
         {/* Footer Section */}
         <motion.div
