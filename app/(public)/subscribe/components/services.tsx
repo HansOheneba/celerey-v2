@@ -116,7 +116,7 @@ export default function Services() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button className="w-full bg-[#1B1856] hover:bg-[#1B1856]/90 text-white font-semibold">
+              <Button className="w-full   text-white font-semibold">
                 Book Service
               </Button>
             </Link>
