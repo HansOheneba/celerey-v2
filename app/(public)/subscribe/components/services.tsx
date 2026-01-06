@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface Service {
   id: number;
@@ -14,59 +15,50 @@ interface Service {
 }
 
 export default function Services() {
- const services: Service[] = [
-   {
-     id: 1,
-     name: "Financial Health Assessment",
-     price: 95,
-     description:
-       "A comprehensive review of your income, expenses, savings, and liabilities to give you a clear picture of your current financial standing and priority areas.",
-     payment_link: "https://your-payment-link.com/financial-health",
-   },
-   {
-     id: 2,
-     name: "Advisor Strategy Session",
-     price: 125,
-     duration: "60 minutes",
-     description:
-       "A deep one-on-one strategy session with a Celerey advisor to clarify goals, address challenges, and define a personalised financial action plan.",
-     payment_link: "https://your-payment-link.com/advisor-session",
-   },
-   {
-     id: 3,
-     name: "Investment Portfolio Review",
-     price: 175,
-     description:
-       "An in-depth analysis of your current investments, risk exposure, diversification, and alignment with your long-term objectives.",
-     payment_link: "https://your-payment-link.com/investment-review",
-   },
-   {
-     id: 4,
-     name: "Wealth Growth Roadmap",
-     price: 225,
-     description:
-       "A structured 90-day roadmap outlining clear steps to grow, protect, and optimise your wealth based on your goals and financial position.",
-     payment_link: "https://your-payment-link.com/wealth-roadmap",
-   },
-   {
-     id: 5,
-     name: "Travel & Relocation Financial Planning",
-     price: 160,
-     description:
-       "Personalised financial planning to prepare you for relocation or long-term travel, covering budgeting, savings targets, and financial sustainability.",
-     payment_link: "https://your-payment-link.com/travel-planning",
-   },
-   {
-     id: 6,
-     name: "Passive Income Strategy Session",
-     price: 195,
-     duration: "60 minutes",
-     description:
-       "Strategic guidance on building sustainable passive income streams aligned with your risk tolerance, capital, and lifestyle goals.",
-     payment_link: "https://your-payment-link.com/passive-income",
-   },
- ];
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${apiBase}/services/`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch services: ${response.status}`);
+        }
+        const data = await response.json();
+        setServices(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch services"
+        );
+        console.error("Error fetching services:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, [apiBase]);
+
+  if (loading) {
+    return (
+      <section className="mt-28 flex justify-center items-center min-h-[200px]">
+        <div className="w-10 h-10 border-4 border-[#1B1856]/20 border-t-[#1B1856] rounded-full animate-spin" />
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="mt-28 text-center text-red-300">
+        <p>Error: {error}</p>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-28">
@@ -81,8 +73,8 @@ export default function Services() {
         <h2 className="text-4xl font-bold mb-4">Services</h2>
         <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
           Get expert help exactly where you need it. These one-off services are
-          designed to give you clarity, direction, and confidence, no
-          long-term commitment.
+          designed to give you clarity, direction, and confidence, no long-term
+          commitment.
         </p>
       </motion.div>
 
@@ -116,7 +108,7 @@ export default function Services() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button className="w-full   text-white font-semibold">
+              <Button className="w-full text-white font-semibold">
                 Book Service
               </Button>
             </Link>
