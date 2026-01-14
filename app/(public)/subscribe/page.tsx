@@ -8,6 +8,69 @@ import { useEffect, useState } from "react";
 
 import Services from "./components/services";
 
+const LOCAL_PLANS: Plan[] = [
+  {
+    id: 1,
+    name: "Foundation",
+    price: 300,
+    billing_cycle: "yearly",
+    tagline: "Structured annual guidance",
+    description:
+      "Designed for individuals seeking clarity and direction with light-touch advisory support.",
+    features: [
+      "1 advisory session per year",
+      "Full access to Celerey masterclasses",
+      "Member briefings and insights",
+      "Community access",
+    ],
+    button_text: "Get Started",
+    popular: false,
+    payment_link: "#",
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: 2,
+    name: "Advisory",
+    price: 1500,
+    billing_cycle: "yearly",
+    tagline: "Ongoing strategic support",
+    description:
+      "For individuals seeking deeper involvement, accountability, and recurring advisory touchpoints.",
+    features: [
+      "Up to 3 advisory sessions per year",
+      "Priority access to advisors",
+      "Advanced masterclasses & sessions",
+      "All Foundation benefits included",
+    ],
+    button_text: "Join Advisory",
+    popular: true,
+    payment_link: "#",
+    created_at: "",
+    updated_at: "",
+  },
+  {
+    id: 3,
+    name: "Concierge",
+    price: 600,
+    billing_cycle: "starting_at",
+    tagline: "Bespoke, pay-per-session access",
+    description:
+      "A fully customized advisory engagement. Select the services you need and receive pricing based on scope and objectives.",
+    features: [
+      "Pay per session",
+      "Custom advisory scope",
+      "Specialized or one-off consultations",
+      "No ongoing commitment required",
+    ],
+    button_text: "Request Concierge Access",
+    popular: false,
+    payment_link: "/subscribe/concierge",
+    created_at: "",
+    updated_at: "",
+  },
+];
+
 
 interface Plan {
   id: number;
@@ -29,43 +92,65 @@ export default function PricingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${apiBase}/plans/`);
+  // useEffect(() => {
+  //   const fetchPlans = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await fetch(`${apiBase}/plans/`);
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch plans: ${response.status}`);
-        }
+  //       if (!response.ok) {
+  //         throw new Error(`Failed to fetch plans: ${response.status}`);
+  //       }
 
-        const data = await response.json();
-        setPlans(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch plans");
-        console.error("Error fetching plans:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       const data = await response.json();
+  //       setPlans(data);
+  //     } catch (err) {
+  //       setError(err instanceof Error ? err.message : "Failed to fetch plans");
+  //       console.error("Error fetching plans:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchPlans();
-  }, [apiBase]);
+  //   fetchPlans();
+  // }, [apiBase]);
 
-  // Format price based on billing cycle
-  const formatPrice = (plan: Plan) => {
-    if (plan.billing_cycle === "one_time") {
-      return `$${plan.price} (One-Time Access)`;
-    }
-     return (
-       <span>
-         ${plan.price}{" "}
-         <span className="text-base font-normal text-gray-500">/ Year</span>
-       </span>
-     );
-  };
+
+useEffect(() => {
+  setPlans(LOCAL_PLANS);
+  setLoading(false);
+}, []);
+
+
+const formatPrice = (plan: Plan) => {
+  if (plan.billing_cycle === "starting_at") {
+    return (
+      <div>
+        <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">
+          Starting at
+        </p>
+        <span className="text-3xl font-bold">
+          ${plan.price}{" "}
+          <span className="text-base font-normal text-gray-500">
+            per session
+          </span>
+        </span>
+      </div>
+    );
+  }
+
+  // DEFAULT RETURN (required)
+  return (
+    <span>
+      ${plan.price}{" "}
+      <span className="text-base font-normal text-gray-500">/ Year</span>
+    </span>
+  );
+};
+
+
 if (loading) {
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-slate-50">
@@ -113,7 +198,7 @@ if (loading) {
           </p>
         </motion.div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -121,7 +206,7 @@ if (loading) {
         >
           <div className="rounded-3xl border border-gray-200 bg-white p-10 shadow-sm hover:shadow-md transition-all duration-300">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              {/* Left Text Section */}
+              
               <div className="flex-1">
                 <h3 className="text-3xl font-semibold mb-2">
                   Essentials (Pay-As-You-Go)
@@ -151,7 +236,7 @@ if (loading) {
                 </ul>
               </div>
 
-              {/* Button */}
+          
               <div className="md:w-auto">
                 <Link href="https://your-payment-link.com" target="_blank">
                   <Button className="w-full md:w-auto px-8 py-3 text-sm font-semibold bg-[#1B1856] hover:bg-[#1B1856]/90 text-white">
@@ -161,7 +246,7 @@ if (loading) {
               </div>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -192,7 +277,10 @@ if (loading) {
                   {plan.tagline}{" "}
                   {/* Updated to use tagline instead of description */}
                 </p>
-                <p className="text-3xl font-bold mb-6">{formatPrice(plan)}</p>
+                <div className="mb-6 text-3xl font-bold">
+                  {formatPrice(plan)}
+                </div>
+                {/* <p className="text-3xl font-bold mb-6">{formatPrice(plan)}</p> */}
                 <p className="text-gray-600 mb-6">{plan.description}</p>{" "}
                 {/* Added description paragraph */}
                 <ul className="space-y-3 mb-8">
@@ -210,7 +298,9 @@ if (loading) {
 
               <Link
                 href={plan.payment_link}
-                target="_blank"
+                target={
+                  plan.billing_cycle === "starting_at" ? "_self" : "_blank"
+                }
                 rel="noopener noreferrer"
               >
                 <Button
@@ -227,7 +317,7 @@ if (loading) {
           ))}
         </div>
 
-        <Services />
+        {/* <Services /> */}
 
         {/* Footer Section */}
         <motion.div
@@ -242,7 +332,7 @@ if (loading) {
           <p className="text-gray-600 mb-8 leading-relaxed">
             Start with{" "}
             <span className="font-medium text-[#D4AF37]">
-              Celerey Essentials
+              Celerey Foundation
             </span>{" "}
             to uncover your financial health, get your custom strategy, and take
             the first confident step toward your goals. You can upgrade anytime

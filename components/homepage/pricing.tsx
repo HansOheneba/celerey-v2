@@ -6,39 +6,42 @@ import Link from "next/link";
 
 const plans = [
   {
-    name: "Essentials",
-    price: "$99 (One-Time Access)",
+    name: "Foundation",
+    price: "300",
+    period: "year",
     description:
-      "Personalized Financial Health Scan™, interactive dashboard access, and a 45-minute strategy session with follow-up support.",
+      "One annual advisory session plus full access to Celerey masterclasses, member briefings, insights, and community resources.",
     cta: "Get Started",
     highlight: false,
   },
   {
-    name: "Core",
-    price: "$299.99 / Year",
+    name: "Advisory",
+    price: "1,500",
+    period: "year",
     description:
-      "Two yearly advisory sessions, quarterly progress reviews, and access to member webinars, accountability calls, and partner perks.",
-    cta: "Upgrade Plan",
+      "Up to three advisory sessions annually with deeper strategic guidance, priority access, advanced sessions, and all member benefits.",
+    cta: "Join Advisory",
     highlight: true,
   },
   {
     name: "Concierge",
-    price: "$1,499 / Year",
+    price: "600+",
+    period: "session",
     description:
-      "Comprehensive wealth management with six annual sessions, strategic planning, dedicated liaison, and access to Celerey’s Global Advisory Network.",
-    cta: "Join Concierge",
+      "A fully customized advisory experience. Select the services you need and receive bespoke pricing based on scope and objectives.",
+    cta: "Explore Concierge",
     highlight: false,
+    link: "/subscribe",
   },
 ];
 
 export default function Pricing() {
   return (
     <section className="relative py-28 text-white overflow-hidden bg-gradient-to-b from-[#0D0C22] via-[#101028] to-[#0B0A1C]">
-      {/* Soft gradient glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.08),transparent_70%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_70%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto text-center px-6">
-        {/* Section Heading */}
+        {/* Heading */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -56,11 +59,10 @@ export default function Pricing() {
           viewport={{ once: true }}
           className="text-gray-400 max-w-2xl mx-auto mb-14 leading-relaxed"
         >
-          Tailored experiences designed to match your wealth journey — whether
-          you’re starting small or optimizing your global portfolio.
+          Advisory access designed with clarity, flexibility, and discretion.
         </motion.p>
 
-        {/* Plans Grid */}
+        {/* Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
           {plans.map((plan, index) => (
             <motion.div
@@ -75,31 +77,58 @@ export default function Pricing() {
                   : "bg-gradient-to-r from-gray-700/50 via-gray-800 to-gray-900"
               }`}
             >
-              <div className="relative bg-[#0C0C18] rounded-2xl p-8 h-full flex flex-col items-center justify-between text-center shadow-lg">
+              <div className="relative bg-[#0C0C18] rounded-2xl p-8 h-full flex flex-col justify-between text-center shadow-lg">
                 <div>
-                  <h3 className="text-2xl font-semibold mb-2">{plan.name}</h3>
-                  <p
-                    className={`text-lg font-medium mb-4 ${
-                      plan.highlight ? "text-blue-300" : "text-blue-500"
-                    }`}
-                  >
-                    {plan.price}
+                  <h3 className="text-2xl font-semibold mb-6">{plan.name}</h3>
+                  {/* Price */}
+                  {plan.name === "Concierge" ? (
+                    <div className="mb-6">
+                      <div className="flex items-end justify-center gap-2">
+                        <span className="text-sm text-gray-400">From USD</span>
+                        <span className="text-5xl font-thin tracking-tight text-[#F8FFF4]">
+                          600
+                        </span>
+                        <span className="text-sm text-gray-400">
+                          / session
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-end justify-center gap-2 mb-6">
+                      <span className="text-sm text-gray-400">USD</span>
+                      <span className="text-5xl font-thin tracking-tight text-[#F8FFF4]">
+                        {plan.price}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        / {plan.period}
+                      </span>
+                    </div>
+                  )}
+
+                  <p className="text-gray-400 leading-relaxed">
+                    {plan.description}
                   </p>
-                  <p className="text-gray-400 mb-8">{plan.description}</p>
                 </div>
 
-                <Button
-                  variant={plan.highlight ? "default" : "outline"}
-                  className={` cursor-pointer ${
-                    plan.highlight
-                      ? "bg-blue-600 hover:bg-blue-900 text-white"
-                      : " "
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
+                {plan.link ? (
+                  <Link href={plan.link}>
+                    <Button variant="outline" className="mt-10">
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant={plan.highlight ? "default" : "outline"}
+                    className={`mt-10 ${
+                      plan.highlight
+                        ? "bg-blue-600 hover:bg-blue-900 text-white"
+                        : ""
+                    }`}
+                  >
+                    {plan.cta}
+                  </Button>
+                )}
 
-                {/* Soft glow on highlight plan */}
                 {plan.highlight && (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -113,7 +142,7 @@ export default function Pricing() {
           ))}
         </div>
 
-        {/* Learn More Button */}
+        {/* Footer CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -122,9 +151,7 @@ export default function Pricing() {
           className="text-center mt-16"
         >
           <Link href="/subscribe">
-            <Button className="">
-              Compare Plans & Explore Features
-            </Button>
+            <Button>View Full Details & Customize Your Plan</Button>
           </Link>
         </motion.div>
       </div>
