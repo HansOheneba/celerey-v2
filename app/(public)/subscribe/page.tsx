@@ -338,8 +338,8 @@ if (loading) {
             the first confident step toward your goals. You can upgrade anytime
             as your needs grow.
           </p>
-          <Link href="https://celerey.app">
-            <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 text-lg font-light">
+          <Link href="#">
+            <Button className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white rounded-full px-8 py-3 font-light">
               Get Started
             </Button>
           </Link>
