@@ -120,8 +120,8 @@ export default function ConciergePricingPage() {
 
   const selectedServices = SERVICES.filter((s) => selected.includes(s.id));
 
-  const total =
-    BASE_PRICE + selectedServices.reduce((sum, s) => sum + s.price, 0);
+  const total = selectedServices.reduce((sum, s) => sum + s.price, 0);
+
 
   return (
     <section className="min-h-screen bg-gradient-to-b from-white to-slate-50 px-6 py-24 text-[#1B1856] my-10">
@@ -185,20 +185,21 @@ export default function ConciergePricingPage() {
             <h3 className="text-xl font-semibold mb-6">Your Estimate</h3>
 
             <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-sm">
-                <span>Base Concierge Session</span>
-                <span>${BASE_PRICE}</span>
-              </div>
-
-              {selectedServices.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex justify-between text-sm text-gray-600"
-                >
-                  <span>{s.name}</span>
-                  <span>+${s.price}</span>
-                </div>
-              ))}
+              {selectedServices.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  Select services to see your estimate
+                </p>
+              ) : (
+                selectedServices.map((s) => (
+                  <div
+                    key={s.id}
+                    className="flex justify-between text-sm text-gray-600"
+                  >
+                    <span>{s.name}</span>
+                    <span>+${s.price}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="border-t pt-4 flex justify-between font-semibold">
@@ -211,7 +212,14 @@ export default function ConciergePricingPage() {
               estimate is not a binding quote.
             </p>
 
-            <Button className="w-full mt-6 bg-[#1B1856] hover:bg-[#1B1856]/90 text-white">
+            <Button
+              disabled={selectedServices.length === 0}
+              className={`w-full mt-6 ${
+                selectedServices.length === 0
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#1B1856] hover:bg-[#1B1856]/90 text-white"
+              }`}
+            >
               Continue & Request Session
             </Button>
           </div>

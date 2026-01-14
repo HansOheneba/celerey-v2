@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import Services from "./components/services";
+// import Services from "./components/services";
 
 const LOCAL_PLANS: Plan[] = [
   {
@@ -52,7 +52,7 @@ const LOCAL_PLANS: Plan[] = [
   {
     id: 3,
     name: "Concierge",
-    price: 600,
+    price: 300,
     billing_cycle: "starting_at",
     tagline: "Bespoke, pay-per-session access",
     description:

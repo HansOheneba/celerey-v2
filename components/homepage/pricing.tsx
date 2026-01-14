@@ -25,7 +25,7 @@ const plans = [
   },
   {
     name: "Concierge",
-    price: "600+",
+    price: "300+",
     period: "session",
     description:
       "A fully customized advisory experience. Select the services you need and receive bespoke pricing based on scope and objectives.",
