@@ -221,6 +221,36 @@ export default function WealthHealthPage() {
     return "Needs Reinforcement";
   };
 
+    const buildAdvisorCTA = (r: WealthHealthResults) => {
+      const lowPillars = r.bottomPillars?.slice(0, 2) || [];
+      const focus = lowPillars.length
+        ? `Focused on: ${lowPillars.join(" & ")}`
+        : "Focused on your next best step";
+
+      // “Reason” copy based on category + score
+      let headline = "Book a 1:1 Wealth Session";
+      let sub = "Get a practical plan tailored to your situation.";
+
+      if (r.score >= 75) {
+        headline = "Optimize with an Advisor";
+        sub =
+          "You’re doing well—an advisor can help you tighten strategy, tax efficiency, and long-term planning.";
+      } else if (r.score >= 50) {
+        headline = "Turn Momentum into a Clear Plan";
+        sub =
+          "You’ve got a solid base—an advisor can help you improve consistency and make smarter next moves.";
+      } else {
+        headline = "Build Your Foundation with Support";
+        sub =
+          "You don’t need perfection—just structure. An advisor can help you create a simple plan you can actually follow.";
+      }
+
+      return { headline, sub, focus };
+    };
+
+    const advisorCTA = buildAdvisorCTA(results);
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-16 px-4 mt-16">
@@ -436,7 +466,7 @@ export default function WealthHealthPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <span
                           className={`text-xs px-2 py-1 rounded-md font-semibold whitespace-nowrap ${getBadgeClass(
-                            score
+                            score,
                           )}`}
                         >
                           {getBadgeLabel(score)}
@@ -535,6 +565,70 @@ export default function WealthHealthPage() {
           </div>
         </motion.div>
 
+        {/* Advisor CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.65 }}
+          className="bg-[#1B1856] text-white rounded-2xl shadow-md p-8 border border-[#1B1856]/20"
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-2xl">
+              <h2 className="text-2xl font-semibold mb-2">
+                {advisorCTA.headline}
+              </h2>
+              <p className="text-white/90 mb-3">{advisorCTA.sub}</p>
+
+              <div className="inline-flex items-center gap-2 text-sm bg-white/10 border border-white/20 rounded-full px-3 py-1">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="font-medium">{advisorCTA.focus}</span>
+              </div>
+
+              <p className="text-sm text-white/80 mt-4">
+                We’ll review your results, identify the fastest win, and leave
+                you with a clear 30–90 day plan.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 w-full md:w-auto">
+              <Button
+                onClick={() => {
+                  // Send context to booking page so it feels personalized there too
+                  const qs = new URLSearchParams({
+                    score: String(results.score),
+                    category: results.category.label,
+                    focus: (results.bottomPillars || []).join(", "),
+                    email: results.email || "",
+                  });
+
+                  // router.push(`/book-advisor?${qs.toString()}`);
+                  router.push(`/wealth-health/#`);
+                }}
+                className="bg-white text-[#1B1856] hover:bg-white/90 font-semibold px-6 py-3"
+              >
+                Book an Advisor Session <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+
+              <button
+                onClick={() => {
+                  const qs = new URLSearchParams({
+                    score: String(results.score),
+                    category: results.category.label,
+                    focus: (results.bottomPillars || []).join(", "),
+                    email: results.email || "",
+                  });
+
+                  // router.push(`/book-advisor?${qs.toString()}#what-to-expect`);
+                  router.push(`/wealth-health/#`);
+                }}
+                className="text-sm underline text-white/90 hover:text-white transition-colors"
+              >
+                See what to expect
+              </button>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Presentation Guidelines */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -595,9 +689,9 @@ export default function WealthHealthPage() {
                       d.toISOString().replace(/[-:]|\.\d{3}/g, "");
 
                     const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-                      title
+                      title,
                     )}&details=${encodeURIComponent(
-                      description
+                      description,
                     )}&dates=${formatDate(start)}/${formatDate(end)}`;
 
                     window.open(googleUrl, "_blank");
@@ -624,9 +718,9 @@ export default function WealthHealthPage() {
                       //     d.toISOString().replace(/[-:]|\.\d{3}/g, "");
 
                       const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(
-                        title
+                        title,
                       )}&body=${encodeURIComponent(
-                        description
+                        description,
                       )}&startdt=${start.toISOString()}&enddt=${end.toISOString()}`;
 
                       window.open(outlookUrl, "_blank");
