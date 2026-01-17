@@ -86,7 +86,7 @@ export default function Hero() {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-6">
-          Your goals. Our guidance.
+          Your goals. Our Expert guidance.
           <span className="text-blue-500"> Real results.</span>
         </h1>
 
