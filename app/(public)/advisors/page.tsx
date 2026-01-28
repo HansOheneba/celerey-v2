@@ -18,6 +18,26 @@ interface Advisor {
   created_at?: string;
   updated_at?: string;
 }
+function AdvisorCardImage({ src, alt }: { src?: string; alt: string }) {
+  const fallback = "/placeholder-avatar.png";
+  const [imgSrc, setImgSrc] = useState(src || fallback);
+
+  useEffect(() => {
+    setImgSrc(src || fallback);
+  }, [src]);
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className="object-cover"
+      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+      onError={() => setImgSrc(fallback)}
+    />
+  );
+}
+
 
 export default function AdvisorsPage() {
   const [advisors, setAdvisors] = useState<Advisor[]>([]);
@@ -25,6 +45,10 @@ export default function AdvisorsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!apiBase) {
+  throw new Error("NEXT_PUBLIC_API_BASE_URL is not set in .env.local");
+}
+
 
   useEffect(() => {
     const fetchAdvisors = async () => {
@@ -121,18 +145,14 @@ export default function AdvisorsPage() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300"
             >
-              {/* Image */}
-              <div className="relative h-64 w-full">
-                <Image
-                  src={advisor.image || "/placeholder-avatar.png"}
-                  alt={advisor.name}
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder-avatar.png";
-                  }}
-                />
-              </div>
+             {/* Image */}
+<div className="relative h-64 w-full">
+  <AdvisorCardImage
+    src={advisor.image}
+    alt={advisor.name}
+  />
+</div>
+
 
               {/* Info */}
               <div className="p-6 text-left">

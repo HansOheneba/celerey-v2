@@ -12,7 +12,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
-import { useRouter } from "next/navigation"; // for Next.js 13+ App Router
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
@@ -20,6 +20,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [visible, setVisible] = React.useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   React.useEffect(() => {
     setMounted(true);
@@ -79,10 +80,9 @@ export default function Header() {
         fixed top-0 left-0 right-0 z-50 
         transition-all duration-500 ease-in-out
         ${visible ? "translate-y-0" : "-translate-y-full"}
-        ${
-          isScrolled
-            ? "bg-black/40 backdrop-blur-sm py-2"
-            : "bg-black/40 backdrop-blur-sm py-6"
+        ${isScrolled
+          ? "bg-black/40 backdrop-blur-sm py-2"
+          : "bg-black/40 backdrop-blur-sm py-6"
         }
       `}
       style={{ willChange: "transform" }}
@@ -105,17 +105,31 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="text-sm font-medium text-white/90 hover:text-white transition-all duration-300 relative group"
-            >
-              {item.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-          ))}
+          {navigation.map((item) => {
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-sm font-medium text-white/90 hover:text-white transition-all duration-300 relative group"
+              >
+                {item.name}
+                <span
+                  className={[
+                    "absolute -bottom-1 left-0 h-0.5 bg-white transition-all duration-300",
+                    isActive ? "w-full" : "w-0 group-hover:w-full",
+                  ].join(" ")}
+                />
+              </Link>
+            );
+          })}
         </nav>
+
 
         {/* Desktop CTA */}
         <div className="hidden md:block">

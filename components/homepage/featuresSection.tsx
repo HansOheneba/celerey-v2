@@ -5,26 +5,27 @@ import Image from "next/image";
 
 const pillars = [
   {
-    title: "Guided Expertise",
-    desc: "Access financial advisors who help you make smarter decisions.",
+    title: "Advisor-Led Judgment",
+    desc: "World-class financial advisors guide critical decisions, supported by technology that brings clarity and context.",
     img: "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?auto=format&fit=crop&w=900&q=70",
   },
   {
-    title: "Intelligent Portfolio Tools",
-    desc: "Track and optimize your investments effortlessly.",
+    title: "Structured Wealth Intelligence",
+    desc: "See your entire financial life in a single, coherent structure designed to support long-term thinking, not just short-term tracking.",
     img: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=900&q=70",
   },
   {
-    title: "Safe & Transparent Planning",
-    desc: "Protect your assets with structured financial strategies.",
+    title: "Deliberate Planning & Control",
+    desc: "Make complex financial choices with confidence through disciplined frameworks that prioritise stability, transparency,advi and intent.",
     img: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=70",
   },
   {
-    title: "Actionable Insights",
-    desc: "Understand your financial health with real-time data.",
+    title: "Decision-Ready Insight",
+    desc: "Transform financial data into clear insight that supports better decisions, when it matters most.",
     img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=70",
   },
 ];
+
 
 export default function FeaturesSection() {
   return (
