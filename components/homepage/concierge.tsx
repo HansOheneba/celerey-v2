@@ -18,7 +18,7 @@ type ServiceCard = {
   description: string;
   priceNote: string; // e.g. "From $250" | "Priced on complexity"
   icon: React.ComponentType<{ className?: string }>;
-  href?: string; // defaults to /subscribe/concierge
+  serviceId: string; // Link to SERVICES array id
 };
 
 type AlaCarteServicesProps = {
@@ -38,6 +38,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Personalized portfolio design aligned with your risk tolerance, timeline, and values.",
     priceNote: "From $250",
     icon: LineChart,
+    serviceId: "asset-allocation",
   },
   {
     title: "Portfolio Management",
@@ -45,6 +46,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Ongoing oversight, rebalancing, and optimization of your investment portfolio.",
     priceNote: "Priced on complexity",
     icon: PiggyBank,
+    serviceId: "asset-allocation",
   },
   {
     title: "Retirement Planning",
@@ -52,6 +54,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Long-term projections, drawdown strategies, and lifestyle planning for your future.",
     priceNote: "From $400",
     icon: Sun,
+    serviceId: "retirement",
   },
   {
     title: "Property Planning",
@@ -59,6 +62,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Guidance on major asset purchases, real estate strategy, and property optimization.",
     priceNote: "From $300",
     icon: Home,
+    serviceId: "real-estate",
   },
   {
     title: "Business Advisory",
@@ -66,6 +70,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Cash flow optimization, business structure planning, and entrepreneur-focused guidance.",
     priceNote: "Priced on complexity",
     icon: Building2,
+    serviceId: "income-growth",
   },
   {
     title: "Legacy Planning",
@@ -73,6 +78,7 @@ const DEFAULT_SERVICES: ServiceCard[] = [
       "Family wealth structuring, succession planning, and multi-generational strategy.",
     priceNote: "From $500",
     icon: Users,
+    serviceId: "estate",
   },
 ];
 
@@ -126,6 +132,7 @@ export default function AlaCarteServices({
         <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s, idx) => {
             const Icon = s.icon;
+            const serviceLink = `${ctaHref}?service=${s.serviceId}`;
 
             return (
               <motion.div
@@ -136,7 +143,7 @@ export default function AlaCarteServices({
                 transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.05 }}
               >
                 <Link
-                  href={s.href ?? ctaHref}
+                  href={serviceLink}
                   className={[
                     "group block h-full rounded-2xl bg-white/60 p-8",
                     "shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-black/5",
