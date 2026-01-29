@@ -243,14 +243,7 @@ export default function Header() {
 
               {/* Mobile CTA */}
               <div className="pt-6 space-y-3">
-                <Button
-                  onClick={() => {
-                    navigateToHash("#entry-pricing", true);
-                  }}
-                  className="w-full"
-                >
-                  Pricing
-                </Button>
+         
 
                 <Button
                   onClick={() => {

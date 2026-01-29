@@ -69,7 +69,7 @@ export default function ChallengeSection({
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.05 }}
             className="mx-auto w-full max-w-[520px] lg:mx-0 flex items-center justify-center"
           >
-            <div className="aspect-square w-72 sm:w-96 rounded-full border border-black/10 bg-white/60 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm flex items-center justify-center">
+            <div className="aspect-square w-56 sm:w-72 md:w-96 rounded-full border border-black/10 bg-white/60 p-4 sm:p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm flex items-center justify-center">
               <div className="opacity-90 w-full h-full flex items-center justify-center">
                 <LottiePlayer
                   animationData={declutterAnimation}
