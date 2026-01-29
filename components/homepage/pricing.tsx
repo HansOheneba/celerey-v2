@@ -1,160 +1,163 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { BeginJourneyModal } from "./beginModal";
 
-const plans = [
-  {
-    name: "Foundation",
-    price: "300",
-    period: "year",
-    description:
-      "One annual advisory session plus full access to Celerey masterclasses, member briefings, insights, and community resources.",
-    cta: "Get Started",
-    highlight: false,
-  },
-  {
-    name: "Advisory",
-    price: "1,500",
-    period: "year",
-    description:
-      "Up to three advisory sessions annually with deeper strategic guidance, priority access, advanced sessions, and all member benefits.",
-    cta: "Join Advisory",
-    highlight: true,
-  },
-  {
-    name: "Concierge",
-    price: "300+",
-    period: "session",
-    description:
-      "A fully customized advisory experience. Select the services you need and receive bespoke pricing based on scope and objectives.",
-    cta: "Explore Concierge",
-    highlight: false,
-    link: "/subscribe",
-  },
+type EntryPointPricingProps = {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  label?: string;
+  price?: string; // "100"
+  currency?: string; // "USD"
+  badge?: string; // "One-time"
+  bullets?: string[];
+  cta?: string;
+  ctaHref?: string;
+  footnote?: string;
+  id?: string;
+};
+
+const defaultBullets = [
+  "Structured 60-minute session with a certified advisor",
+  "Complete review of income, assets, and liabilities",
+  "Goal mapping and priority alignment",
+  "High-level wealth strategy and clear next steps",
 ];
 
-export default function Pricing() {
+export default function EntryPointPricing({
+  eyebrow = "BEGIN HERE",
+  title = "One clear starting point",
+  subtitle =
+    "Every Celerey relationship begins with a single, structured advisory session. No complexity. No commitment beyond this first step.",
+  label = "ADVISORY ACCESS",
+  price = "100",
+  currency = "USD",
+  badge = "One-time",
+  bullets = defaultBullets,
+  cta = "Schedule Your Session",
+  ctaHref = "/book",
+  footnote = "Professional. Confidential. No sales pressure.",
+  id = "entry-pricing",
+}: EntryPointPricingProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
-    <section className="relative py-28 text-white overflow-hidden bg-gradient-to-b from-[#0D0C22] via-[#101028] to-[#0B0A1C]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_70%)] pointer-events-none" />
+    <>
+      <section id={id} className="w-full bg-white py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-6 text-center">
+          {/* Heading */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80"
+          >
+            {eyebrow}
+          </motion.p>
 
-      <div className="relative z-10 max-w-6xl mx-auto text-center px-6">
-        {/* Heading */}
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-semibold mb-6"
-        >
-          Choose Your <span className="text-blue-600">Celerey</span> Experience
-        </motion.h2>
+          <motion.h2
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="mt-6 font-serif text-4xl leading-[1.08] text-neutral-900 sm:text-5xl md:text-6xl"
+          >
+            {title}
+          </motion.h2>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-gray-400 max-w-2xl mx-auto mb-14 leading-relaxed"
-        >
-          Advisory access designed with clarity, flexibility, and discretion.
-        </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ delay: 0.12, duration: 0.6 }}
+            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-700 sm:text-lg"
+          >
+            {subtitle}
+          </motion.p>
 
-        {/* Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.15, duration: 0.5 }}
-              viewport={{ once: true }}
-              className={`relative p-[1px] rounded-2xl ${
-                plan.highlight
-                  ? "bg-gradient-to-r from-blue-700 via-blue-500 to-blue-400"
-                  : "bg-gradient-to-r from-gray-700/50 via-gray-800 to-gray-900"
-              }`}
-            >
-              <div className="relative bg-[#0C0C18] rounded-2xl p-8 h-full flex flex-col justify-between text-center shadow-lg">
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6">{plan.name}</h3>
-                  {/* Price */}
-                  {plan.name === "Concierge" ? (
-                    <div className="mb-6">
-                      <div className="flex items-end justify-center gap-2">
-                        <span className="text-sm text-gray-400">From USD</span>
-                        <span className="text-5xl font-thin tracking-tight text-[#F8FFF4]">
-                          600
-                        </span>
-                        <span className="text-sm text-gray-400">
-                          / session
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-end justify-center gap-2 mb-6">
-                      <span className="text-sm text-gray-400">USD</span>
-                      <span className="text-5xl font-thin tracking-tight text-[#F8FFF4]">
-                        {plan.price}
-                      </span>
-                      <span className="text-sm text-gray-400">
-                        / {plan.period}
-                      </span>
-                    </div>
-                  )}
+          {/* Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ delay: 0.08, duration: 0.7, ease: "easeOut" }}
+            className="mx-auto mt-12 max-w-3xl"
+          >
+            <div className="relative overflow-hidden rounded-[28px] bg-[#1B1856] text-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] ring-1 ring-white/10">
+              {/* subtle glow */}
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.14),transparent_55%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
 
-                  <p className="text-gray-400 leading-relaxed">
-                    {plan.description}
+              {/* Top area */}
+              <div className="relative flex items-start justify-between gap-6 px-8 pt-8 sm:px-10">
+                <div className="text-left">
+                  <p className="text-xs tracking-[0.18em] text-white/70">
+                    {label}
                   </p>
+
+                  <div className="mt-3 flex items-end gap-3">
+                    <span className="font-serif text-5xl leading-none sm:text-6xl">
+                      ${price}
+                    </span>
+                    <span className="pb-1 text-sm text-white/60">{currency}</span>
+                  </div>
                 </div>
 
-                {plan.link ? (
-                  <Link href={plan.link}>
-                    <Button variant="outline" className="mt-10">
-                      {plan.cta}
-                    </Button>
-                  </Link>
-                ) : (
-                  <Button
-                    variant={plan.highlight ? "default" : "outline"}
-                    className={`mt-10 ${
-                      plan.highlight
-                        ? "bg-blue-600 hover:bg-blue-900 text-white"
-                        : ""
-                    }`}
-                  >
-                    {plan.cta}
-                  </Button>
-                )}
-
-                {plan.highlight && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                    className="absolute inset-0 rounded-2xl bg-[#D4AF37]/10 blur-3xl -z-10"
-                  />
-                )}
+                <div className="pt-1">
+                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80 ring-1 ring-white/10">
+                    {badge}
+                  </span>
+                </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
 
-        {/* Footer CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <Link href="/subscribe">
-            <Button>View Full Details & Customize Your Plan</Button>
-          </Link>
-        </motion.div>
-      </div>
-    </section>
+              {/* divider */}
+              <div className="mt-8 h-px w-full bg-white/10" />
+
+              {/* Bullets */}
+              <div className="relative px-8 py-8 sm:px-10">
+                <ul className="space-y-4 text-left">
+                  {bullets.map((b) => (
+                    <li key={b} className="flex items-start gap-3">
+                      <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/10">
+                        <Check className="h-4 w-4 text-white/85" />
+                      </span>
+                      <p className="text-sm leading-relaxed text-white/85 sm:text-base">
+                        {b}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <div className="mt-10">
+                  <Button
+                    onClick={() => setModalOpen(true)}
+                    className="h-12 w-full rounded-full bg-white text-sm font-semibold text-neutral-900 hover:bg-white/90"
+                  >
+                    {cta}
+                  </Button>
+
+                  <p className="mt-4 text-center text-xs text-white/50">
+                    {footnote}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <BeginJourneyModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        priceLabel={`$${price}`}
+      />
+    </>
   );
 }

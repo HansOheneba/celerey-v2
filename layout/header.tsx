@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/sheet";
 import { Menu, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
+import { BeginJourneyModal } from "@/components/homepage/beginModal"; // added
 
 export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [visible, setVisible] = React.useState(true);
+  const [modalOpen, setModalOpen] = React.useState(false); // new
   const router = useRouter();
   const pathname = usePathname();
 
@@ -51,27 +53,37 @@ export default function Header() {
 
   if (!mounted) return null;
 
+  // Updated navigation (removed Home, added anchors and services)
   const navigation = [
-    { name: "Home", href: "/" },
+    { name: "Philosophy", href: "#challenge" },
+    { name: "Pricing", href: "#entry-pricing" },
+    { name: "Services", href: "#ala-carte" },
     { name: "Advisors", href: "/advisors" },
-    { name: "Subscribe", href: "/subscribe" },
-    { name: "Insights", href: "/insights" },
     { name: "Execution Partners", href: "/partners" },
-    { name: "Contact", href: "/contact" },
+    { name: "Health Scan", href: "#wealth-scan" },
   ];
 
-  const handleScrollToWealthHealth = () => {
-    const isHome = window.location.pathname === "/";
-    const el = document.getElementById("wealth-scan");
-
-    if (isHome && el) {
-      el.scrollIntoView({ behavior: "smooth" });
-      setOpen(false);
+  // helper to scroll or navigate to an id (id can be passed with or without leading '#')
+  const navigateToHash = (rawHref: string, closeSheet?: boolean) => {
+    const href = rawHref.startsWith("#") ? rawHref : `#${rawHref}`;
+    const id = href.replace(/^#/, "");
+    const isHome = pathname === "/";
+    if (isHome) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      // navigate to homepage with hash
-      router.push("/#wealth-scan");
-      setOpen(false);
+      router.push(`/#${id}`);
     }
+    if (closeSheet) setOpen(false);
+  };
+
+  // replace handler to open modal
+  const handleOpenBeginModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleScrollToPricing = () => {
+    navigateToHash("#entry-pricing");
   };
 
   return (
@@ -104,20 +116,40 @@ export default function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-6">
           {navigation.map((item) => {
+            const isAnchor = item.href.startsWith("#");
             const isActive =
               item.href === "/"
                 ? pathname === "/"
-                : pathname.startsWith(item.href);
+                : pathname.startsWith(item.href.replace(/^#/, ""));
+            const linkClass =
+              "text-sm font-normal text-white/90 hover:text-white transition-all duration-300 relative group";
 
+            if (isAnchor) {
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigateToHash(item.href);
+                  }}
+                  className={linkClass}
+                >
+                  {item.name}
+                  <span
+                    className={[
+                      "absolute -bottom-1 left-0 h-0.5 bg-white transition-all duration-300",
+                      isActive ? "w-full" : "w-0 group-hover:w-full",
+                    ].join(" ")}
+                  />
+                </a>
+              );
+            }
 
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="text-sm font-medium text-white/90 hover:text-white transition-all duration-300 relative group"
-              >
+              <Link key={item.name} href={item.href} className={linkClass}>
                 {item.name}
                 <span
                   className={[
@@ -130,14 +162,13 @@ export default function Header() {
           })}
         </nav>
 
-
         {/* Desktop CTA */}
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-3">
           <Button
-            onClick={handleScrollToWealthHealth}
-            className="cursor-pointer"
+            onClick={handleOpenBeginModal}
+            className="h-10 px-4 text-sm cursor-pointer"
           >
-            Start Your Free Financial Health Scan
+            Start with $100
           </Button>
         </div>
 
@@ -187,28 +218,60 @@ export default function Header() {
 
               {/* Mobile nav links */}
               <nav className="flex flex-col space-y-6 text-lg font-medium">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    className="text-gray-800 hover:text-blue-600 transition-all duration-300 py-2 border-b border-gray-100"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {navigation.map((item) => {
+                  const isAnchor = item.href.startsWith("#");
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (isAnchor) {
+                          navigateToHash(item.href, true);
+                        } else {
+                          setOpen(false);
+                          router.push(item.href);
+                        }
+                      }}
+                      className="text-gray-800 hover:text-blue-600 transition-all duration-300 py-2 border-b border-gray-100"
+                    >
+                      {item.name}
+                    </a>
+                  );
+                })}
               </nav>
 
               {/* Mobile CTA */}
-              <div className="pt-10">
-                <Button onClick={handleScrollToWealthHealth} className="w-full">
-                  Start Your Free Financial Health Scan
+              <div className="pt-6 space-y-3">
+                <Button
+                  onClick={() => {
+                    navigateToHash("#entry-pricing", true);
+                  }}
+                  className="w-full"
+                >
+                  Pricing
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                  className="w-full"
+                >
+                  Start — $100
                 </Button>
               </div>
             </SheetContent>
           </Sheet>
         </div>
       </div>
+
+      {/* Begin journey modal (header) */}
+      <BeginJourneyModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        priceLabel="$100"
+      />
     </header>
   );
 }

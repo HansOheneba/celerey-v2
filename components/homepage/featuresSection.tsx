@@ -1,134 +1,109 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
+import { BarChart3, Bell, MessageSquareText } from "lucide-react";
 
-const pillars = [
+type FeatureCard = {
+  title: string;
+  desc: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+const cards: FeatureCard[] = [
   {
-    title: "Advisor-Led Judgment",
-    desc: "World-class financial advisors guide critical decisions, supported by technology that brings clarity and context.",
-    img: "https://images.unsplash.com/photo-1551836022-4c4c79ecde51?auto=format&fit=crop&w=900&q=70",
+    title: "Personal Dashboard",
+    desc: "Track your net worth, goals, and progress in one elegant view.",
+    icon: BarChart3,
   },
   {
-    title: "Structured Wealth Intelligence",
-    desc: "See your entire financial life in a single, coherent structure designed to support long-term thinking, not just short-term tracking.",
-    img: "https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&w=900&q=70",
+    title: "Proactive Insights",
+    desc: "Receive timely nudges and opportunities based on your situation.",
+    icon: Bell,
   },
   {
-    title: "Deliberate Planning & Control",
-    desc: "Make complex financial choices with confidence through disciplined frameworks that prioritise stability, transparency,advi and intent.",
-    img: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=70",
-  },
-  {
-    title: "Decision-Ready Insight",
-    desc: "Transform financial data into clear insight that supports better decisions, when it matters most.",
-    img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=70",
+    title: "Advisor Access",
+    desc: "Access to an advisor. Get answers when you need them.",
+    icon: MessageSquareText,
   },
 ];
 
-
 export default function FeaturesSection() {
   return (
-    <section className="py-24 bg-[#fdfbf7]">
-      {/* Main Title */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-        className="text-center max-w-3xl mx-auto mb-16"
-      >
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-          Your Financial Growth Partner
-        </h2>
-        <p className="mt-4 text-gray-700 text-lg">
-          Smart tools, expert guidance, and actionable insights to help you
-          grow, protect, and track your wealth, all in one place.
-        </p>
-      </motion.div>
+    <section className="relative overflow-hidden bg-[#1B1856] py-20 sm:py-28">
+      {/* subtle ambient glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.06),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_35%,rgba(255,255,255,0.05),transparent_55%)]" />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
-        {/* Left — 2 pillars */}
-        <div className="flex flex-col space-y-10">
-          {pillars.slice(0, 2).map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              viewport={{ once: true }}
-              className="cursor-pointer"
-            >
-              <div className="overflow-hidden rounded-xl shadow-sm">
-                <Image
-                  src={item.img}
-                  alt={item.title}
-                  width={600}
-                  height={400}
-                  className="rounded-xl object-cover transition-all duration-500"
-                />
-              </div>
-              <h3 className="mt-3 text-lg font-semibold text-gray-900">
-                {item.title}
-              </h3>
-              <p className="text-gray-600 text-sm mt-1">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Center — Main Image + Value Proposition */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
+      <div className="relative mx-auto max-w-6xl px-6 text-center">
+        {/* Eyebrow */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="flex flex-col items-center text-center"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-[11px] sm:text-xs tracking-[0.22em] text-white/50"
         >
-          <div className="overflow-hidden rounded-3xl shadow-md">
-            <Image
-              src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1000&q=70"
-              alt="Celerey Hub"
-              width={700}
-              height={800}
-              className="rounded-3xl object-cover h-[500px] w-full transition-all duration-700"
-            />
-          </div>
-          <h3 className="mt-6 text-xl font-bold text-gray-900">
-            Grow, Protect, and Track Your Wealth
-          </h3>
-          <p className="mt-2 text-gray-600 max-w-xs">
-            Celerey combines expert advisors, intuitive tools, and actionable
-            insights, everything you need to take control of your financial
-            journey.
-          </p>
-        </motion.div>
+          THE LONG VIEW
+        </motion.p>
 
-        {/* Right — 2 pillars */}
-        <div className="flex flex-col space-y-10">
-          {pillars.slice(2, 4).map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              viewport={{ once: true }}
-              className="cursor-pointer"
-            >
-              <div className="overflow-hidden rounded-xl shadow-sm">
-                <Image
-                  src={item.img}
-                  alt={item.title}
-                  width={600}
-                  height={400}
-                  className="rounded-xl object-cover transition-all duration-500"
-                />
-              </div>
-              <h3 className="mt-3 text-lg font-semibold text-gray-900">
-                {item.title}
-              </h3>
-              <p className="text-gray-600 text-sm mt-1">{item.desc}</p>
-            </motion.div>
-          ))}
+        {/* Title */}
+        <motion.h2
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mt-6 font-serif text-4xl leading-[1.08] text-white sm:text-5xl md:text-6xl"
+        >
+          <span className="block">As your life evolves,</span>
+          <span className="block text-white/55">so does Celerey</span>
+        </motion.h2>
+
+        {/* Copy */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ delay: 0.12, duration: 0.6 }}
+          className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg"
+        >
+          Wealth building is not a single moment; it&apos;s a lifelong journey.
+          Your Celerey dashboard grows with you, tracking your progress,
+          surfacing insights, and keeping your advisor connected to your evolving
+          story.
+        </motion.p>
+
+        {/* Cards */}
+        <div className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
+          {cards.map((c, i) => {
+            const Icon = c.icon;
+
+            return (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.55, ease: "easeOut", delay: i * 0.06 }}
+                className={[
+                  "rounded-2xl bg-white/5 p-7 text-left",
+                  "ring-1 ring-white/10",
+                  "shadow-[0_20px_60px_rgba(0,0,0,0.35)]",
+                ].join(" ")}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/8 ring-1 ring-white/10">
+                  <Icon className="h-6 w-6 text-white/75" />
+                </div>
+
+                <h3 className="mt-6 text-base font-semibold text-white sm:text-lg">
+                  {c.title}
+                </h3>
+
+                <p className="mt-3 text-sm leading-relaxed text-white/60">
+                  {c.desc}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

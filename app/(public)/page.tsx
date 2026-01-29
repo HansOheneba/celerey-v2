@@ -9,21 +9,37 @@ import InsightsSection from "@/components/homepage/insights";
 import Community from "@/components/homepage/community";
 import ChallengeSection from "@/components/homepage/challenge";
 import ApproachSection from "@/components/homepage/approach";
+import AlaCarteServices from "@/components/homepage/concierge";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       <Hero />
-      <ChallengeSection/>
-      <ApproachSection/>
+
+
+      <ApproachSection />
+      {/* Philosophy / Challenge section — target: #challenge */}
+      <div id="challenge">
+        <ChallengeSection />
+      </div>
       <FeaturesSection />
-      {/* <Journey /> */}
-      <Partners />
+
+      {/* Pricing / Entry point — target: #entry-pricing */}
+      <div id="entry-pricing">
+        <Pricing id="entry-pricing" />
+      </div>
+
+      {/* A la carte services — target: #ala-carte */}
+      <div id="ala-carte">
+        <AlaCarteServices />
+      </div>
+
       <WealthScan />
-      <Pricing />
-      {/* <Advisors /> */}
       <InsightsSection />
       <Community />
+      {/* <Advisors /> */}
+      {/* <Partners /> */}
+      {/* <Journey /> */}
     </div>
   );
 }

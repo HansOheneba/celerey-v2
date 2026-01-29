@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { BeginJourneyModal } from "@/components/homepage/beginModal";
 
 const videoList = [
   "/videos/vid9.mp4",
@@ -56,10 +57,10 @@ export default function Hero() {
   const videoRefs = useRef<HTMLVideoElement[]>([]);
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleScrollToWealthHealth = () => {
-    const el = document.getElementById("wealth-scan");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleOpenBeginModal = () => {
+    setModalOpen(true);
   };
 
   // Cycle through videos every 5 seconds
@@ -131,8 +132,8 @@ export default function Hero() {
       <div className="" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-[95vh] max-w-6xl flex-col items-center justify-between px-6 pt-20 pb-16 text-center">
-        <div></div>
+      <div className="relative z-10 mx-auto flex min-h-screen md:min-h-[95vh] max-w-6xl flex-col items-center justify-between px-3 pt-14 pb-10 text-center sm:px-6 sm:pt-20 sm:pb-16">
+        <div className="h-40 lg:h-auto"></div>
         <motion.div
           className="w-full max-w-4xl"
           initial={{ opacity: 0, y: 18 }}
@@ -145,43 +146,49 @@ export default function Hero() {
           </p> */}
 
           {/* headline */}
-          <h1 className="mt-6 font-serif text-5xl leading-[1.05] text-white sm:text-6xl md:text-7xl">
+          <h1 className="mt-4 font-serif text-3xl leading-[1.1] text-white xs:text-4xl sm:text-5xl md:text-6xl">
             Wealth built with{" "}
-            <span className="italic">intention</span>
+            <span className="font-bold text-blue-300">intention</span>
           </h1>
 
           {/* subtext */}
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white sm:text-lg">
+          <p className="mx-auto mt-4 max-w-[95vw] text-sm leading-relaxed text-white xs:text-base sm:text-lg sm:max-w-2xl">
             Celerey is combining intelligent technology with globally certified
             advisors to bring structure, clarity, and long-term direction to your
             financial life.
           </p>
 
           {/* buttons */}
-          <div className="mx-auto mt-10 flex w-full max-w-xl flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mx-auto mt-7 flex w-full max-w-xs flex-col items-center justify-center gap-2 sm:mt-10 sm:max-w-xl sm:flex-row sm:gap-3">
             <Button
-              asChild
-              onClick={handleScrollToWealthHealth}
-              className="w-full rounded-full px-7 py-6 text-sm font-medium text-white sm:w-auto"
+              onClick={handleOpenBeginModal}
+              className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
-              <Link href="/#wealth-scan">Start with $100</Link>
+              Start with $100
             </Button>
 
             <Button
               asChild
               variant="outline"
-              className="w-full rounded-full border-neutral-900/15 bg-white/40 px-7 py-6 text-sm font-medium text-white hover:bg-white/60 sm:w-auto"
+              className="w-full rounded-full border-neutral-900/15 bg-white/40 px-5 py-4 text-xs font-medium text-white hover:bg-white/60 sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
               <Link href="/#wealth-scan">Free Financial Health Scan</Link>
             </Button>
           </div>
         </motion.div>
 
+        {/* Begin journey modal (hero) */}
+        <BeginJourneyModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          priceLabel="$100"
+        />
+
         {/* divider + stats */}
-        <div ref={statsRef} className="mt-14 w-full max-w-5xl">
+        <div ref={statsRef} className="mt-10 w-full max-w-5xl sm:mt-14">
           <div className="mx-auto h-px w-full bg-white/20" />
 
-          <div className="mx-auto mt-10 grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
+          <div className="mx-auto mt-7 grid w-full grid-cols-3 gap-3 sm:mt-10 sm:gap-8">
             {STATS.map((s) => {
               const numericValue = parseInt(s.value);
               const isNumeric = !isNaN(numericValue);
@@ -195,10 +202,10 @@ export default function Hero() {
                   animate={statsVisible ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5 }}
                 >
-                  <div className="font-serif text-3xl text-white sm:text-4xl">
+                  <div className="font-serif text-base text-white xs:text-xl sm:text-2xl md:text-3xl">
                     {isNumeric ? count : s.value}
                   </div>
-                  <div className="mt-1 text-[11px] tracking-[0.16em] text-white/80">
+                  <div className="mt-1 text-[9px] tracking-[0.16em] text-white/80 xs:text-[10px] sm:text-[11px]">
                     {s.label}
                   </div>
                 </motion.div>

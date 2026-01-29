@@ -99,7 +99,7 @@ export default function InsightsSection() {
           className="text-4xl md:text-5xl font-semibold mb-6 text-gray-900"
         >
           Insights{" "}
-          <span className="text-blue-800 font-medium">& Resources</span>
+          <span className="text-[#1B1856] font-medium">& Resources</span>
         </motion.h2>
 
         <motion.p
@@ -121,7 +121,7 @@ export default function InsightsSection() {
               onClick={() => setActiveTab(tab as "insights" | "podcasts")}
               className={`relative text-lg font-medium pb-2 transition-all ${
                 activeTab === tab
-                  ? "text-blue-800"
+                  ? "text-[#1B1856]"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -129,7 +129,7 @@ export default function InsightsSection() {
               {activeTab === tab && (
                 <motion.div
                   layoutId="underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-500 rounded-full"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1B1856] rounded-full"
                 />
               )}
             </button>
@@ -180,7 +180,7 @@ export default function InsightsSection() {
                   </p>
 
                   {"action" in item ? (
-                    <Button variant="outline">{item.action}</Button>
+                    <Button variant="outline" className="h-11 rounded-full bg-neutral-900 px-6 hover:bg-neutral-800">{item.action}</Button>
                   ) : (
                     <div className="text-gray-500 text-sm">{item.duration}</div>
                   )}
@@ -199,7 +199,7 @@ export default function InsightsSection() {
           className="mt-16"
         >
           <Link href="/insights">
-            <Button className=" ">View More Insights</Button>
+            <Button className="h-11 rounded-full px-6 text-white ">View More Insights</Button>
           </Link>
         </motion.div>
       </div>

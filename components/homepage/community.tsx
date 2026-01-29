@@ -2,14 +2,18 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Phone } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function Community() {
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const handleScrollToWealthHealth = () => {
+    const el = document.getElementById("entry-pricing");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +29,7 @@ export default function Community() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to subscribe.");
       }
 
@@ -45,27 +49,54 @@ export default function Community() {
   };
 
   return (
-    <section className="relative overflow-hidden py-32 text-gray-900 bg-gradient-to-b from-blue-50 via-blue-100 to-blue-200">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
-        {/* Newsletter Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-gray-900">
-            Join <span className="text-blue-800">The Celerey Insider</span>{" "}
-            Community
-          </h2>
-          <p className="text-gray-700 mb-8">
-            Connect with like-minded individuals on their wealth-building
-            journey.
-          </p>
+    <section className="relative overflow-hidden bg-white py-20 sm:py-20">
+      {/* subtle page texture */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(0,0,0,0.04),transparent_60%)]" />
 
+      <div className="relative mx-auto max-w-6xl px-6 text-center">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80"
+        >
+          JOIN THE COMMUNITY
+        </motion.p>
+
+        <motion.h2
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="mt-6 font-serif text-4xl leading-[1.06] text-neutral-900 sm:text-5xl md:text-6xl"
+        >
+          <span className="block">Build wealth with</span>
+          <span className="block italic">confidence and intention</span>
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ delay: 0.12, duration: 0.6 }}
+          className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-700 sm:text-lg"
+        >
+          You&apos;ve worked hard for what you have. Now it&apos;s time to ensure
+          it works hard for you — with a community that shares the journey.
+        </motion.p>
+
+        {/* CTA row (email + button) */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ delay: 0.12, duration: 0.6 }}
+          className="mx-auto mt-10 max-w-2xl"
+        >
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-3"
+            className="flex flex-col items-stretch justify-center gap-3 sm:flex-row"
           >
             <input
               type="email"
@@ -74,42 +105,52 @@ export default function Community() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isSubmitting}
-              className="flex-1 h-10 px-4 rounded-md border border-blue-200 bg-white text-gray-700 focus:border-blue-500 outline-none shadow-sm"
+              className={[
+                "h-12 flex-1 rounded-full bg-white px-5 text-sm text-neutral-900",
+                "ring-1 ring-black/10 outline-none",
+                "placeholder:text-neutral-500",
+                "focus:ring-2 focus:ring-blue-600/40",
+                "disabled:opacity-60",
+              ].join(" ")}
             />
-            <Button type="submit" disabled={isSubmitting}>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-12 rounded-full px-7 text-white"
+            >
               {isSubmitting ? "Joining..." : "Join Community"}
             </Button>
           </form>
+
+          <p className="mt-4 text-xs text-neutral-500">
+            No spam. Just insights, briefings, and updates. Unsubscribe anytime.
+          </p>
         </motion.div>
 
-        {/* Help Section */}
+        {/* Secondary CTA (optional) */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="md:pl-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.25 }}
+          transition={{ delay: 0.18, duration: 0.6 }}
+          className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <div className="p-8 bg-white border border-blue-100 rounded-3xl shadow-sm">
-            <h3 className="text-2xl font-semibold mb-3 text-gray-900">
-              Need immediate help?
-            </h3>
-            <p className="text-gray-700 mb-6">
-              Chat with our{" "}
-              <span className="text-blue-800 font-medium">AI assistant</span> or
-              connect directly with our Client Success team.
-            </p>
+          <Button
+          onClick={handleScrollToWealthHealth}
+            asChild
+            className="h-11 rounded-full bg-neutral-900 px-6 text-white hover:bg-neutral-800"
+          >
+            <Link href="/#entry-pricing">Begin with $100</Link>
+          </Button>
 
-            <Link href="https://wa.me/12272296921" target="_blank">
-              <Button
-                className="bg-green-600 hover:bg-green-500 text-white flex items-center gap-2"
-                onClick={() => toast.info("Opening WhatsApp to connect...")}
-              >
-                <Phone className="w-5 h-5" />
-                WhatsApp
-              </Button>
-            </Link>
-          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="h-11 rounded-full border-black/10 bg-white/60 px-6 text-neutral-900 hover:bg-white"
+          >
+            <Link href="/advisors">Speak to an Advisor</Link>
+          </Button>
         </motion.div>
       </div>
     </section>

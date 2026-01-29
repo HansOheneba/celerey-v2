@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { CheckCircle2, Clock3, Shield, Sparkles } from "lucide-react";
 
 interface Question {
   question: string;
@@ -420,16 +421,33 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
   return (
     <section
       id="wealth-scan"
-      className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 text-gray-900 px-6 py-16"
+      className=" flex flex-col items-center justify-center bg-blue-950 px-6 py-24"
     >
-      <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-blue-950">
+      <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-white">
         Discover Your Financial Health
       </h2>
 
-      <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-        Take a quick 3-minute self-assessment to understand your financial
-        strengths <br /> and uncover opportunities for growth.
-      </p>
+            {/* Subcopy */}
+        <p className="mx-auto mt-5 max-w-2xl text-center text-base leading-relaxed text-neutral-200 sm:text-lg">
+          Answer a few simple questions to see where you stand, identify your
+          strengths, and uncover the next best step to build with confidence.
+        </p>
+
+        {/* quick badges */}
+        <div className="mx-auto my-7 flex max-w-2xl flex-wrap items-center justify-center gap-3">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
+            <Clock3 className="h-4 w-4 text-neutral-600" />
+            3 minutes
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
+            <CheckCircle2 className="h-4 w-4 text-neutral-600" />
+            6 questions
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
+            <Sparkles className="h-4 w-4 text-neutral-600" />
+            Free, no account needed
+          </span>
+        </div>
 
       {/* Email Form Overlay */}
       <AnimatePresence>
@@ -486,7 +504,7 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">
-                  We respect your privacy. Your email will only be used to send
+                  We respect your privacy. Your email will only be used to see
                   your results and occasional financial insights.
                 </p>
               </form>
@@ -495,26 +513,89 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
         )}
       </AnimatePresence>
 
-      {!started ? (
-        // Intro screen
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8 flex flex-col items-center justify-center"
-        >
-     
-          <p className="text-gray-600 text-center mb-8 text-sm sm:text-base">
-            Answer a few simple questions to see where you stand financially and
-            uncover opportunities to grow your wealth and confidence.
-          </p>
+{!started ? (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, ease: "easeOut" }}
+    className="w-full max-w-4xl"
+  >
+    {/* outer frame */}
+    <div className="relative overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+      {/* soft background wash */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.12),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,rgba(15,23,42,0.06),transparent_55%)]" />
+
+      <div className="relative px-7 py-10 sm:px-12 sm:py-14">
+      
+        {/* Title */}
+        {/* <h2 className="mt-6 text-center font-serif text-4xl leading-[1.05] text-neutral-900 sm:text-5xl">
+          Discover your financial health
+          <span className="block italic text-neutral-700">
+            in under 3 minutes
+          </span>
+        </h2> */}
+
+        {/* Subcopy */}
+
+
+       
+        {/* benefits row */}
+        <div className="mx-auto mt-5 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            {
+              title: "Instant score",
+              desc: "A simple 0–100 view of your current position.",
+            },
+            {
+              title: "Pillar breakdown",
+              desc: "See what’s strong and what needs attention.",
+            },
+            {
+              title: "Next-step guidance",
+              desc: "Clear recommendations you can act on.",
+            },
+          ].map((b) => (
+            <div
+              key={b.title}
+              className="rounded-2xl bg-white/60 p-5 ring-1 ring-black/10"
+            >
+              <p className="text-sm font-semibold text-neutral-900">{b.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-700">
+                {b.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button
             onClick={() => setStarted(true)}
-            className=""
+            className="h-12 rounded-full px-7 text-white"
           >
             Begin Assessment
           </Button>
-        </motion.div>
-      ) : (
+{/* 
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("wealth-scan");
+              el?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="text-sm font-medium text-neutral-700 underline underline-offset-4 hover:text-neutral-900"
+          >
+            Learn what you’ll get
+          </button> */}
+        </div>
+
+        <p className="mt-5 text-center text-xs text-neutral-500">
+          You’ll be asked for your email only at the end to send your results.
+        </p>
+      </div>
+    </div>
+  </motion.div>
+) : (
         <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
           {/* Progress */}
           <Progress
@@ -555,21 +636,21 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
                 ))}
               </div>
 
-              <div className="border-t border-gray-200 pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
-                <div className="min-h-[70px] flex items-start">
+              <div className="pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
+                {/* <div className="min-h-[70px] flex items-start">
                   <p>
                     <span className="font-medium text-blue-950">
                       Why we ask:
                     </span>{" "}
                     {current.why}
                   </p>
-                </div>
+                </div> */}
               </div>
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation buttons */}
-          <div className="flex justify-between mt-10">
+          <div className="flex justify-between mt-5 pb-2">
             <Button
               onClick={handlePrev}
               disabled={step === 0}
