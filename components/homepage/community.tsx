@@ -139,7 +139,7 @@ export default function Community() {
           <Button
           onClick={handleScrollToWealthHealth}
             asChild
-            className="h-11 rounded-full bg-neutral-900 px-6 text-white hover:bg-neutral-800"
+            className="h-11 rounded-full "
           >
             <Link href="/#entry-pricing">Begin with $100</Link>
           </Button>

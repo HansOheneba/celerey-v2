@@ -194,6 +194,9 @@ export default function Hero() {
               const isNumeric = !isNaN(numericValue);
               const count = useCountUp(isNumeric ? numericValue : 0, statsVisible);
 
+              const hasReg = s.value.includes("®");
+              const baseValue = hasReg ? s.value.replace("®", "") : s.value;
+
               return (
                 <motion.div
                   key={s.label}
@@ -203,7 +206,16 @@ export default function Hero() {
                   transition={{ duration: 0.5 }}
                 >
                   <div className="font-serif text-base text-white xs:text-xl sm:text-2xl md:text-3xl">
-                    {isNumeric ? count : s.value}
+                    {isNumeric ? (
+                      count
+                    ) : (
+                      <span>
+                        {baseValue}
+                        {hasReg && (
+                          <sup className="ml-1 text-[15px]">®</sup>
+                        )}
+                      </span>
+                    )}
                   </div>
                   <div className="mt-1 text-[9px] tracking-[0.16em] text-white/80 xs:text-[10px] sm:text-[11px]">
                     {s.label}

@@ -46,7 +46,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#0B0B0B] text-white/80 py-16 border-t border-white/10">
+    <footer className="bg-blue-950 text-white/80 py-16 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-6">
         {/* Desktop Grid */}
         <div className="hidden md:grid grid-cols-4 gap-12 mb-16">
