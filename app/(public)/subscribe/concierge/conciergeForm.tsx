@@ -29,7 +29,7 @@ const conciergeFormSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  location: z.string().optional(), // Changed from company to location
+  location: z.string().min(1, "Location is required"), 
   specialRequirements: z.string().optional(),
 });
 
@@ -283,10 +283,10 @@ export function ConciergeForm({
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location (Optional)</FormLabel>
+                  <FormLabel>Location</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="e.g., New York, NY or Remote" 
+                      placeholder="e.g., London, UK or Accra, Ghana" 
                       {...field} 
                     />
                   </FormControl>
