@@ -63,6 +63,11 @@ export default function Hero() {
     setModalOpen(true);
   };
 
+  const handleScrollToPricing = () => {
+    const el = document.getElementById("entry-pricing");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   // Cycle through videos every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -161,7 +166,7 @@ export default function Hero() {
           {/* buttons */}
           <div className="mx-auto mt-7 flex w-full max-w-xs flex-col items-center justify-center gap-2 sm:mt-10 sm:max-w-xl sm:flex-row sm:gap-3">
             <Button
-              onClick={handleOpenBeginModal}
+              onClick={handleScrollToPricing}
               className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
               Start with $100
@@ -181,7 +186,6 @@ export default function Hero() {
         <BeginJourneyModal
           open={modalOpen}
           onOpenChange={setModalOpen}
-          priceLabel="$100"
         />
 
         {/* divider + stats */}

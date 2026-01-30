@@ -156,7 +156,6 @@ export default function EntryPointPricing({
       <BeginJourneyModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        priceLabel={`$${price}`}
       />
     </>
   );

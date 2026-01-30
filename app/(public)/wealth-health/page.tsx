@@ -577,7 +577,6 @@ export default function WealthHealthPage() {
       <BeginJourneyModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        priceLabel="$100"
       />
     </div>
   );

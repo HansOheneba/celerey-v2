@@ -165,7 +165,7 @@ export default function Header() {
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Button
-            onClick={handleOpenBeginModal}
+            onClick={handleScrollToPricing}
             className="h-10 px-4 text-sm cursor-pointer"
           >
             Start with $100
@@ -246,9 +246,7 @@ export default function Header() {
          
 
                 <Button
-                  onClick={() => {
-                    setModalOpen(true);
-                  }}
+                  onClick={handleScrollToPricing}
                   className="w-full"
                 >
                   Start — $100
@@ -263,7 +261,6 @@ export default function Header() {
       <BeginJourneyModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        priceLabel="$100"
       />
     </header>
   );

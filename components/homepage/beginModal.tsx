@@ -35,13 +35,8 @@ type BeginJourneyValues = {
 type BeginJourneyModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  priceLabel?: string; // "$100"
-  /**
-   * Return/throw to control success/failure.
-   * If it resolves => success screen.
-   * If it throws => show error message.
-   */
-  onSubmit?: (values: BeginJourneyValues) => Promise<void> | void;
+
+  apiUrl?: string; 
 };
 
 const TIME_ZONES: { value: string; label: string }[] = [
@@ -56,8 +51,7 @@ const TIME_ZONES: { value: string; label: string }[] = [
 export function BeginJourneyModal({
   open,
   onOpenChange,
-  priceLabel = "$100",
-  onSubmit,
+  apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start/`,
 }: BeginJourneyModalProps) {
   const [step, setStep] = React.useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -142,10 +136,27 @@ export function BeginJourneyModal({
     try {
       setIsSubmitting(true);
 
-      // Call your API here via onSubmit
-      // If onSubmit isn't passed, we still show success (useful for UI testing)
-      await onSubmit?.(values);
+      // Send data to your API
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values), // Send exactly what the API expects
+      });
 
+      const result = await response.json();
+
+      if (!result.ok) {
+        // Handle validation errors from API
+        if (result.error === "VALIDATION_ERROR" && result.details) {
+          const errorMessages = Object.values(result.details).join(", ");
+          throw new Error(errorMessages);
+        }
+        throw new Error(result.message || "Submission failed");
+      }
+
+      // Success!
       setStep("success");
     } catch (err) {
       const message =
@@ -168,7 +179,6 @@ export function BeginJourneyModal({
               className="absolute right-4 top-4 rounded-full p-2 text-neutral-500 hover:bg-black/5 hover:text-neutral-700"
               aria-label="Close"
             >
-              {/* <X className="h-5 w-5" /> */}
             </button>
           </DialogClose>
 
@@ -180,7 +190,7 @@ export function BeginJourneyModal({
                     Begin Your Journey
                   </DialogTitle>
                   <p className="mt-2 text-sm text-neutral-600 sm:text-base">
-                    Create your account to schedule your {priceLabel} advisory
+                    Create your account to schedule your advisory
                     session
                   </p>
                 </DialogHeader>
@@ -299,6 +309,7 @@ export function BeginJourneyModal({
                         <Link
                           href="/terms"
                           className="underline underline-offset-4 hover:text-neutral-900"
+                          target="_blank"
                         >
                           Terms of Service
                         </Link>{" "}
@@ -306,6 +317,7 @@ export function BeginJourneyModal({
                         <Link
                           href="/privacy"
                           className="underline underline-offset-4 hover:text-neutral-900"
+                          target="_blank"
                         >
                           Privacy Policy
                         </Link>
@@ -338,9 +350,9 @@ export function BeginJourneyModal({
                   <p className="text-center text-sm text-neutral-600">
                     Already have an account?{" "}
                     <Link
-                    target="_blank"
                       href="https://celerey.app/auth/signin"
                       className="font-semibold text-neutral-900 underline underline-offset-4 hover:opacity-80"
+                      target="_blank"
                     >
                       Sign in
                     </Link>
@@ -394,7 +406,7 @@ export function BeginJourneyModal({
                     </Button>
 
                     <p className="pt-2 text-xs text-neutral-500">
-                      Didn’t see it? Check spam/junk, or try again with a
+                      Didn't see it? Check spam/junk, or try again with a
                       different email.
                     </p>
                   </div>
