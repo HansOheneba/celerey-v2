@@ -1,4 +1,4 @@
-// app/onboarding/components/FinancialMOTPage2.tsx
+// Update app/onboarding/components/page2.tsx (FinancialMOTPage2)
 "use client";
 
 import React, { useState } from 'react';
@@ -29,6 +29,7 @@ export function FinancialMOTPage2() {
   const router = useRouter();
   const { data, updateData, completeStep, setStep } = useOnboardingStore();
   const [selectedGoals, setSelectedGoals] = useState<string[]>(data.financialGoals || []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleGoalToggle = (goalId: string) => {
     const newGoals = selectedGoals.includes(goalId)
@@ -39,13 +40,38 @@ export function FinancialMOTPage2() {
     updateData({ financialGoals: newGoals });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    completeStep(3);
-    // You could submit all data to backend here
-    // Then redirect to dashboard or next step
-    router.push('/dashboard');
+    if (!data.riskTolerance) {
+      alert('Please select your risk tolerance');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Optional: Save all data to your backend
+      // const response = await fetch('/api/onboarding/complete', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(data),
+      // });
+      
+      // if (response.ok) {
+        completeStep(3);
+        // Redirect to booking page
+        router.push('/book-session');
+      // } else {
+      //   throw new Error('Failed to save data');
+      // }
+      
+    } catch (error) {
+      console.error('Error:', error);
+      alert('There was an issue. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,9 +160,10 @@ export function FinancialMOTPage2() {
           </Button>
           <Button
             type="submit"
-            className="h-12 flex-1 rounded-full bg-neutral-900 text-white hover:bg-neutral-800"
+            disabled={isSubmitting}
+            className="h-12 flex-1 rounded-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-60"
           >
-            Complete Financial MOT
+            {isSubmitting ? 'Saving...' : 'Complete & Book Session'}
           </Button>
         </div>
       </form>

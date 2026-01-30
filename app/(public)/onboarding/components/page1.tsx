@@ -46,7 +46,7 @@ export function FinancialMOTPage1() {
     <div className="max-w-2xl mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="font-serif text-3xl text-neutral-900 sm:text-4xl">
-          Financial MOT - Part 1
+          Financial MOT
         </h1>
         <p className="mt-2 text-sm text-neutral-600 sm:text-base">
           Let's understand your current financial situation

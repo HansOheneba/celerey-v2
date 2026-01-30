@@ -1,4 +1,4 @@
-// app/onboarding/components/PersonalInfoPage.tsx
+// Update app/onboarding/components/bioData.tsx
 "use client";
 
 import React, { useEffect } from 'react';
@@ -32,20 +32,28 @@ export function PersonalInfoPage() {
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
 
-  // Pre-populate from localStorage on mount
+  // Data should already be pre-populated from the BeginJourneyModal
+  // Let's log it to confirm
   useEffect(() => {
-    // You can add logic here to pre-populate if needed
-  }, []);
+    console.log('BioData page loaded with data:', {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      timeZone: data.timeZone,
+      agree: data.agree
+    });
+  }, [data]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!data.firstName.trim()) newErrors.firstName = "First name is required";
-    if (!data.lastName.trim()) newErrors.lastName = "Last name is required";
-    if (!data.email.trim()) newErrors.email = "Email is required";
+    if (!data.firstName?.trim()) newErrors.firstName = "First name is required";
+    if (!data.lastName?.trim()) newErrors.lastName = "Last name is required";
+    if (!data.email?.trim()) newErrors.email = "Email is required";
     if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) 
       newErrors.email = "Enter a valid email";
-    if (!data.phone.trim()) newErrors.phone = "Phone number is required";
+    if (!data.phone?.trim()) newErrors.phone = "Phone number is required";
     if (!data.timeZone) newErrors.timeZone = "Select your location";
     if (!data.agree) newErrors.agree = "You must agree to continue";
     
@@ -58,7 +66,6 @@ export function PersonalInfoPage() {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      // Mark all as touched to show errors
       setTouched({
         firstName: true,
         lastName: true,
@@ -81,7 +88,6 @@ export function PersonalInfoPage() {
 
   const handleChange = (field: keyof typeof data, value: any) => {
     updateData({ [field]: value });
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -96,6 +102,7 @@ export function PersonalInfoPage() {
         <p className="mt-2 text-sm text-neutral-600 sm:text-base">
           Let's start with your basic details
         </p>
+  
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -107,7 +114,7 @@ export function PersonalInfoPage() {
             </Label>
             <Input
               id="firstName"
-              value={data.firstName}
+              value={data.firstName || ''}
               onChange={(e) => handleChange('firstName', e.target.value)}
               onBlur={() => markTouched('firstName')}
               className="h-12 rounded-xl border-black/10 bg-white"
@@ -123,7 +130,7 @@ export function PersonalInfoPage() {
             </Label>
             <Input
               id="lastName"
-              value={data.lastName}
+              value={data.lastName || ''}
               onChange={(e) => handleChange('lastName', e.target.value)}
               onBlur={() => markTouched('lastName')}
               className="h-12 rounded-xl border-black/10 bg-white"
@@ -142,7 +149,7 @@ export function PersonalInfoPage() {
           <Input
             id="email"
             type="email"
-            value={data.email}
+            value={data.email || ''}
             onChange={(e) => handleChange('email', e.target.value)}
             onBlur={() => markTouched('email')}
             className="h-12 rounded-xl border-black/10 bg-white"
@@ -159,7 +166,7 @@ export function PersonalInfoPage() {
           </Label>
           <Input
             id="phone"
-            value={data.phone}
+            value={data.phone || ''}
             onChange={(e) => handleChange('phone', e.target.value)}
             onBlur={() => markTouched('phone')}
             className="h-12 rounded-xl border-black/10 bg-white"
@@ -173,7 +180,7 @@ export function PersonalInfoPage() {
         <div className="space-y-2">
           <Label className="text-neutral-700">Location</Label>
           <Select
-            value={data.timeZone}
+            value={data.timeZone || ''}
             onValueChange={(v) => handleChange('timeZone', v)}
           >
             <SelectTrigger
@@ -195,12 +202,12 @@ export function PersonalInfoPage() {
           ) : null}
         </div>
 
-        {/* Agree */}
+        {/* Agree - Keep checkbox pre-checked if already agreed */}
         <div className="space-y-2">
           <div className="flex items-start gap-3">
             <Checkbox
               id="agree"
-              checked={data.agree}
+              checked={data.agree || false}
               onCheckedChange={(v) => handleChange('agree', Boolean(v))}
               onBlur={() => markTouched('agree')}
               className="mt-1"

@@ -1,8 +1,10 @@
+// Update your beginModal.tsx
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
 import { X, MailCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useOnboardingStore } from "@/app/(public)/onboarding/hooks/useOnboardingStore";
 
 type BeginJourneyValues = {
   firstName: string;
@@ -35,7 +38,6 @@ type BeginJourneyValues = {
 type BeginJourneyModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-
   apiUrl?: string; 
 };
 
@@ -52,8 +54,10 @@ export function BeginJourneyModal({
   open,
   onOpenChange,
   apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start/`,
-  // apiUrl = "http://127.0.0.1:5000/api/start/",
 }: BeginJourneyModalProps) {
+  const router = useRouter();
+  const { updateData } = useOnboardingStore();
+  
   const [step, setStep] = React.useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
@@ -84,14 +88,9 @@ export function BeginJourneyModal({
     });
   }, []);
 
-  const STRIPE_CHECKOUT_URL  = `${process.env.NEXT_PUBLIC_STRIPE_CHECKOUT_URL}`;
-  const STRIPE_SUCCESS_URL = `${process.env.NEXT_PUBLIC_STRIPE_SUCCESS_URL}`; 
-
-
   // When modal closes, reset to form for next open
   React.useEffect(() => {
     if (!open) {
-      // slight delay so close animation feels smooth
       const t = setTimeout(() => resetAll(), 150);
       return () => clearTimeout(t);
     }
@@ -141,30 +140,43 @@ export function BeginJourneyModal({
     try {
       setIsSubmitting(true);
 
-      // Send data to your API
+
+
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values), // Send exactly what the API expects
+        body: JSON.stringify(values),
       });
 
       const result = await response.json();
 
       if (!result.ok) {
-        // Handle validation errors from API
         if (result.error === "VALIDATION_ERROR" && result.details) {
           const errorMessages = Object.values(result.details).join(", ");
           throw new Error(errorMessages);
         }
         throw new Error(result.message || "Submission failed");
       }
+      
+      // 1. Save data to the onboarding store
+      updateData({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        timeZone: values.timeZone,
+        agree: values.agree,
+        currentStep: 1, // Start at step 1
+      });
 
-      // Success!
-     const stripeUrl = `${STRIPE_CHECKOUT_URL}?prefilled_email=${encodeURIComponent(values.email)}&client_reference_id=${encodeURIComponent(values.email)}`;
-
-window.location.href = stripeUrl;
+      // 2. Close the modal
+      onOpenChange(false);
+      
+      // 3. Redirect to onboarding page
+      router.push("/onboarding?step=1");
+      
     } catch (err) {
       const message =
         err instanceof Error
@@ -186,6 +198,7 @@ window.location.href = stripeUrl;
               className="absolute right-4 top-4 rounded-full p-2 text-neutral-500 hover:bg-black/5 hover:text-neutral-700"
               aria-label="Close"
             >
+              <X className="h-5 w-5" />
             </button>
           </DialogClose>
 
@@ -197,8 +210,7 @@ window.location.href = stripeUrl;
                     Begin Your Journey
                   </DialogTitle>
                   <p className="mt-2 text-sm text-neutral-600 sm:text-base">
-                    Create your account to schedule your advisory
-                    session
+                    Create your account to schedule your advisory session
                   </p>
                 </DialogHeader>
 
@@ -350,7 +362,7 @@ window.location.href = stripeUrl;
                   >
                     {isSubmitting
                       ? "Creating your account..."
-                      : "Create Account & Schedule Session"}
+                      : "Create Account & Continue"}
                   </Button>
 
                   {/* Footer */}
@@ -368,55 +380,19 @@ window.location.href = stripeUrl;
               </>
             ) : (
               <>
-                {/* SUCCESS STEP */}
+                {/* Success step removed since we're redirecting */}
                 <div className="mx-auto max-w-xl text-center">
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/70 ring-1 ring-black/10">
                     <MailCheck className="h-7 w-7 text-neutral-900" />
                   </div>
 
                   <h3 className="mt-6 font-serif text-3xl text-neutral-900 sm:text-4xl">
-                    Success
+                    Redirecting...
                   </h3>
 
                   <p className="mt-3 text-sm leading-relaxed text-neutral-600 sm:text-base">
-                    We will send next steps to{" "}
-                    <span className="font-semibold text-neutral-900">
-                      {values.email}
-                    </span>
-                    . Please note: we will only reach out via email from a{" "}
-                    <span className="font-semibold text-neutral-900">
-                      celerey.co
-                    </span>{" "}
-                    email address.
+                    Taking you to the next step of your journey.
                   </p>
-
-                  <div className="mt-8 space-y-3">
-                    <Button
-                      onClick={() => onOpenChange(false)}
-                      className="h-12 w-full rounded-full bg-neutral-900 text-white hover:bg-neutral-800"
-                    >
-                      Close
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        // keep modal open but allow changing email / resubmitting
-                        setStep("form");
-                        setSubmitError(null);
-                        setTouched({});
-                      }}
-                      className="h-12 w-full rounded-full border-black/10 bg-white/60 text-neutral-900 hover:bg-white"
-                    >
-                      Use a different email
-                    </Button>
-
-                    <p className="pt-2 text-xs text-neutral-500">
-                      Didn't see it? Check spam/junk, or try again with a
-                      different email.
-                    </p>
-                  </div>
                 </div>
               </>
             )}
