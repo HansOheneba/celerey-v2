@@ -84,6 +84,10 @@ export function BeginJourneyModal({
     });
   }, []);
 
+  const STRIPE_CHECKOUT_URL  = `${process.env.NEXT_PUBLIC_STRIPE_CHECKOUT_URL}`;
+  const STRIPE_SUCCESS_URL = `${process.env.NEXT_PUBLIC_STRIPE_SUCCESS_URL}`; 
+
+
   // When modal closes, reset to form for next open
   React.useEffect(() => {
     if (!open) {
@@ -158,7 +162,9 @@ export function BeginJourneyModal({
       }
 
       // Success!
-      setStep("success");
+     const stripeUrl = `${STRIPE_CHECKOUT_URL}?prefilled_email=${encodeURIComponent(values.email)}&client_reference_id=${encodeURIComponent(values.email)}`;
+
+window.location.href = stripeUrl;
     } catch (err) {
       const message =
         err instanceof Error
