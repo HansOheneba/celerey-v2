@@ -52,6 +52,7 @@ export function BeginJourneyModal({
   open,
   onOpenChange,
   apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start/`,
+  // apiUrl = "http://127.0.0.1:5000/api/start/",
 }: BeginJourneyModalProps) {
   const [step, setStep] = React.useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
