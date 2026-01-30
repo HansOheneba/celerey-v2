@@ -29,7 +29,7 @@ const conciergeFormSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  company: z.string().optional(),
+  location: z.string().optional(), // Changed from company to location
   specialRequirements: z.string().optional(),
 });
 
@@ -63,7 +63,7 @@ export function ConciergeForm({
       lastName: "",
       email: "",
       phone: "",
-      company: "",
+      location: "", // Changed default value
       specialRequirements: "",
     },
   });
@@ -86,7 +86,7 @@ export function ConciergeForm({
           lastName: data.lastName,
           email: data.email,
           phone: data.phone,
-          company: data.company || "",
+          location: data.location || "", // Changed from company to location
         },
         selectedServices: selectedServices.map((s) => ({
           id: s.id,
@@ -280,12 +280,15 @@ export function ConciergeForm({
 
             <FormField
               control={form.control}
-              name="company"
+              name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company (Optional)</FormLabel>
+                  <FormLabel>Location (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Company" {...field} />
+                    <Input 
+                      placeholder="e.g., New York, NY or Remote" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
