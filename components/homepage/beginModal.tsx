@@ -1,9 +1,8 @@
-// Update your beginModal.tsx
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
-import { X, MailCheck } from "lucide-react";
+import { X, MailCheck, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -17,13 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useOnboardingStore } from "@/app/(public)/onboarding/hooks/useOnboardingStore";
 
 type BeginJourneyValues = {
@@ -31,7 +23,7 @@ type BeginJourneyValues = {
   lastName: string;
   email: string;
   phone: string;
-  timeZone: string;
+  timeZone: string; // Keep this key for backend compatibility
   agree: boolean;
 };
 
@@ -41,14 +33,59 @@ type BeginJourneyModalProps = {
   apiUrl?: string; 
 };
 
-const TIME_ZONES: { value: string; label: string }[] = [
-  { value: "Africa/Accra", label: "Africa/Accra (GMT)" },
-  { value: "Europe/London", label: "Europe/London" },
-  { value: "Europe/Paris", label: "Europe/Paris" },
-  { value: "America/New_York", label: "America/New_York" },
-  { value: "America/Los_Angeles", label: "America/Los_Angeles" },
-  { value: "Asia/Dubai", label: "Asia/Dubai" },
+// Common timezones/locations for initial suggestions
+const COMMON_LOCATIONS = [
+  { value: "Africa/Accra", label: "Accra, Ghana (GMT)", keywords: ["accra", "ghana", "acra"] },
+  { value: "Europe/London", label: "London, United Kingdom (GMT)", keywords: ["london", "uk", "united kingdom", "britain"] },
+  { value: "Europe/Paris", label: "Paris, France (CET)", keywords: ["paris", "france"] },
+  { value: "America/New_York", label: "New York, USA (EST)", keywords: ["new york", "nyc", "new york city", "usa", "america"] },
+  { value: "America/Los_Angeles", label: "Los Angeles, USA (PST)", keywords: ["los angeles", "la", "california"] },
+  { value: "Asia/Dubai", label: "Dubai, UAE (GST)", keywords: ["dubai", "uae", "united arab emirates"] },
+  { value: "Asia/Tokyo", label: "Tokyo, Japan (JST)", keywords: ["tokyo", "japan"] },
+  { value: "Australia/Sydney", label: "Sydney, Australia (AEST)", keywords: ["sydney", "australia"] },
+  { value: "Asia/Singapore", label: "Singapore (SGT)", keywords: ["singapore"] },
+  { value: "Asia/Kolkata", label: "Mumbai, India (IST)", keywords: ["mumbai", "india", "delhi", "bangalore", "chennai"] },
+  { value: "Africa/Lagos", label: "Lagos, Nigeria (WAT)", keywords: ["lagos", "nigeria", "abuja"] },
+  { value: "Africa/Johannesburg", label: "Johannesburg, South Africa (SAST)", keywords: ["johannesburg", "south africa", "cape town"] },
+  { value: "America/Sao_Paulo", label: "São Paulo, Brazil (BRT)", keywords: ["são paulo", "sao paulo", "brazil", "rio de janeiro"] },
+  { value: "America/Toronto", label: "Toronto, Canada (EST)", keywords: ["toronto", "canada", "vancouver", "montreal"] },
+  { value: "Europe/Berlin", label: "Berlin, Germany (CET)", keywords: ["berlin", "germany", "munich", "frankfurt"] },
 ];
+
+// Helper function to find the best matching timezone for a given location input
+const findTimezoneForInput = (input: string): string | null => {
+  if (!input.trim()) return null;
+  
+  const normalizedInput = input.toLowerCase().trim();
+  
+  // First, try to find exact or partial matches in labels
+  for (const location of COMMON_LOCATIONS) {
+    // Check if input matches the label (case-insensitive)
+    if (location.label.toLowerCase().includes(normalizedInput)) {
+      return location.value;
+    }
+    
+    // Check if input matches any of the keywords
+    if (location.keywords?.some(keyword => normalizedInput.includes(keyword.toLowerCase()))) {
+      return location.value;
+    }
+  }
+  
+  // Try to match by city/country patterns
+  // Example: "Ghana, Accra" or "Accra, Ghana"
+  const parts = normalizedInput.split(/[,\s]+/).filter(part => part.length > 2);
+  
+  for (const location of COMMON_LOCATIONS) {
+    // Check each part against the location's keywords
+    for (const part of parts) {
+      if (location.keywords?.some(keyword => keyword.toLowerCase() === part)) {
+        return location.value;
+      }
+    }
+  }
+  
+  return null;
+};
 
 export function BeginJourneyModal({
   open,
@@ -72,6 +109,9 @@ export function BeginJourneyModal({
   });
 
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
+  const [locationInput, setLocationInput] = React.useState("");
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = React.useState(false);
 
   const resetAll = React.useCallback(() => {
     setStep("form");
@@ -86,6 +126,9 @@ export function BeginJourneyModal({
       timeZone: "",
       agree: false,
     });
+    setLocationInput("");
+    setShowSuggestions(false);
+    setIsLoadingLocation(false);
   }, []);
 
   // When modal closes, reset to form for next open
@@ -107,6 +150,113 @@ export function BeginJourneyModal({
     setTouched((t) => ({ ...t, [key]: true }));
   };
 
+  // Filter suggestions based on input
+  const filteredSuggestions = React.useMemo(() => {
+    if (!locationInput.trim()) {
+      return COMMON_LOCATIONS;
+    }
+    
+    const input = locationInput.toLowerCase();
+    return COMMON_LOCATIONS.filter(location => {
+      // Check if input matches label
+      if (location.label.toLowerCase().includes(input)) return true;
+      
+      // Check if input matches any keywords
+      if (location.keywords?.some(keyword => 
+        keyword.toLowerCase().includes(input) || input.includes(keyword.toLowerCase())
+      )) return true;
+      
+      return false;
+    });
+  }, [locationInput]);
+
+  // Try to detect user's location
+  const detectUserLocation = React.useCallback(async () => {
+    if (navigator.geolocation && !values.timeZone) {
+      setIsLoadingLocation(true);
+      try {
+        // First get coordinates
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 5000,
+            maximumAge: 60000,
+          });
+        });
+        
+        // Use a geocoding service to get location name
+        // Using OpenStreetMap Nominatim (free, no API key needed)
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          const city = data.address.city || data.address.town || data.address.village;
+          const country = data.address.country;
+          
+          if (city && country) {
+            // Try to find matching timezone for this location
+            const timezone = findTimezoneForInput(`${city}, ${country}`);
+            if (timezone) {
+              setField("timeZone", timezone);
+              setLocationInput(`${city}, ${country}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn("Could not detect location:", error);
+      } finally {
+        setIsLoadingLocation(false);
+      }
+    }
+  }, [values.timeZone]);
+
+  // Auto-detect location on mount when modal opens
+  React.useEffect(() => {
+    if (open && !values.timeZone) {
+      detectUserLocation();
+    }
+  }, [open, values.timeZone, detectUserLocation]);
+
+  const handleLocationSelect = (suggestion: typeof COMMON_LOCATIONS[0]) => {
+    setField("timeZone", suggestion.value);
+    setLocationInput(suggestion.label);
+    setShowSuggestions(false);
+    markTouched("timeZone");
+  };
+
+  const handleLocationInputChange = (value: string) => {
+    setLocationInput(value);
+    setShowSuggestions(true);
+    
+    // Find matching timezone for the input
+    const timezone = findTimezoneForInput(value);
+    if (timezone) {
+      setField("timeZone", timezone);
+    } else {
+      // If we can't find a match, clear the timeZone field
+      // But don't show error until user tries to submit
+      setField("timeZone", "");
+    }
+  };
+
+  // Update timezone when location input loses focus (if we can find a match)
+  const handleLocationBlur = () => {
+    setTimeout(() => {
+      setShowSuggestions(false);
+      
+      // Only try to match if there's input but no timezone yet
+      if (locationInput.trim() && !values.timeZone) {
+        const timezone = findTimezoneForInput(locationInput);
+        if (timezone) {
+          setField("timeZone", timezone);
+        }
+      }
+      
+      markTouched("timeZone");
+    }, 200);
+  };
+
   const errors = React.useMemo(() => {
     const e: Partial<Record<keyof BeginJourneyValues, string>> = {};
     if (!values.firstName.trim()) e.firstName = "First name is required";
@@ -115,7 +265,7 @@ export function BeginJourneyModal({
     if (values.email && !/^\S+@\S+\.\S+$/.test(values.email))
       e.email = "Enter a valid email";
     if (!values.phone.trim()) e.phone = "Phone number is required";
-    if (!values.timeZone) e.timeZone = "Select your time zone";
+    if (!values.timeZone) e.timeZone = "Select your location";
     if (!values.agree) e.agree = "You must agree to continue";
     return e;
   }, [values]);
@@ -135,12 +285,18 @@ export function BeginJourneyModal({
       agree: true,
     });
 
+    // One final attempt to match the location input to a timezone
+    if (!values.timeZone && locationInput.trim()) {
+      const timezone = findTimezoneForInput(locationInput);
+      if (timezone) {
+        setField("timeZone", timezone);
+      }
+    }
+
     if (Object.keys(errors).length > 0) return;
 
     try {
       setIsSubmitting(true);
-
-
 
       const response = await fetch(apiUrl, {
         method: "POST",
@@ -287,30 +443,53 @@ export function BeginJourneyModal({
                     ) : null}
                   </div>
 
-                  {/* Timezone */}
+                  {/* Location (replaces Timezone) */}
                   <div className="space-y-2">
-                    <Label className="text-neutral-700">Time Zone</Label>
-                    <Select
-                      value={values.timeZone}
-                      onValueChange={(v) => setField("timeZone", v)}
-                    >
-                      <SelectTrigger
-                        onBlur={() => markTouched("timeZone")}
-                        className="h-12 rounded-xl border-black/10 bg-white"
-                      >
-                        <SelectValue placeholder="Select your time zone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TIME_ZONES.map((tz) => (
-                          <SelectItem key={tz.value} value={tz.value}>
-                            {tz.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="location" className="text-neutral-700">
+                      Location
+                    </Label>
+                    <div className="relative">
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+                        <Input
+                          id="location"
+                          value={locationInput}
+                          onChange={(e) => handleLocationInputChange(e.target.value)}
+                          onFocus={() => setShowSuggestions(true)}
+                          onBlur={handleLocationBlur}
+                          placeholder="Type your city or country"
+                          className="h-12 rounded-xl border-black/10 bg-white pl-10"
+                        />
+                        {isLoadingLocation && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600"></div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Location suggestions */}
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-black/10 bg-white py-2 shadow-lg">
+                          {filteredSuggestions.map((suggestion) => (
+                            <button
+                              key={suggestion.value}
+                              type="button"
+                              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50"
+                              onClick={() => handleLocationSelect(suggestion)}
+                            >
+                              <MapPin className="h-4 w-4 text-neutral-400" />
+                              <span>{suggestion.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     {touched.timeZone && errors.timeZone ? (
                       <p className="text-xs text-red-600">{errors.timeZone}</p>
                     ) : null}
+                    <p className="text-xs text-neutral-500">
+                      We'll use this to schedule sessions at convenient times for you
+                    </p>
                   </div>
 
                   {/* Agree */}
@@ -358,7 +537,7 @@ export function BeginJourneyModal({
                   <Button
                     type="submit"
                     disabled={!canSubmit}
-                    className="h-12 w-full rounded-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-60"
+                    className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90 disabled:opacity-60"
                   >
                     {isSubmitting
                       ? "Creating your account..."

@@ -4,7 +4,7 @@
 import React, { useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { PersonalInfoPage } from './components/bioData';
-import { FinancialMOTPage1 } from './components/page1';
+import { FinancialMOTPage } from './components/page1';
 import { FinancialMOTPage2 } from './components/page2';
 import { useOnboardingStore } from './hooks/useOnboardingStore';
 import { Progress } from '@/components/ui/progress';
@@ -28,7 +28,7 @@ function ProgressIndicator() {
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${
                 data.currentStep >= step.number
-                  ? 'bg-neutral-900 text-white'
+                  ? 'bg-[#1B1856] text-white'
                   : 'border-2 border-black/20 text-black/40'
               }`}
             >
@@ -62,12 +62,12 @@ function OnboardingContent() {
   const currentStep = parseInt(step || '1');
 
   return (
-    <div className="min-h-screen bg-[#f4f3f2]">
+    <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-4xl px-4 py-8">
         <ProgressIndicator />
         
         {currentStep === 1 && <PersonalInfoPage />}
-        {currentStep === 2 && <FinancialMOTPage1 />}
+        {currentStep === 2 && <FinancialMOTPage />}
         {currentStep === 3 && <FinancialMOTPage2 />}
       </div>
     </div>

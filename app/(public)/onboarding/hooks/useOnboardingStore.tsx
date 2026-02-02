@@ -12,20 +12,42 @@ export interface OnboardingData {
   phone: string;
   timeZone: string;
   agree: boolean;
-  
-  // Additional Onboarding Data
-  location?: string;
   dateOfBirth?: string;
+  ageRange?: string;
+  citizenship?: string;
   gender?: string;
   maritalStatus?: string;
   dependents?: number;
   
-  // Financial MOT Data
-  employmentStatus?: string;
-  annualIncome?: string;
+  // Financial MOT Data - UPDATED
+  // Income & Expenses
+  primaryIncomeSource?: string;
+  monthlyIncome?: string;
   monthlyExpenses?: string;
+  
+  // Assets
+  cashSavings?: string;
+  investmentPortfolio?: string;
+  retirementAccounts?: string;
+  realEstateValue?: string;
+  otherAssets?: string;
+  
+  // Liabilities
+  mortgageDebt?: string;
+  studentLoans?: string;
+  creditCardDebt?: string;
+  personalLoans?: string;
+  otherLiabilities?: string;
+  
+  // Asset Locations
+  assetCountries?: string[];
+  
+  // Financial Knowledge & Preferences
+  financialKnowledge?: 'beginner' | 'intermediate' | 'advanced';
   financialGoals?: string[];
+  investmentTimeframe?: 'short' | 'medium' | 'long';
   riskTolerance?: 'low' | 'medium' | 'high';
+  emergencyFund?: 'yes' | 'no' | 'partial';
   
   // Progress tracking
   currentStep: number;

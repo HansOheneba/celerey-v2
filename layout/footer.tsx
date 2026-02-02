@@ -14,15 +14,15 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const sections = [
-    {
-      title: "Celerey Ecosystem",
-      links: [
-        { href: "/wealth", label: "Wealth Management" },
-        { href: "/career", label: "Career Navigation" },
-        // { href: "/tools", label: "Investment Tools" },
-        { href: "/advisors", label: "Advisory Services" },
-      ],
-    },
+    // {
+    //   title: "Celerey Ecosystem",
+    //   links: [
+    //     { href: "/wealth", label: "Wealth Management" },
+    //     { href: "/career", label: "Career Navigation" },
+    //     // { href: "/tools", label: "Investment Tools" },
+    //     { href: "/advisors", label: "Advisory Services" },
+    //   ],
+    // },
     {
       title: "Tools",
       links: [
@@ -35,14 +35,16 @@ export default function Footer() {
         { href: "/tools", label: "Explore All Tools" },
       ],
     },
-    {
-      title: "Company",
-      links: [
-        { href: "/about", label: "Who we are" },
-        // { href: "/careers", label: "Careers" },
-        { href: "/insights", label: "Resources" },
-      ],
-    },
+   {
+  title: "Company",
+  links: [
+    { href: "/about", label: "Who we are" },
+    { href: "/advisors", label: "Our Advisors" },
+    { href: "/insights", label: "Resources" },
+    { href: "/contact", label: "Contact" },
+  ],
+},
+
   ];
 
   return (
@@ -66,16 +68,27 @@ export default function Footer() {
               guidance and smart tools.
             </p>
 
-            <div className="mt-6 flex space-x-4">
-              <Link
-                href="https://www.linkedin.com/company/celerey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-blue-500 transition-colors"
-              >
-                <Linkedin className="h-6 w-6" />
-              </Link>
-            </div>
+         <div className="mt-6 flex items-center gap-4">
+  {/* LinkedIn */}
+  <Link
+    href="https://www.linkedin.com/company/celerey"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="hover:text-blue-500 transition-colors"
+  >
+    <Linkedin className="h-6 w-6" />
+  </Link>
+
+  {/* WhatsApp */}
+  <Link
+    href="https://wa.me/12272296921"
+    target="_blank"
+    className="inline-flex items-center gap-2 bg-[#27924e] hover:bg-[#1EBE5D] text-white rounded-full px-4 py-2 text-sm font-medium transition"
+  >
+    <span>WhatsApp</span>
+  </Link>
+</div>
+
           </div>
 
           {/* Desktop Columns */}
