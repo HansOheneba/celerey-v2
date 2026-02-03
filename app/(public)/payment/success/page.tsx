@@ -211,6 +211,7 @@ function PaymentSuccessContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f4f3f2] to-white">
+        <div className="h-16"></div>
       <div className="container mx-auto max-w-4xl px-4 py-12 sm:py-20">
         {/* Header */}
         <div className="mb-8 text-center">
