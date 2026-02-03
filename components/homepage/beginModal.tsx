@@ -155,8 +155,8 @@ const COMMON_TIMEZONES: Record<string, string> = {
 export function BeginJourneyModal({
   open,
   onOpenChange,
-  // apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`,
-  apiUrl = `http://127.0.0.1:5000/api/start`,
+  apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`,
+  // apiUrl = `http://127.0.0.1:5000/api/start`,
 }: BeginJourneyModalProps) {
   const router = useRouter();
   const { updateData } = useOnboardingStore();
@@ -511,8 +511,8 @@ export function BeginJourneyModal({
 
     try {
       // Call your backend to create a Stripe Checkout session
-      // const checkoutApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/checkout`;
-      const checkoutApiUrl = `http://127.0.0.1:5000/api/billing/checkout`;
+      const checkoutApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/checkout`;
+      // const checkoutApiUrl = `http://127.0.0.1:5000/api/billing/checkout`;
       
       console.log("Creating checkout session for user:", userId);
       console.log("Checkout API URL:", checkoutApiUrl);
