@@ -8,6 +8,7 @@ import { FinancialMOTPage } from './components/page1';
 import { FinancialMOTPage2 } from './components/page2';
 import { useOnboardingStore } from './hooks/useOnboardingStore';
 import { Progress } from '@/components/ui/progress';
+import { Loader2 } from 'lucide-react';
 
 // Progress Indicator Component
 function ProgressIndicator() {
@@ -19,10 +20,9 @@ function ProgressIndicator() {
     { number: 3, label: 'Goals & Risk' },
   ];
 
-
   return (
     <div className="my-8">
-        <div className='mt-30'></div>
+      <div className='mt-30'></div>
       <div className="flex items-center justify-between">
         {steps.map((step) => (
           <div key={step.number} className="flex flex-col items-center">
@@ -47,49 +47,127 @@ function ProgressIndicator() {
   );
 }
 
+// Loader Component
+function OnboardingLoader() {
+  return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="text-center">
+        <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#1B1856] mb-4" />
+        <p className="text-neutral-600">Verifying your access...</p>
+      </div>
+    </div>
+  );
+}
+
 // Main Content Component
 function OnboardingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const step = searchParams.get('step');
   const { setStep } = useOnboardingStore();
+  const [isVerifying, setIsVerifying] = React.useState(true);
+  const [hasAccess, setHasAccess] = React.useState(false);
 
-  useEffect(() => {
-    const verifyAccess = async () => {
-      const userId = localStorage.getItem("celerey_user_id");
-      if (!userId) {
-        router.push("/");
+  const wasRecentlyVerified = () => {
+    if (typeof window === "undefined") return false;
+    const ts = sessionStorage.getItem("celerey_payment_verified_at");
+    if (!ts) return false;
+    const ageMs = Date.now() - Number(ts);
+    return Number.isFinite(ageMs) && ageMs < 5 * 60 * 1000; // 5 minutes
+  };
+
+  const verifyAccess = async () => {
+    const userId = localStorage.getItem("celerey_user_id");
+    if (!userId) {
+      console.log("No user ID found in localStorage");
+      router.push("/");
+      return;
+    }
+
+    try {
+      // Properly encode the userId for URL
+      const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/access?user_id=${encodeURIComponent(userId)}`;
+      console.log("Fetching from:", API_URL);
+      
+      const response = await fetch(API_URL, {
+        credentials: "include",
+      });
+      
+      // Check HTTP status
+      if (!response.ok) {
+        console.error("HTTP error:", response.status, response.statusText);
+        
+        // Try to get error message from response
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        
+        if (wasRecentlyVerified()) {
+          console.log("Recently verified, allowing access despite HTTP error");
+          setHasAccess(true);
+          setIsVerifying(false);
+        } else {
+          router.push("/payment/success");
+        }
         return;
       }
-
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/access?user_id=${userId}`,
-          {
-            credentials: "include",
-          }
-        );
-        
-        const data = await response.json();
-        if (!data.paid) {
-          router.push("/payment/verify");
+      
+      // Parse response
+      const data = await response.json();
+      console.log("Access check response:", data);
+      
+      if (!data.ok || !data.paid) {
+        console.log("Payment not verified:", data.error || "No payment");
+        if (wasRecentlyVerified()) {
+          console.log("Recently verified, allowing access despite payment check");
+          setHasAccess(true);
+          setIsVerifying(false);
+        } else {
+          router.push("/payment/success");
         }
-      } catch (error) {
-        console.error("Error verifying access:", error);
-        router.push("/payment/verify");
+        return;
       }
-    };
+      
+      // Payment verified
+      console.log("Payment verified, allowing access");
+      setHasAccess(true);
+      setIsVerifying(false);
+      
+    } catch (error) {
+      console.error("Error verifying access:", error);
+      if (wasRecentlyVerified()) {
+        console.log("Recently verified, allowing access despite error");
+        setHasAccess(true);
+        setIsVerifying(false);
+      } else {
+        router.push("/payment/success");
+      }
+    }
+  };
 
+  useEffect(() => {
     verifyAccess();
   }, [router]);
 
   useEffect(() => {
+    if (!hasAccess) return;
+    
     const stepNum = parseInt(step || '1');
     if (stepNum >= 1 && stepNum <= 3) {
       setStep(stepNum);
     }
-  }, [step, setStep]);
+  }, [step, setStep, hasAccess]);
 
+  // Show loader while verifying
+  if (isVerifying) {
+    return <OnboardingLoader />;
+  }
+
+  // If no access (should have redirected already)
+  if (!hasAccess) {
+    return null;
+  }
+
+  // User has access - show onboarding
   const currentStep = parseInt(step || '1');
 
   return (
@@ -110,7 +188,10 @@ export default function OnboardingPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#f4f3f2] flex items-center justify-center">
-        <div className="text-center">Loading onboarding...</div>
+        <div className="text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#1B1856] mb-4" />
+          <p className="text-neutral-700">Loading onboarding...</p>
+        </div>
       </div>
     }>
       <OnboardingContent />

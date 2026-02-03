@@ -44,47 +44,69 @@ function PaymentSuccessContent() {
   
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
-  // Get userId from localStorage or onboarding store
+  // Get userId from localStorage
   useEffect(() => {
     const storedUserId = localStorage.getItem("celerey_user_id");
     if (storedUserId) {
       setUserId(storedUserId);
+      console.log("Found user ID in localStorage:", storedUserId);
+    } else {
+      console.log("No user ID found in localStorage");
+      setStatus('failed');
+      setMessage("User ID not found. Please return to the beginning.");
     }
   }, []);
 
   // Poll payment status
   useEffect(() => {
     if (!userId) {
-      setStatus('failed');
-      setMessage("User ID not found. Please return to the beginning.");
       return;
     }
 
     const checkPaymentStatus = async () => {
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/billing/access?user_id=${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-          }
-        );
-
-        const data: AccessCheckResponse = await response.json();
+        // Properly encode the userId
+        const API_URL = `${API_BASE_URL}/billing/access?user_id=${encodeURIComponent(userId)}`;
+        console.log("Polling payment status:", API_URL);
         
-        if (!data.ok) {
-          console.error("Error checking payment:", data.error);
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+
+        // Check HTTP status
+        if (!response.ok) {
+          console.error("HTTP error:", response.status, response.statusText);
+          const errorText = await response.text();
+          console.error("Error response:", errorText);
           
           // If we've tried enough times and still no payment, show failed
-          if (pollCount >= 15) { // 30 seconds with 2 second intervals
+          if (pollCount >= 15) {
             setStatus('failed');
             setMessage("Payment verification timed out. Please contact support.");
           } else {
             // Continue polling
             setPollCount(prev => prev + 1);
+            setMessage(`Checking payment... Attempt ${pollCount + 1} of 15`);
+          }
+          return;
+        }
+
+        const data: AccessCheckResponse = await response.json();
+        console.log("Payment check response:", data);
+        
+        if (!data.ok) {
+          console.error("Backend error:", data.error, data.message);
+          
+          if (pollCount >= 15) {
+            setStatus('failed');
+            setMessage("Payment verification failed. Please contact support.");
+          } else {
+            setPollCount(prev => prev + 1);
+            setMessage(`Checking payment... Attempt ${pollCount + 1} of 15`);
           }
           return;
         }
@@ -96,6 +118,11 @@ function PaymentSuccessContent() {
           // Get detailed payment info
           await fetchPaymentDetails();
           
+          // Mark verification time to prevent loops
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("celerey_payment_verified_at", Date.now().toString());
+          }
+
           // Redirect after 2 seconds
           setTimeout(() => {
             router.push("/onboarding?step=1");
@@ -114,6 +141,7 @@ function PaymentSuccessContent() {
           setMessage("Network error. Please refresh or contact support.");
         } else {
           setPollCount(prev => prev + 1);
+          setMessage(`Checking payment... Attempt ${pollCount + 1} of 15`);
         }
       }
     };
@@ -122,7 +150,7 @@ function PaymentSuccessContent() {
     checkPaymentStatus();
 
     // Set up polling interval (every 2 seconds for 30 seconds total)
-    if (status !== 'success' && pollCount < 15) {
+    if (pollCount < 15) {
       const interval = setInterval(() => {
         checkPaymentStatus();
       }, 2000);
@@ -136,7 +164,7 @@ function PaymentSuccessContent() {
     
     try {
       const response = await fetch(
-        `${API_BASE_URL}/billing/status?user_id=${userId}`,
+        `${API_BASE_URL}/billing/status?user_id=${encodeURIComponent(userId)}`,
         {
           method: "GET",
           headers: {
@@ -145,6 +173,11 @@ function PaymentSuccessContent() {
           credentials: "include",
         }
       );
+
+      if (!response.ok) {
+        console.error("Failed to fetch payment details:", response.status);
+        return;
+      }
 
       const data: PaymentStatusResponse = await response.json();
       if (data.ok && data.user) {
@@ -167,6 +200,13 @@ function PaymentSuccessContent() {
 
   const handleGoToDashboard = () => {
     router.push("/");
+  };
+
+  const handleManualRedirect = () => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("celerey_payment_verified_at", Date.now().toString());
+    }
+    router.push("/onboarding?step=1");
   };
 
   return (
@@ -223,6 +263,16 @@ function PaymentSuccessContent() {
                 This may take a few moments. Attempt {pollCount + 1} of 15
               </p>
             )}
+            
+            {/* Debug info */}
+            <div className="mt-2 text-xs text-neutral-400">
+              {userId && (
+                <p>User ID: {userId.substring(0, 8)}...</p>
+              )}
+              {sessionId && (
+                <p>Session: {sessionId.substring(0, 12)}...</p>
+              )}
+            </div>
           </div>
 
           {/* Payment Details */}
@@ -253,14 +303,6 @@ function PaymentSuccessContent() {
                     <span className="text-neutral-600">Paid at:</span>
                     <span className="text-neutral-900">
                       {new Date(paymentDetails.paid_at).toLocaleString()}
-                    </span>
-                  </div>
-                )}
-                {userId && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-neutral-600">User ID:</span>
-                    <span className="font-mono text-xs text-neutral-900">
-                      {userId.substring(0, 8)}...
                     </span>
                   </div>
                 )}
@@ -330,12 +372,21 @@ function PaymentSuccessContent() {
           {/* Action Buttons */}
           <div className="space-y-3">
             {status === 'success' && (
-              <Button
-                onClick={() => router.push("/onboarding?step=1")}
-                className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90"
-              >
-                Continue to Onboarding →
-              </Button>
+              <>
+                <Button
+                  onClick={() => router.push("/onboarding?step=1")}
+                  className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90"
+                >
+                  Continue to Onboarding →
+                </Button>
+                <Button
+                  onClick={handleManualRedirect}
+                  variant="outline"
+                  className="h-10 w-full rounded-full border-black/10"
+                >
+                  Go to Onboarding Now
+                </Button>
+              </>
             )}
             
             {status === 'pending' && (
@@ -354,6 +405,13 @@ function PaymentSuccessContent() {
                 >
                   Check Again
                 </Button>
+                <Button
+                  onClick={handleManualRedirect}
+                  variant="ghost"
+                  className="h-10 w-full rounded-full text-sm"
+                >
+                  I've already paid, continue anyway
+                </Button>
               </div>
             )}
             
@@ -364,6 +422,13 @@ function PaymentSuccessContent() {
                   className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90"
                 >
                   Try Again
+                </Button>
+                <Button
+                  onClick={handleManualRedirect}
+                  variant="outline"
+                  className="h-10 w-full rounded-full border-black/10"
+                >
+                  Proceed to Onboarding Anyway
                 </Button>
                 <Button
                   onClick={handleContactSupport}
