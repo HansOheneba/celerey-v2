@@ -12,6 +12,7 @@ export interface OnboardingData {
   phone: string;
   timeZone: string;
   agree: boolean;
+  userId ?: string;
   dateOfBirth?: string;
   ageRange?: string;
   citizenship?: string;
@@ -69,6 +70,7 @@ const initialData: OnboardingData = {
   phone: '',
   timeZone: '',
   agree: false,
+  userId: undefined,
   currentStep: 1,
   completedSteps: [],
 };

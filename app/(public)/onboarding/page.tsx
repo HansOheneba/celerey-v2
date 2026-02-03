@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { PersonalInfoPage } from './components/bioData';
 import { FinancialMOTPage } from './components/page1';
 import { FinancialMOTPage2 } from './components/page2';
@@ -18,6 +18,7 @@ function ProgressIndicator() {
     { number: 2, label: 'Income & Expenses' },
     { number: 3, label: 'Goals & Risk' },
   ];
+
 
   return (
     <div className="my-8">
@@ -49,8 +50,38 @@ function ProgressIndicator() {
 // Main Content Component
 function OnboardingContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const step = searchParams.get('step');
   const { setStep } = useOnboardingStore();
+
+  useEffect(() => {
+    const verifyAccess = async () => {
+      const userId = localStorage.getItem("celerey_user_id");
+      if (!userId) {
+        router.push("/");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/access?user_id=${userId}`,
+          {
+            credentials: "include",
+          }
+        );
+        
+        const data = await response.json();
+        if (!data.paid) {
+          router.push("/payment/verify");
+        }
+      } catch (error) {
+        console.error("Error verifying access:", error);
+        router.push("/payment/verify");
+      }
+    };
+
+    verifyAccess();
+  }, [router]);
 
   useEffect(() => {
     const stepNum = parseInt(step || '1');

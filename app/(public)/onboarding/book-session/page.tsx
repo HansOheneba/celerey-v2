@@ -4,7 +4,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useOnboardingStore } from "../onboarding/hooks/useOnboardingStore";
+import { useOnboardingStore } from "../hooks/useOnboardingStore";
 import { Loader2, Calendar, ArrowLeft, ShieldCheck, Mail, Phone, Target, DollarSign, TrendingUp } from "lucide-react";
 
 declare global {

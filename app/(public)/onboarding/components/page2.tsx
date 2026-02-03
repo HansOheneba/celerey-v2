@@ -111,7 +111,7 @@ export function FinancialMOTPage2() {
       // if (response.ok) {
         completeStep(3);
         // Redirect to booking page
-        router.push('/book-session');
+        router.push('/onboarding/book-session');
       // } else {
       //   throw new Error('Failed to save data');
       // }
