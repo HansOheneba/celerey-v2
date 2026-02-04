@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { PersonalInfoPage } from './components/bioData';
 import { FinancialMOTPage } from './components/page1';
 import { FinancialMOTPage2 } from './components/page2';
@@ -62,112 +62,16 @@ function OnboardingLoader() {
 // Main Content Component
 function OnboardingContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const step = searchParams.get('step');
   const { setStep } = useOnboardingStore();
-  const [isVerifying, setIsVerifying] = React.useState(true);
-  const [hasAccess, setHasAccess] = React.useState(false);
-
-  const wasRecentlyVerified = () => {
-    if (typeof window === "undefined") return false;
-    const ts = sessionStorage.getItem("celerey_payment_verified_at");
-    if (!ts) return false;
-    const ageMs = Date.now() - Number(ts);
-    return Number.isFinite(ageMs) && ageMs < 5 * 60 * 1000; // 5 minutes
-  };
-
-  const verifyAccess = async () => {
-    const userId = localStorage.getItem("celerey_user_id");
-    if (!userId) {
-      console.log("No user ID found in localStorage");
-      router.push("/");
-      return;
-    }
-
-    try {
-      // Properly encode the userId for URL
-      const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/access?user_id=${encodeURIComponent(userId)}`;
-      console.log("Fetching from:", API_URL);
-      
-      const response = await fetch(API_URL, {
-        credentials: "include",
-      });
-      
-      // Check HTTP status
-      if (!response.ok) {
-        console.error("HTTP error:", response.status, response.statusText);
-        
-        // Try to get error message from response
-        const errorText = await response.text();
-        console.error("Error response:", errorText);
-        
-        if (wasRecentlyVerified()) {
-          console.log("Recently verified, allowing access despite HTTP error");
-          setHasAccess(true);
-          setIsVerifying(false);
-        } else {
-          router.push("/payment/success");
-        }
-        return;
-      }
-      
-      // Parse response
-      const data = await response.json();
-      console.log("Access check response:", data);
-      
-      if (!data.ok || !data.paid) {
-        console.log("Payment not verified:", data.error || "No payment");
-        if (wasRecentlyVerified()) {
-          console.log("Recently verified, allowing access despite payment check");
-          setHasAccess(true);
-          setIsVerifying(false);
-        } else {
-          router.push("/payment/success");
-        }
-        return;
-      }
-      
-      // Payment verified
-      console.log("Payment verified, allowing access");
-      setHasAccess(true);
-      setIsVerifying(false);
-      
-    } catch (error) {
-      console.error("Error verifying access:", error);
-      if (wasRecentlyVerified()) {
-        console.log("Recently verified, allowing access despite error");
-        setHasAccess(true);
-        setIsVerifying(false);
-      } else {
-        router.push("/payment/success");
-      }
-    }
-  };
 
   useEffect(() => {
-    verifyAccess();
-  }, [router]);
-
-  useEffect(() => {
-    if (!hasAccess) return;
-    
     const stepNum = parseInt(step || '1');
     if (stepNum >= 1 && stepNum <= 3) {
       setStep(stepNum);
     }
-  }, [step, setStep, hasAccess]);
+  }, [step, setStep]);
 
-  // Show loader while verifying
-  if (isVerifying) {
-    return <OnboardingLoader />;
-  }
-
-  // If no access (should have redirected already)
-  if (!hasAccess) {
-    return null;
-  }
-
-  // User has access - show onboarding
   const currentStep = parseInt(step || '1');
 
   return (
