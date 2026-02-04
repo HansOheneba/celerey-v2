@@ -26,7 +26,7 @@ const defaultBullets = [
   "Structured 60-minute session with a certified advisor",
   "Complete review of income, assets, and liabilities",
   "Goal mapping and priority alignment",
-  "High-level wealth strategy and clear next steps",
+  "High-level Financial strategy and clear next steps",
 ];
 
 export default function EntryPointPricing({
