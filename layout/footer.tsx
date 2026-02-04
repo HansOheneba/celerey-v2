@@ -13,39 +13,35 @@ import {
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const sections = [
-    // {
-    //   title: "Celerey Ecosystem",
-    //   links: [
-    //     { href: "/wealth", label: "Wealth Management" },
-    //     { href: "/career", label: "Career Navigation" },
-    //     // { href: "/tools", label: "Investment Tools" },
-    //     { href: "/advisors", label: "Advisory Services" },
-    //   ],
-    // },
-    {
-      title: "Tools",
-      links: [
-        { href: "/tools/budget-planner", label: "Budget Planner" },
-        { href: "/tools/money-manager", label: "Simple Money Manager" },
-        {
-          href: "/tools/savings-calculator",
-          label: "Savings Goals Calculator",
-        },
-        { href: "/tools", label: "Explore All Tools" },
-      ],
-    },
-   {
-  title: "Company",
-  links: [
-    { href: "/about", label: "Who we are" },
-    { href: "/advisors", label: "Our Advisors" },
-    { href: "/insights", label: "Resources" },
-    { href: "/contact", label: "Contact" },
-  ],
-},
+const sections = [
+  {
+    title: "Tools",
+    links: [
+      { href: "/tools/budget-planner", label: "Budget Planner" },
+      { href: "/tools/money-manager", label: "Simple Money Manager" },
+      { href: "/tools/savings-calculator", label: "Savings Goals Calculator" },
+      { href: "/tools", label: "Explore All Tools" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { href: "/about", label: "Who we are" },
+      { href: "/advisors", label: "Our Advisors" },
+      { href: "/insights", label: "Resources" },
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      { href: "/contact", label: "Help & Support" },
+      { href: "/faqs", label: "FAQs" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/terms", label: "Terms of Service" },
+    ],
+  },
+];
 
-  ];
 
   return (
     <footer className="bg-blue-950 text-white/80 py-16 border-t border-white/10">

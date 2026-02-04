@@ -19,6 +19,7 @@ export default function BookSessionPage() {
   const { data, reset } = useOnboardingStore();
   const [isLoading, setIsLoading] = React.useState(true);
   const [scriptLoaded, setScriptLoaded] = React.useState(false);
+  const [bookingStarted, setBookingStarted] = React.useState(false);
 
   // Load Google Calendar script
   useEffect(() => {
@@ -53,7 +54,6 @@ export default function BookSessionPage() {
             clearInterval(check);
             setScriptLoaded(true);
             setIsLoading(false);
-            initializeCalendarButton();
           }
         }, 200);
 
@@ -68,7 +68,6 @@ export default function BookSessionPage() {
       script.onload = () => {
         setScriptLoaded(true);
         setIsLoading(false);
-        initializeCalendarButton();
       };
 
       script.onerror = () => {
@@ -208,13 +207,11 @@ export default function BookSessionPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="w-fit mx-auto">
-                    <div
-  id="calendar-scheduling-button"
-  className="inline-block"
-/>
-
-
+                  <div
+                    className="w-fit mx-auto"
+                    onClick={() => setBookingStarted(true)}
+                  >
+                    <div id="calendar-scheduling-button" className="inline-block" />
                   </div>
                 )}
 
@@ -232,6 +229,30 @@ export default function BookSessionPage() {
                     </p>
                   </div>
                 ) : null}
+
+                {bookingStarted && (
+                  <div className="mt-6 rounded-2xl border border-black/10 bg-[#f4f3f2] p-4">
+                    <p className="text-sm text-neutral-700">
+                      If you’ve booked your session, check your email for confirmation and next steps.
+                    </p>
+
+                    <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <Button
+                        className="h-11 rounded-full bg-[#1B1856] text-white"
+                        onClick={() => router.push("/")}
+                      >
+                        Go back home
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-11 rounded-full border-black/10"
+                        onClick={() => setBookingStarted(false)}
+                      >
+                        Not yet
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
           
@@ -242,6 +263,31 @@ export default function BookSessionPage() {
         {/* Bottom spacing */}
         <div className="h-6" />
       </div>
+
+      <style jsx global>{`
+        .qxCTlb {
+          background-color: #1B1856 !important;
+          color: #ffffff !important;
+          height: 44px !important;
+          padding: 0 24px !important;
+          border-radius: 9999px !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          border: none !important;
+          box-shadow: none !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
+        }
+        #calendar-scheduling-button .qxCTlb:hover {
+          background-color: rgba(27, 24, 86, 0.9) !important;
+        }
+        #calendar-scheduling-button .qxCTlb:focus-visible {
+          outline: none !important;
+          box-shadow: 0 0 0 3px rgba(27, 24, 86, 0.3) !important;
+        }
+      `}</style>
     </div>
   );
 }

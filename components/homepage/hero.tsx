@@ -169,7 +169,7 @@ export default function Hero() {
               onClick={handleScrollToPricing}
               className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
-              Find Out How
+              Start with $100
             </Button>
 
             <Button
