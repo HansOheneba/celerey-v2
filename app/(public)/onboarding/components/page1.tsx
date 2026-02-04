@@ -1,7 +1,7 @@
 // app/onboarding/components/FinancialMOTPage.tsx
 "use client";
 
-import React, { useState, useRef, KeyboardEvent } from 'react';
+import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -159,6 +159,10 @@ export function FinancialMOTPage() {
       default: return '$';
     }
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">

@@ -1,7 +1,7 @@
 // Update app/onboarding/components/page2.tsx (FinancialMOTPage2)
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -75,6 +75,11 @@ export function FinancialMOTPage2() {
   const { data, updateData, completeStep, setStep } = useOnboardingStore();
   const [selectedGoals, setSelectedGoals] = useState<string[]>(data.financialGoals || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleGoalToggle = (goalId: string) => {
     const newGoals = selectedGoals.includes(goalId)

@@ -136,6 +136,10 @@ export function PersonalInfoPage() {
     }
   }, [data.timeZone]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const markTouched = (field: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
