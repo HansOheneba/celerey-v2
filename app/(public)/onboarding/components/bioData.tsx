@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, CalendarIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 import { useOnboardingStore } from "../hooks/useOnboardingStore";
 
@@ -52,29 +60,6 @@ const DEPENDENTS_OPTIONS = [
   { value: "5+", label: "5+" },
 ];
 
-const COMMON_LOCATIONS = [
-  { value: "Africa/Accra", label: "Accra, Ghana (GMT)", keywords: ["accra", "ghana", "acra"] },
-  { value: "Europe/London", label: "London, United Kingdom (GMT)", keywords: ["london", "uk", "united kingdom", "britain"] },
-  { value: "Europe/Paris", label: "Paris, France (CET)", keywords: ["paris", "france"] },
-  { value: "America/New_York", label: "New York, USA (EST)", keywords: ["new york", "nyc", "new york city", "usa", "america"] },
-  { value: "America/Los_Angeles", label: "Los Angeles, USA (PST)", keywords: ["los angeles", "la", "california"] },
-  { value: "Asia/Dubai", label: "Dubai, UAE (GST)", keywords: ["dubai", "uae", "united arab emirates"] },
-  { value: "Asia/Tokyo", label: "Tokyo, Japan (JST)", keywords: ["tokyo", "japan"] },
-  { value: "Australia/Sydney", label: "Sydney, Australia (AEST)", keywords: ["sydney", "australia"] },
-  { value: "Asia/Singapore", label: "Singapore (SGT)", keywords: ["singapore"] },
-  { value: "Asia/Kolkata", label: "Mumbai, India (IST)", keywords: ["mumbai", "india", "delhi", "bangalore", "chennai"] },
-  { value: "Africa/Lagos", label: "Lagos, Nigeria (WAT)", keywords: ["lagos", "nigeria", "abuja"] },
-  { value: "Africa/Johannesburg", label: "Johannesburg, South Africa (SAST)", keywords: ["johannesburg", "south africa", "cape town"] },
-  { value: "America/Sao_Paulo", label: "São Paulo, Brazil (BRT)", keywords: ["são paulo", "sao paulo", "brazil", "rio de janeiro"] },
-  { value: "America/Toronto", label: "Toronto, Canada (EST)", keywords: ["toronto", "canada", "vancouver", "montreal"] },
-  { value: "Europe/Berlin", label: "Berlin, Germany (CET)", keywords: ["berlin", "germany", "munich", "frankfurt"] },
-];
-
-const findLocationLabel = (timezone: string): string => {
-  const location = COMMON_LOCATIONS.find((loc) => loc.value === timezone);
-  return location ? location.label : timezone;
-};
-
 function FieldError({ show, message }: { show: boolean; message?: string }) {
   if (!show || !message) return null;
   return <p className="text-[11px] leading-4 text-red-600">{message}</p>;
@@ -109,32 +94,43 @@ export function PersonalInfoPage() {
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
 
-  const [locationInput, setLocationInput] = React.useState("");
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  // Local form state
+  const [formData, setFormData] = React.useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    timeZone: "",
+    dateOfBirth: "",
+    citizenship: "",
+    gender: "",
+    maritalStatus: "",
+    dependents: undefined as number | undefined,
+  });
 
-  const filteredSuggestions = React.useMemo(() => {
-    if (!locationInput.trim()) return COMMON_LOCATIONS;
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(undefined);
+  const [datePickerOpen, setDatePickerOpen] = React.useState(false);
 
-    const input = locationInput.toLowerCase();
-    return COMMON_LOCATIONS.filter((location) => {
-      if (location.label.toLowerCase().includes(input)) return true;
-      if (
-        location.keywords?.some(
-          (keyword) =>
-            keyword.toLowerCase().includes(input) || input.includes(keyword.toLowerCase())
-        )
-      )
-        return true;
-      return false;
-    });
-  }, [locationInput]);
-
+  // Initialize from store whenever store data changes
   useEffect(() => {
-    if (data.timeZone) {
-      const label = findLocationLabel(data.timeZone);
-      setLocationInput(label);
+    setFormData({
+      firstName: data.firstName || "",
+      lastName: data.lastName || "",
+      email: data.email || "",
+      phone: data.phone || "",
+      timeZone: data.timeZone || "",
+      dateOfBirth: data.dateOfBirth || "",
+      citizenship: data.citizenship || "",
+      gender: data.gender || "",
+      maritalStatus: data.maritalStatus || "",
+      dependents: data.dependents,
+    });
+    
+    // Parse date if exists
+    if (data.dateOfBirth) {
+      setSelectedDate(new Date(data.dateOfBirth));
     }
-  }, [data.timeZone]);
+  }, [data]); // This will run whenever store data updates
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -144,74 +140,32 @@ export function PersonalInfoPage() {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
-  const handleChange = <K extends keyof typeof data>(field: K, value: (typeof data)[K]) => {
-    updateData({ [field]: value });
+  const handleChange = <K extends keyof typeof formData>(field: K, value: (typeof formData)[K]) => {
+    const updatedFormData = { ...formData, [field]: value };
+    setFormData(updatedFormData);
+    
+    // Immediately sync to store for real-time persistence
+    updateData(updatedFormData);
+    
     if (errors[field as string]) {
       setErrors((prev) => ({ ...prev, [field as string]: "" }));
     }
   };
 
-  const findTimezoneForInput = (input: string): string | null => {
-    if (!input.trim()) return null;
-    const normalized = input.toLowerCase().trim();
-
-    for (const location of COMMON_LOCATIONS) {
-      if (location.label.toLowerCase().includes(normalized)) return location.value;
-      if (location.keywords?.some((keyword) => normalized.includes(keyword.toLowerCase())))
-        return location.value;
-    }
-
-    const parts = normalized.split(/[,\s]+/).filter((p) => p.length > 2);
-    for (const location of COMMON_LOCATIONS) {
-      for (const part of parts) {
-        if (location.keywords?.some((k) => k.toLowerCase() === part)) return location.value;
-      }
-    }
-    return null;
-  };
-
-  const handleLocationSelect = (suggestion: (typeof COMMON_LOCATIONS)[number]) => {
-    updateData({ timeZone: suggestion.value });
-    setLocationInput(suggestion.label);
-    setShowSuggestions(false);
-    markTouched("timeZone");
-  };
-
-  const handleLocationInputChange = (value: string) => {
-    setLocationInput(value);
-    setShowSuggestions(true);
-
-    const timezone = findTimezoneForInput(value);
-    updateData({ timeZone: timezone ?? "" });
-  };
-
-  const handleLocationBlur = () => {
-    setTimeout(() => {
-      setShowSuggestions(false);
-
-      if (locationInput.trim() && !data.timeZone) {
-        const timezone = findTimezoneForInput(locationInput);
-        if (timezone) updateData({ timeZone: timezone });
-      }
-
-      markTouched("timeZone");
-    }, 150);
-  };
-
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!data.firstName?.trim()) newErrors.firstName = "First name is required";
-    if (!data.lastName?.trim()) newErrors.lastName = "Last name is required";
-    if (!data.email?.trim()) newErrors.email = "Email is required";
-    if (data.email && !/^\S+@\S+\.\S+$/.test(data.email)) newErrors.email = "Enter a valid email";
-    if (!data.phone?.trim()) newErrors.phone = "Phone number is required";
-    if (!data.timeZone) newErrors.timeZone = "Select your location";
-    if (!data.ageRange) newErrors.ageRange = "Age range is required";
-    if (!data.citizenship?.trim()) newErrors.citizenship = "Citizenship is required";
-    if (!data.gender) newErrors.gender = "Gender is required";
-    if (!data.maritalStatus) newErrors.maritalStatus = "Marital status is required";
-    if (data.dependents === undefined) newErrors.dependents = "Number of dependents is required";
+    if (!formData.firstName?.trim()) newErrors.firstName = "First name is required";
+    if (!formData.lastName?.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email?.trim()) newErrors.email = "Email is required";
+    if (formData.email && !/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Enter a valid email";
+    if (!formData.phone?.trim()) newErrors.phone = "Phone number is required";
+    if (!formData.timeZone?.trim()) newErrors.timeZone = "Location is required";
+    if (!formData.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
+    if (!formData.citizenship?.trim()) newErrors.citizenship = "Citizenship is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.maritalStatus) newErrors.maritalStatus = "Marital status is required";
+    if (formData.dependents === undefined) newErrors.dependents = "Number of dependents is required";
     if (!data.agree) newErrors.agree = "You must agree to continue";
 
     return newErrors;
@@ -219,11 +173,6 @@ export function PersonalInfoPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!data.timeZone && locationInput.trim()) {
-      const timezone = findTimezoneForInput(locationInput);
-      if (timezone) updateData({ timeZone: timezone });
-    }
 
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -234,7 +183,7 @@ export function PersonalInfoPage() {
         email: true,
         phone: true,
         timeZone: true,
-        ageRange: true,
+        dateOfBirth: true,
         citizenship: true,
         gender: true,
         maritalStatus: true,
@@ -244,9 +193,23 @@ export function PersonalInfoPage() {
       return;
     }
 
+    // Final sync to store (though it's already synced in real-time)
+    updateData(formData);
+
     completeStep(1);
     setStep(2);
+    
+    // Log the entire store data
+    console.log("Onboarding Store Data (Step 1 → Step 2):", data);
+    
     router.push("/onboarding?step=2");
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    const dateString = date ? format(date, "yyyy-MM-dd") : "";
+    handleChange("dateOfBirth", dateString);
+    setDatePickerOpen(false);
   };
 
   return (
@@ -269,7 +232,7 @@ export function PersonalInfoPage() {
               </Label>
               <Input
                 id="firstName"
-                value={data.firstName || ""}
+                value={formData.firstName}
                 onChange={(e) => handleChange("firstName", e.target.value)}
                 onBlur={() => markTouched("firstName")}
                 className="h-10 rounded-xl border-black/10 bg-white"
@@ -283,7 +246,7 @@ export function PersonalInfoPage() {
               </Label>
               <Input
                 id="lastName"
-                value={data.lastName || ""}
+                value={formData.lastName}
                 onChange={(e) => handleChange("lastName", e.target.value)}
                 onBlur={() => markTouched("lastName")}
                 className="h-10 rounded-xl border-black/10 bg-white"
@@ -300,7 +263,7 @@ export function PersonalInfoPage() {
               <Input
                 id="email"
                 type="email"
-                value={data.email || ""}
+                value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 onBlur={() => markTouched("email")}
                 className="h-10 rounded-xl border-black/10 bg-white"
@@ -314,7 +277,7 @@ export function PersonalInfoPage() {
               </Label>
               <Input
                 id="phone"
-                value={data.phone || ""}
+                value={formData.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
                 onBlur={() => markTouched("phone")}
                 className="h-10 rounded-xl border-black/10 bg-white"
@@ -332,31 +295,12 @@ export function PersonalInfoPage() {
               <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
               <Input
                 id="location"
-                value={locationInput}
-                onChange={(e) => handleLocationInputChange(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={handleLocationBlur}
-                placeholder="City or country"
+                value={formData.timeZone}
+                onChange={(e) => handleChange("timeZone", e.target.value)}
+                onBlur={() => markTouched("timeZone")}
+                placeholder="e.g., Accra, Ghana"
                 className="h-10 rounded-xl border-black/10 bg-white pl-9"
               />
-
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl border border-black/10 bg-white shadow-lg">
-                  <div className="max-h-64 overflow-auto py-1">
-                    {filteredSuggestions.map((suggestion) => (
-                      <button
-                        key={suggestion.value}
-                        type="button"
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-neutral-50"
-                        onClick={() => handleLocationSelect(suggestion)}
-                      >
-                        <MapPin className="h-4 w-4 text-neutral-400" />
-                        <span className="text-neutral-800">{suggestion.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             <FieldError show={Boolean(touched.timeZone)} message={errors.timeZone} />
@@ -365,147 +309,126 @@ export function PersonalInfoPage() {
             </p>
           </div>
         </Card>
-<Card title="Demographics">
-  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-    <div className="space-y-1.5">
-      <Label className="text-sm text-neutral-700">Age range</Label>
-      <Select value={data.ageRange || ""} onValueChange={(v) => handleChange("ageRange", v)}>
-        <SelectTrigger
-          onBlur={() => markTouched("ageRange")}
-          className="h-10 w-full rounded-xl border-black/10 bg-white"
-        >
-          <SelectValue placeholder="Select" />
-        </SelectTrigger>
-        <SelectContent>
-          {AGE_RANGES.map((age) => (
-            <SelectItem key={age.value} value={age.value}>
-              {age.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FieldError show={Boolean(touched.ageRange)} message={errors.ageRange} />
-    </div>
-
-    <div className="space-y-1.5">
-      <Label htmlFor="citizenship" className="text-sm text-neutral-700">
-        Citizenship
-      </Label>
-      <Input
-        id="citizenship"
-        value={data.citizenship || ""}
-        onChange={(e) => handleChange("citizenship", e.target.value)}
-        onBlur={() => markTouched("citizenship")}
-        placeholder="e.g., Ghanaian"
-        className="h-10 w-full rounded-xl border-black/10 bg-white"
-      />
-      <FieldError show={Boolean(touched.citizenship)} message={errors.citizenship} />
-    </div>
-
-    <div className="space-y-1.5">
-      <Label className="text-sm text-neutral-700">Gender</Label>
-      <Select value={data.gender || ""} onValueChange={(v) => handleChange("gender", v)}>
-        <SelectTrigger
-          onBlur={() => markTouched("gender")}
-          className="h-10 w-full rounded-xl border-black/10 bg-white"
-        >
-          <SelectValue placeholder="Select" />
-        </SelectTrigger>
-        <SelectContent>
-          {GENDER_OPTIONS.map((gender) => (
-            <SelectItem key={gender.value} value={gender.value}>
-              {gender.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FieldError show={Boolean(touched.gender)} message={errors.gender} />
-    </div>
-
-    <div className="space-y-1.5">
-      <Label className="text-sm text-neutral-700">Marital status</Label>
-      <Select
-        value={data.maritalStatus || ""}
-        onValueChange={(v) => handleChange("maritalStatus", v)}
-      >
-        <SelectTrigger
-          onBlur={() => markTouched("maritalStatus")}
-          className="h-10 w-full rounded-xl border-black/10 bg-white"
-        >
-          <SelectValue placeholder="Select" />
-        </SelectTrigger>
-        <SelectContent>
-          {MARITAL_STATUS_OPTIONS.map((status) => (
-            <SelectItem key={status.value} value={status.value}>
-              {status.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <FieldError show={Boolean(touched.maritalStatus)} message={errors.maritalStatus} />
-    </div>
-
-    <div className="space-y-1.5 sm:col-span-2">
-      <Label className="text-sm text-neutral-700">Dependents</Label>
-      <Select
-        value={data.dependents?.toString() || ""}
-        onValueChange={(v) => handleChange("dependents", Number(v))}
-      >
-        <SelectTrigger
-          onBlur={() => markTouched("dependents")}
-          className="h-10 w-full rounded-xl border-black/10 bg-white"
-        >
-          <SelectValue placeholder="Select" />
-        </SelectTrigger>
-        <SelectContent>
-          {DEPENDENTS_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <FieldError show={Boolean(touched.dependents)} message={errors.dependents} />
-      <p className="text-xs text-neutral-500">Anyone who relies on you financially.</p>
-    </div>
-  </div>
-</Card>
-
-
-        {/* <Card title="Consent">
-          <div className="space-y-2">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="agree"
-                checked={data.agree || false}
-                onCheckedChange={(v) => handleChange("agree", Boolean(v))}
-                onBlur={() => markTouched("agree")}
-                className="mt-0.5"
-              />
-              <Label htmlFor="agree" className="text-sm text-neutral-700 leading-5">
-                I agree to the{" "}
-                <Link
-                  href="/terms"
-                  className="underline underline-offset-4 hover:text-neutral-900"
-                  target="_blank"
-                >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  href="/privacy"
-                  className="underline underline-offset-4 hover:text-neutral-900"
-                  target="_blank"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </Label>
+        <Card title="Demographics">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-neutral-700">Date of Birth</Label>
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "h-10 w-full justify-start text-left font-normal rounded-xl border-black/10 bg-white px-3",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                    onBlur={() => markTouched("dateOfBirth")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    defaultMonth={selectedDate}
+                    captionLayout="dropdown"
+                    onSelect={handleDateSelect}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
+                  />
+                </PopoverContent>
+              </Popover>
+              <FieldError show={Boolean(touched.dateOfBirth)} message={errors.dateOfBirth} />
             </div>
-            <FieldError show={Boolean(touched.agree)} message={errors.agree} />
+
+            <div className="space-y-1.5">
+              <Label htmlFor="citizenship" className="text-sm text-neutral-700">
+                Citizenship
+              </Label>
+              <Input
+                id="citizenship"
+                value={formData.citizenship}
+                onChange={(e) => handleChange("citizenship", e.target.value)}
+                onBlur={() => markTouched("citizenship")}
+                placeholder="e.g., Ghanaian"
+                className="h-10 w-full rounded-xl border-black/10 bg-white"
+              />
+              <FieldError show={Boolean(touched.citizenship)} message={errors.citizenship} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm text-neutral-700">Gender</Label>
+              <Select value={formData.gender || ""} onValueChange={(v) => handleChange("gender", v)}>
+                <SelectTrigger
+                  onBlur={() => markTouched("gender")}
+                  className="h-10 w-full rounded-xl border-black/10 bg-white"
+                >
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {GENDER_OPTIONS.map((gender) => (
+                    <SelectItem key={gender.value} value={gender.value}>
+                      {gender.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError show={Boolean(touched.gender)} message={errors.gender} />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-sm text-neutral-700">Marital status</Label>
+              <Select
+                value={formData.maritalStatus || ""}
+                onValueChange={(v) => handleChange("maritalStatus", v)}
+              >
+                <SelectTrigger
+                  onBlur={() => markTouched("maritalStatus")}
+                  className="h-10 w-full rounded-xl border-black/10 bg-white"
+                >
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MARITAL_STATUS_OPTIONS.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldError show={Boolean(touched.maritalStatus)} message={errors.maritalStatus} />
+            </div>
+
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label className="text-sm text-neutral-700">Dependents</Label>
+              <Select
+                value={formData.dependents?.toString() || ""}
+                onValueChange={(v) => handleChange("dependents", Number(v))}
+              >
+                <SelectTrigger
+                  onBlur={() => markTouched("dependents")}
+                  className="h-10 w-full rounded-xl border-black/10 bg-white"
+                >
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPENDENTS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <FieldError show={Boolean(touched.dependents)} message={errors.dependents} />
+              <p className="text-xs text-neutral-500">Anyone who relies on you financially.</p>
+            </div>
           </div>
-        </Card> */}
+        </Card>
 
         <Button
           type="submit"

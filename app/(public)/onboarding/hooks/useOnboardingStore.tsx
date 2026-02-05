@@ -14,7 +14,6 @@ export interface OnboardingData {
   agree: boolean;
   userId ?: string;
   dateOfBirth?: string;
-  ageRange?: string;
   citizenship?: string;
   gender?: string;
   maritalStatus?: string;

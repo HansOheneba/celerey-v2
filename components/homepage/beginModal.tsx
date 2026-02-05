@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { X, MailCheck, MapPin, Search, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useDebounce } from "use-debounce";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,20 +25,6 @@ type BeginJourneyValues = {
   phone: string;
   timeZone: string;
   agree: boolean;
-};
-
-type LocationSuggestion = {
-  display_name: string;
-  lat: string;
-  lon: string;
-  type: string;
-  address?: {
-    city?: string;
-    town?: string;
-    village?: string;
-    state?: string;
-    country?: string;
-  };
 };
 
 type BeginJourneyModalProps = {
@@ -67,96 +52,10 @@ interface CheckoutResponse {
   message?: string;
 }
 
-// Common timezones for major cities (fallback)
-const COMMON_TIMEZONES: Record<string, string> = {
-  // North America
-  "New York": "America/New_York",
-  "Los Angeles": "America/Los_Angeles",
-  "Chicago": "America/Chicago",
-  "Toronto": "America/Toronto",
-  "Vancouver": "America/Vancouver",
-  "Mexico City": "America/Mexico_City",
-  
-  // South America
-  "São Paulo": "America/Sao_Paulo",
-  "Rio de Janeiro": "America/Sao_Paulo",
-  "Buenos Aires": "America/Argentina/Buenos_Aires",
-  "Lima": "America/Lima",
-  "Bogotá": "America/Bogota",
-  
-  // Europe
-  "London": "Europe/London",
-  "Paris": "Europe/Paris",
-  "Berlin": "Europe/Berlin",
-  "Madrid": "Europe/Madrid",
-  "Rome": "Europe/Rome",
-  "Amsterdam": "Europe/Amsterdam",
-  "Lisbon": "Europe/Lisbon",
-  "Dublin": "Europe/Dublin",
-  "Warsaw": "Europe/Warsaw",
-  "Vienna": "Europe/Vienna",
-  "Prague": "Europe/Prague",
-  "Budapest": "Europe/Budapest",
-  "Athens": "Europe/Athens",
-  "Stockholm": "Europe/Stockholm",
-  "Oslo": "Europe/Oslo",
-  "Helsinki": "Europe/Helsinki",
-  "Copenhagen": "Europe/Copenhagen",
-  "Zurich": "Europe/Zurich",
-  "Brussels": "Europe/Brussels",
-  
-  // Africa
-  "Lagos": "Africa/Lagos",
-  "Accra": "Africa/Accra",
-  "Nairobi": "Africa/Nairobi",
-  "Cairo": "Africa/Cairo",
-  "Johannesburg": "Africa/Johannesburg",
-  "Cape Town": "Africa/Johannesburg",
-  "Casablanca": "Africa/Casablanca",
-  "Addis Ababa": "Africa/Addis_Ababa",
-  "Kampala": "Africa/Kampala",
-  "Dar es Salaam": "Africa/Dar_es_Salaam",
-  
-  // Asia
-  "Tokyo": "Asia/Tokyo",
-  "Singapore": "Asia/Singapore",
-  "Hong Kong": "Asia/Hong_Kong",
-  "Shanghai": "Asia/Shanghai",
-  "Beijing": "Asia/Shanghai",
-  "Seoul": "Asia/Seoul",
-  "Bangkok": "Asia/Bangkok",
-  "Kuala Lumpur": "Asia/Kuala_Lumpur",
-  "Jakarta": "Asia/Jakarta",
-  "Manila": "Asia/Manila",
-  "Mumbai": "Asia/Kolkata",
-  "Delhi": "Asia/Kolkata",
-  "Bangalore": "Asia/Kolkata",
-  "Chennai": "Asia/Kolkata",
-  "Karachi": "Asia/Karachi",
-  "Dhaka": "Asia/Dhaka",
-  "Colombo": "Asia/Colombo",
-  "Kathmandu": "Asia/Kathmandu",
-  "Dubai": "Asia/Dubai",
-  "Abu Dhabi": "Asia/Dubai",
-  "Riyadh": "Asia/Riyadh",
-  "Tel Aviv": "Asia/Jerusalem",
-  "Istanbul": "Europe/Istanbul",
-  
-  // Australia/Oceania
-  "Sydney": "Australia/Sydney",
-  "Melbourne": "Australia/Melbourne",
-  "Brisbane": "Australia/Brisbane",
-  "Perth": "Australia/Perth",
-  "Auckland": "Pacific/Auckland",
-  "Wellington": "Pacific/Auckland",
-  "Fiji": "Pacific/Fiji",
-};
-
 export function BeginJourneyModal({
   open,
   onOpenChange,
   apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`,
-  // apiUrl = `http://127.0.0.1:5000/api/start`,
 }: BeginJourneyModalProps) {
   const router = useRouter();
   const { updateData } = useOnboardingStore();
@@ -178,11 +77,6 @@ export function BeginJourneyModal({
 
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
   const [locationInput, setLocationInput] = React.useState("");
-  const [debouncedLocation] = useDebounce(locationInput, 500);
-  const [suggestions, setSuggestions] = React.useState<LocationSuggestion[]>([]);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false);
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [isDetectingTimezone, setIsDetectingTimezone] = React.useState(false);
 
   const resetAll = React.useCallback(() => {
     setStep("form");
@@ -199,9 +93,6 @@ export function BeginJourneyModal({
       agree: false,
     });
     setLocationInput("");
-    setSuggestions([]);
-    setShowSuggestions(false);
-    setIsDetectingTimezone(false);
     setUserId(null);
   }, []);
 
@@ -212,36 +103,6 @@ export function BeginJourneyModal({
       return () => clearTimeout(t);
     }
   }, [open, resetAll]);
-
-  // Fetch suggestions from OpenStreetMap
-  React.useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (!debouncedLocation.trim() || debouncedLocation.length < 2) {
-        setSuggestions([]);
-        return;
-      }
-
-      setIsLoadingSuggestions(true);
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(debouncedLocation)}&addressdetails=1&limit=8&accept-language=en`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-        }
-      } catch (error) {
-        console.error("Error fetching location suggestions:", error);
-      } finally {
-        setIsLoadingSuggestions(false);
-      }
-    };
-
-    if (showSuggestions) {
-      fetchSuggestions();
-    }
-  }, [debouncedLocation, showSuggestions]);
 
   const setField = <K extends keyof BeginJourneyValues>(
     key: K,
@@ -254,150 +115,10 @@ export function BeginJourneyModal({
     setTouched((t) => ({ ...t, [key]: true }));
   };
 
-  // Helper to get timezone from coordinates using free API
-  const getTimezoneFromCoordinates = async (lat: string, lon: string): Promise<string | null> => {
-    try {
-      const response = await fetch(
-        `https://api.timezonedb.com/v2.1/get-time-zone?key=0C24OIKGSGDM&format=json&by=position&lat=${lat}&lng=${lon}`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.status === "OK") {
-          return data.zoneName;
-        }
-      }
-      
-      // Fallback: Use Geonames API (free, no API key needed for small use)
-      const geonamesResponse = await fetch(
-        `http://api.geonames.org/timezoneJSON?lat=${lat}&lng=${lon}&username=demo`
-      );
-      
-      if (geonamesResponse.ok) {
-        const geonamesData = await geonamesResponse.json();
-        return geonamesData.timezoneId || null;
-      }
-      
-      return null;
-    } catch (error) {
-      console.error("Error getting timezone:", error);
-      return null;
-    }
-  };
-
-  // Simple timezone guess from city name (fallback)
-  const guessTimezoneFromCity = (cityName: string): string | null => {
-    const normalizedCity = cityName.toLowerCase();
-    
-    // Check for exact matches in common timezones
-    for (const [city, timezone] of Object.entries(COMMON_TIMEZONES)) {
-      if (normalizedCity.includes(city.toLowerCase())) {
-        return timezone;
-      }
-    }
-    
-    // Check by country/region patterns
-    if (normalizedCity.includes("usa") || normalizedCity.includes("united states")) {
-      return "America/New_York";
-    }
-    if (normalizedCity.includes("uk") || normalizedCity.includes("united kingdom")) {
-      return "Europe/London";
-    }
-    if (normalizedCity.includes("canada")) {
-      return "America/Toronto";
-    }
-    if (normalizedCity.includes("australia")) {
-      return "Australia/Sydney";
-    }
-    if (normalizedCity.includes("india")) {
-      return "Asia/Kolkata";
-    }
-    if (normalizedCity.includes("china")) {
-      return "Asia/Shanghai";
-    }
-    if (normalizedCity.includes("japan")) {
-      return "Asia/Tokyo";
-    }
-    if (normalizedCity.includes("germany")) {
-      return "Europe/Berlin";
-    }
-    if (normalizedCity.includes("france")) {
-      return "Europe/Paris";
-    }
-    if (normalizedCity.includes("spain")) {
-      return "Europe/Madrid";
-    }
-    if (normalizedCity.includes("italy")) {
-      return "Europe/Rome";
-    }
-    if (normalizedCity.includes("nigeria")) {
-      return "Africa/Lagos";
-    }
-    if (normalizedCity.includes("ghana")) {
-      return "Africa/Accra";
-    }
-    if (normalizedCity.includes("south africa")) {
-      return "Africa/Johannesburg";
-    }
-    
-    return null;
-  };
-
-  const handleLocationSelect = async (suggestion: LocationSuggestion) => {
-    setLocationInput(suggestion.display_name);
-    setShowSuggestions(false);
-    setIsDetectingTimezone(true);
-    
-    try {
-      // Try to get accurate timezone from coordinates
-      const timezone = await getTimezoneFromCoordinates(suggestion.lat, suggestion.lon);
-      
-      if (timezone) {
-        setField("timeZone", timezone);
-      } else {
-        // Fallback to guessing from city name
-        const guessedTimezone = guessTimezoneFromCity(suggestion.display_name);
-        if (guessedTimezone) {
-          setField("timeZone", guessedTimezone);
-        } else {
-          // Last resort: Use city name from address details
-          const cityName = suggestion.address?.city || suggestion.address?.town || suggestion.address?.village;
-          if (cityName) {
-            const cityTimezone = guessTimezoneFromCity(cityName);
-            if (cityTimezone) {
-              setField("timeZone", cityTimezone);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error setting timezone:", error);
-      // Use fallback
-      const guessedTimezone = guessTimezoneFromCity(suggestion.display_name);
-      if (guessedTimezone) {
-        setField("timeZone", guessedTimezone);
-      }
-    } finally {
-      setIsDetectingTimezone(false);
-    }
-    
-    markTouched("timeZone");
-  };
-
-  const handleLocationBlur = () => {
-    setTimeout(() => {
-      setShowSuggestions(false);
-      
-      // If user typed something but didn't select, try to guess timezone
-      if (locationInput.trim() && !values.timeZone && !isDetectingTimezone) {
-        const guessedTimezone = guessTimezoneFromCity(locationInput);
-        if (guessedTimezone) {
-          setField("timeZone", guessedTimezone);
-        }
-      }
-      
-      markTouched("timeZone");
-    }, 200);
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocationInput(value);
+    setField("timeZone", value);
   };
 
   const errors = React.useMemo(() => {
@@ -408,7 +129,7 @@ export function BeginJourneyModal({
     if (values.email && !/^\S+@\S+\.\S+$/.test(values.email))
       e.email = "Enter a valid email";
     if (!values.phone.trim()) e.phone = "Phone number is required";
-    if (!values.timeZone) e.timeZone = "Select your location";
+    if (!values.timeZone.trim()) e.timeZone = "Location is required";
     if (!values.agree) e.agree = "You must agree to continue";
     return e;
   }, [values]);
@@ -419,22 +140,10 @@ export function BeginJourneyModal({
     ev.preventDefault();
     setSubmitError(null);
 
-    setTouched({
-      firstName: true,
-      lastName: true,
-      email: true,
-      phone: true,
-      timeZone: true,
-      agree: true,
+    // Mark all fields as touched
+    Object.keys(values).forEach((key) => {
+      markTouched(key as keyof BeginJourneyValues);
     });
-
-    // Final attempt to guess timezone
-    if (!values.timeZone && locationInput.trim() && !isDetectingTimezone) {
-      const guessedTimezone = guessTimezoneFromCity(locationInput);
-      if (guessedTimezone) {
-        setField("timeZone", guessedTimezone);
-      }
-    }
 
     if (Object.keys(errors).length > 0) return;
 
@@ -475,7 +184,7 @@ export function BeginJourneyModal({
         lastName: values.lastName,
         email: values.email,
         phone: values.phone,
-        timeZone: values.timeZone,
+        timeZone: values.timeZone, // This now contains the user's location input
         agree: values.agree,
         userId: newUserId,
         currentStep: 1,
@@ -512,7 +221,6 @@ export function BeginJourneyModal({
     try {
       // Call your backend to create a Stripe Checkout session
       const checkoutApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/checkout`;
-      // const checkoutApiUrl = `http://127.0.0.1:5000/api/billing/checkout`;
       
       console.log("Creating checkout session for user:", userId);
       console.log("Checkout API URL:", checkoutApiUrl);
@@ -532,7 +240,7 @@ export function BeginJourneyModal({
       if (!result.ok) {
         if (result.error === "ALREADY_PAID") {
           // User already paid - redirect them to success/dashboard
-          setSubmitError("You already have access. Redirecting...");
+          setSubmitError("ALREADY_PAID:You already have access. Redirecting...");
           setTimeout(() => {
             router.push("/onboarding");
           }, 2000);
@@ -564,7 +272,7 @@ export function BeginJourneyModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[720px] gap-0 overflow-hidden rounded-2xl p-0">
-        <div className="relative bg-[#f4f3f2]">
+        <div className="relative bg-white">
           {/* close */}
           <DialogClose asChild>
             <button
@@ -660,77 +368,21 @@ export function BeginJourneyModal({
                     ) : null}
                   </div>
 
-                  {/* Location */}
+                  {/* Location - Simplified */}
                   <div className="space-y-2">
                     <Label htmlFor="location" className="text-neutral-700">
                       Location
                     </Label>
                     <div className="relative">
-                      <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
-                        <Input
-                          id="location"
-                          value={locationInput}
-                          onChange={(e) => {
-                            setLocationInput(e.target.value);
-                            setShowSuggestions(true);
-                          }}
-                          onFocus={() => setShowSuggestions(true)}
-                          onBlur={handleLocationBlur}
-                          placeholder="Type your city or country"
-                          className="h-12 rounded-xl border-black/10 bg-white pl-10"
-                        />
-                        {(isLoadingSuggestions || isDetectingTimezone) && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600"></div>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Suggestions dropdown */}
-                      {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-black/10 bg-white py-2 shadow-lg max-h-60 overflow-y-auto">
-                          {suggestions.map((suggestion, index) => (
-                            <button
-                              key={`${suggestion.lat}-${suggestion.lon}-${index}`}
-                              type="button"
-                              className="flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-neutral-50"
-                              onClick={() => handleLocationSelect(suggestion)}
-                            >
-                              <MapPin className="h-4 w-4 text-neutral-400 mt-0.5" />
-                              <div>
-                                <div className="text-sm font-medium">
-                                  {suggestion.address?.city || suggestion.address?.town || suggestion.address?.village || "Unknown"}
-                                </div>
-                                <div className="text-xs text-neutral-500">
-                                  {suggestion.address?.state && `${suggestion.address.state}, `}
-                                  {suggestion.address?.country}
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Loading state */}
-                      {isLoadingSuggestions && showSuggestions && (
-                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-black/10 bg-white py-4 shadow-lg">
-                          <div className="flex items-center justify-center gap-2">
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-600"></div>
-                            <span className="text-sm text-neutral-500">Searching...</span>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* No results */}
-                      {showSuggestions && !isLoadingSuggestions && suggestions.length === 0 && locationInput.length >= 2 && (
-                        <div className="absolute z-10 mt-1 w-full rounded-xl border border-black/10 bg-white py-4 shadow-lg">
-                          <div className="flex flex-col items-center gap-2">
-                            <Search className="h-5 w-5 text-neutral-400" />
-                            <p className="text-sm text-neutral-500">No locations found</p>
-                          </div>
-                        </div>
-                      )}
+                      <MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+                      <Input
+                        id="location"
+                        value={locationInput}
+                        onChange={handleLocationChange}
+                        onBlur={() => markTouched("timeZone")}
+                        placeholder="Enter your city, state, or country"
+                        className="h-12 rounded-xl border-black/10 bg-white pl-10"
+                      />
                     </div>
                     {touched.timeZone && errors.timeZone ? (
                       <p className="text-xs text-red-600">{errors.timeZone}</p>
@@ -776,21 +428,23 @@ export function BeginJourneyModal({
 
                   {/* Server/API error */}
                   {submitError ? (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                      {submitError}
+                    <div className={`rounded-xl border px-4 py-3 text-sm ${
+                      submitError.startsWith("ALREADY_PAID:")
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-red-200 bg-red-50 text-red-700"
+                    }`}>
+                      {submitError.replace("ALREADY_PAID:", "")}
                     </div>
                   ) : null}
 
                   {/* Submit */}
                   <Button
                     type="submit"
-                    disabled={!canSubmit || isDetectingTimezone}
+                    disabled={!canSubmit}
                     className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90 disabled:opacity-60"
                   >
                     {isSubmitting
                       ? "Creating your account..."
-                      : isDetectingTimezone
-                      ? "Detecting timezone..."
                       : "Create Account & Continue"}
                   </Button>
 
@@ -833,6 +487,9 @@ export function BeginJourneyModal({
                       </div>
                       <div className="border-t pt-3">
                         <p className="text-xs text-neutral-500">
+                          Location: <span className="font-medium">{values.timeZone}</span>
+                        </p>
+                        <p className="text-xs text-neutral-500">
                           User ID: <span className="font-mono text-xs">{userId ? userId.substring(0, 8) + "..." : "Loading..."}</span>
                         </p>
                       </div>
@@ -853,8 +510,12 @@ export function BeginJourneyModal({
                   </div>
 
                   {submitError ? (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                      {submitError}
+                    <div className={`rounded-xl border px-4 py-3 text-sm ${
+                      submitError.startsWith("ALREADY_PAID:")
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-red-200 bg-red-50 text-red-700"
+                    }`}>
+                      {submitError.replace("ALREADY_PAID:", "")}
                     </div>
                   ) : null}
 

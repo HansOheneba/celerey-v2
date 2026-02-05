@@ -132,7 +132,7 @@ export function FinancialMOTPage() {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const validationErrors = validate();
@@ -143,6 +143,10 @@ export function FinancialMOTPage() {
 
     completeStep(2);
     setStep(3);
+    
+    // Log the entire store data
+    console.log("Onboarding Store Data (Step 2 → Step 3):", data);
+    
     router.push('/onboarding?step=3');
   };
 
@@ -160,7 +164,13 @@ export function FinancialMOTPage() {
     }
   };
 
+  const hasInitialized = React.useRef(false);
+
   useEffect(() => {
+    if (!hasInitialized.current) {
+      // Populate form from store only once on mount
+      hasInitialized.current = true;
+    }
     window.scrollTo(0, 0);
   }, []);
 

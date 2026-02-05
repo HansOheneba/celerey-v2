@@ -75,9 +75,14 @@ export function FinancialMOTPage2() {
   const { data, updateData, completeStep, setStep } = useOnboardingStore();
   const [selectedGoals, setSelectedGoals] = useState<string[]>(data.financialGoals || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasInitialized = React.useRef(false);
 
   // Scroll to top on mount
   useEffect(() => {
+    if (!hasInitialized.current) {
+      // Populate initial state from store only once
+      hasInitialized.current = true;
+    }
     window.scrollTo(0, 0);
   }, []);
 
@@ -115,6 +120,9 @@ export function FinancialMOTPage2() {
       
       // if (response.ok) {
         completeStep(3);
+        // Log the entire store data
+        console.log("Onboarding Store Data (Step 3 → Book Session):", data);
+        
         // Redirect to booking page
         router.push('/onboarding/book-session');
       // } else {
