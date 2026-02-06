@@ -14,7 +14,7 @@ export default function PublicLayout({
       <Header />
      
       {/* Main content */}
-      <main className="mx-auto  ">{children}</main>
+      <main className="mx-auto pt-24">{children}</main>
 
       {/* Footer*/}
       <Footer />

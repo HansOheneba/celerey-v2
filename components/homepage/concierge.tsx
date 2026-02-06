@@ -93,7 +93,7 @@ export default function AlaCarteServices({
   className = "",
 }: AlaCarteServicesProps) {
   return (
-    <section id={id} className={`w-full bg-[#f4f3f2] py-16 sm:py-24 ${className}`}>
+  <section id={id} className={`w-full bg-[#f4f3f] py-16 sm:py-24 ${className}`}>
       <div className="mx-auto max-w-6xl px-6">
         {/* Header */}
         <div className="text-center">

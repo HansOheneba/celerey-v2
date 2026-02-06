@@ -6,47 +6,64 @@ import { ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-black via-gray-900 to-black text-white px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center"
-      >
-        <h1 className="text-[6rem] md:text-[8rem] font-extrabold tracking-tight bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent drop-shadow-lg">
-          404
-        </h1>
-        <h2 className="text-2xl md:text-3xl font-semibold mt-2">
-          Page Not Found
-        </h2>
-        <p className="text-gray-400 mt-3 max-w-md mx-auto">
-          Oops! The page you&apos;re looking for doesn&apos;t exist or may have been
-          moved.
-        </p>
+    <div className="relative min-h-screen bg-[#070A14] text-white overflow-hidden -mt-24">
+      {/* Subtle brand glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-32 -left-40 h-[520px] w-[520px] rounded-full bg-purple-500/20 blur-[120px]" />
+        <div className="absolute bottom-[-160px] right-[-180px] h-[560px] w-[560px] rounded-full bg-[#1B1856]/25 blur-[130px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_55%)]" />
+      </div>
 
+      <div className="relative z-10 mx-auto max-w-5xl px-6 py-20 md:py-24 min-h-screen flex items-center">
         <motion.div
-          // whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-8"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-xl "
         >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-white text-black px-5 py-3 rounded-full font-medium transition hover:bg-gray-200"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Go Home
-          </Link>
-        </motion.div>
-      </motion.div>
+          {/* Small label */}
+          <p className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
+            Error 404
+          </p>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 0.1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 1 }}
-        className="absolute inset-0 flex justify-center items-center pointer-events-none"
-      >
-        <div className="w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 blur-[120px]" />
-      </motion.div>
+          <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-white">
+            This page doesn’t exist.
+          </h1>
+
+          <p className="mt-4 text-white/70 text-base md:text-lg leading-relaxed">
+            The link may be broken, or the page may have been moved. Try going
+            back home.
+          </p>
+
+          <motion.div whileTap={{ scale: 0.98 }} className="mt-8 flex ">
+            <Link
+              href="/"
+              className="
+                inline-flex items-center gap-2
+                rounded-full
+                bg-white text-[#070A14]
+                px-5 py-3
+                text-sm font-medium
+                transition
+                hover:bg-white/90
+              "
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Go home
+            </Link>
+          </motion.div>
+
+          {/* Secondary link */}
+          <div className="mt-4 flex ">
+            <Link
+              href="/resources"
+              className="text-sm text-white/60 hover:text-white transition-colors"
+            >
+              Browse resources →
+            </Link>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -68,6 +68,11 @@ export default function Hero() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleScrollToWealthScan = () => {
+    const el = document.getElementById("wealth-scan");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   // Cycle through videos every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -109,7 +114,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[95vh] w-full overflow-hidden">
+    <section className="relative min-h-[95vh] -mt-24 w-full overflow-hidden">
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         {videoList.map((video, index) => (
@@ -173,11 +178,11 @@ export default function Hero() {
             </Button>
 
             <Button
-              asChild
+              onClick={handleScrollToWealthScan}
               variant="outline"
               className="w-full rounded-full border-neutral-900/15 bg-white/40 px-5 py-4 text-xs font-medium text-white hover:bg-white/60 sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
-              <Link href="/#wealth-scan">Free Financial Health Scan</Link>
+              Free Financial Health Scan
             </Button>
           </div>
         </motion.div>

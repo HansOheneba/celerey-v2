@@ -74,7 +74,7 @@ export default function AdvisorsPage() {
 
   if (isLoading) {
     return (
-      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex items-center justify-center h-64">
             <div
@@ -89,7 +89,7 @@ export default function AdvisorsPage() {
 
   if (error) {
     return (
-      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg text-red-600">{error}</div>
@@ -101,7 +101,7 @@ export default function AdvisorsPage() {
 
   if (advisors.length === 0) {
     return (
-      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+      <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <div className="flex items-center justify-center h-64">
             <div className="text-lg text-gray-600">No advisors found.</div>
@@ -112,7 +112,7 @@ export default function AdvisorsPage() {
   }
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6 mt-10">
+    <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-24 px-6">
       <div className="max-w-6xl mx-auto text-center">
         {/* Header */}
         <motion.h1
