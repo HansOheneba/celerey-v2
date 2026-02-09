@@ -102,7 +102,7 @@ export default function ResearchPage() {
                       className="inline-flex items-center gap-2 text-gray-900/70 hover:text-gray-900 transition-colors"
                     >
                       <Download className="w-4 h-4" />
-                      Download PDF <span aria-hidden>→</span>
+                      Read Article <span aria-hidden>→</span>
                     </a>
                   </div>
                 </div>

@@ -15,6 +15,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "example.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.squarespace-cdn.com",
+      }, {
+        protocol: "https",
+        hostname: "www.celerey.co",
+      },
     ],
   },
 };
