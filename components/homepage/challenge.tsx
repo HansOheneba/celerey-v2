@@ -15,8 +15,8 @@ type ChallengeSectionProps = {
 
 export default function ChallengeSection({
   eyebrow = "THE CHALLENGE",
-  title = "Most people don't need more\nfinancial products.",
-  subtitle = "They need structure. Perspective. A clear plan that connects today's decisions to tomorrow's outcomes.",
+  title = "You don't need more\nfinancial products.",
+  subtitle = "You need structure. Perspective. A clear plan that connects today's decisions to tomorrow's outcomes.",
   body = "The financial industry offers complexity when it should offer clarity. It pushes products when it should provide guidance. It optimizes for transactions when it should optimize for trust.",
   emphasis = "We built Celerey to be different.",
   className = "",
