@@ -2,49 +2,121 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BeginJourneyModal } from "./beginModal";
+
+type BillingCadence = "annual" | "one-time";
+type TierKey = "starter" | "dashboard";
+
+type Tier = {
+  key: TierKey;
+  label: string;
+  name: string;
+  price: string; // "100", "300"
+  currency: string; // "USD"
+  cadence: BillingCadence;
+  badge: string; // "One-time", "Annual"
+  description: string;
+  bullets: string[];
+  ctaLabel: string;
+  footnote?: string;
+  emphasis?: boolean;
+};
 
 type EntryPointPricingProps = {
   eyebrow?: string;
   title?: string;
   subtitle?: string;
-  label?: string;
-  price?: string; // "100"
-  currency?: string; // "USD"
-  badge?: string; // "One-time"
-  bullets?: string[];
-  cta?: string;
-  ctaHref?: string;
-  footnote?: string;
+  currency?: string;
   id?: string;
+  tiers?: Tier[];
 };
 
-const defaultBullets = [
-  "Structured 60-minute session with a certified advisor",
-  "Complete review of income, assets, and liabilities",
-  "Goal mapping and priority alignment",
-  "High-level Financial strategy and clear next steps",
+const starterBullets = [
+  "One advisory session (up to 45 minutes)",
+  "High-level review of your current position and goals",
+  "Clear next steps and recommended priorities",
+  "No dashboard access",
 ];
 
+const dashboardBullets = [
+  "Two advisor sessions",
+  "Dashboard access for tracking and insights",
+  "Financial snapshot setup (we collect and structure your inputs)",
+  "Our bot learns your context and keeps you on track",
+  "Priority alerts + next steps tailored to you",
+];
+
+function PriceBlock({
+  price,
+  currency,
+  cadence,
+}: {
+  price: string;
+  currency: string;
+  cadence: BillingCadence;
+}) {
+  const cadenceText = cadence === "annual" ? "per year" : "one-time";
+  return (
+    <div className="mt-4 flex items-end gap-2">
+      <span className="font-serif text-5xl leading-none">${price}</span>
+      <div className="pb-1">
+        <div className="text-sm text-white/70">{currency}</div>
+        <div className="text-xs text-white/55">{cadenceText}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function EntryPointPricing({
-  eyebrow = "BEGIN HERE",
-  title = "One clear starting point",
-  subtitle =
-    "Every Celerey relationship begins with a single, structured advisory session. No complexity. No commitment beyond this first step.",
-  label = "ADVISORY ACCESS",
-  price = "100",
+  eyebrow = "PRICING",
+  title = "Choose your starting point",
+  subtitle = "Go advisory-only for a quick reset, or choose dashboard access for ongoing visibility, structured financial capture, and deeper guidance.",
   currency = "USD",
-  badge = "One-time",
-  bullets = defaultBullets,
-  cta = "Schedule Your Session",
-  ctaHref = "/book",
-  footnote = "Professional. Confidential. No sales pressure.",
   id = "entry-pricing",
+  tiers,
 }: EntryPointPricingProps) {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const defaultTiers: Tier[] = useMemo(
+    () => [
+      {
+        key: "starter",
+        label: "ADVISORY ONLY",
+        name: "Starter",
+        price: "100",
+        currency,
+        cadence: "one-time",
+        badge: "One-time",
+        description:
+          "A single advisory session designed to give you clarity, direction, and a clean set of next steps; without dashboard access.",
+        bullets: starterBullets,
+        ctaLabel: "Book Advisory Session",
+      },
+      {
+        key: "dashboard",
+        label: "ADVISORY + DASHBOARD",
+        name: "Dashboard (Annual)",
+        price: "300",
+        currency,
+        cadence: "annual",
+        badge: "Annual",
+        description:
+          "For ongoing visibility; dashboard access, structured financial capture, our bot that understands your context, and two focused advisor sessions to help you act on insights.",
+        bullets: dashboardBullets,
+        ctaLabel: "Start Annual Plan",
+       
+        emphasis: true,
+      },
+    ],
+    [currency],
+  );
+
+  const allTiers = tiers?.length ? tiers : defaultTiers;
+  const starter = allTiers.find((t) => t.key === "starter")!;
+  const dashboard = allTiers.find((t) => t.key === "dashboard")!;
 
   return (
     <>
@@ -81,81 +153,112 @@ export default function EntryPointPricing({
             {subtitle}
           </motion.p>
 
-          {/* Card */}
+          {/* Side-by-side pricing */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
-            transition={{ delay: 0.08, duration: 0.7, ease: "easeOut" }}
-            className="mx-auto mt-12 max-w-3xl"
+            transition={{ delay: 0.06, duration: 0.7, ease: "easeOut" }}
+            className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2"
           >
-            <div className="relative overflow-hidden rounded-[28px] bg-[#1B1856] text-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] ring-1 ring-white/10">
-              {/* subtle glow */}
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.14),transparent_55%)]" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
+            {[starter, dashboard].map((t) => (
+              <div
+                key={t.key}
+                className={[
+                  "relative flex h-full flex-col overflow-hidden rounded-[28px] bg-[#1B1856] text-white shadow-[0_18px_55px_rgba(0,0,0,0.16)] ring-1 ring-white/10",
+                  t.emphasis ? "md:scale-[1.01]" : "",
+                ].join(" ")}
+              >
+                {/* subtle glow */}
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.14),transparent_55%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
 
-              {/* Top area */}
-              <div className="relative flex items-start justify-between gap-6 px-8 pt-8 sm:px-10">
-                <div className="text-left">
-                  <p className="text-xs tracking-[0.18em] text-white/70">
-                    {label}
-                  </p>
+                <div className="relative flex flex-1 flex-col px-8 pt-8 sm:px-10">
+                  <div className="flex items-start justify-between gap-6">
+                    <div className="text-left">
+                      <p className="text-xs tracking-[0.18em] text-white/70">
+                        {t.label}
+                      </p>
 
-                  <div className="mt-3 flex items-end gap-3">
-                    <span className="font-serif text-5xl leading-none sm:text-6xl">
-                      ${price}
-                    </span>
-                    <span className="pb-1 text-sm text-white/60">{currency}</span>
+                      <h3 className="mt-3 text-lg font-semibold text-white">
+                        {t.name}
+                      </h3>
+
+                      <PriceBlock
+                        price={t.price}
+                        currency={t.currency}
+                        cadence={t.cadence}
+                      />
+
+                      <p className="mt-4 text-sm text-white/70">
+                        {t.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-1">
+                      <Badge
+                        variant="outline"
+                        className="bg-white/10 text-white/80 ring-white/10"
+                      >
+                        {t.badge}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 h-px w-full bg-white/10" />
+
+                  <div className="flex flex-1 flex-col py-8">
+                    <ul className="space-y-4 text-left">
+                      {t.bullets.map((b) => (
+                        <li key={b} className="flex items-start gap-3">
+                          <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/10">
+                            <Check className="h-4 w-4 text-white/85" />
+                          </span>
+                          <p className="text-sm leading-relaxed text-white/85 sm:text-base">
+                            {b}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-auto pt-10">
+                      <Button
+                        onClick={() => {
+                          setModalOpen(true);
+                        }}
+                        className={[
+                          "h-12 w-full rounded-full text-sm font-semibold",
+                          t.emphasis
+                            ? "bg-white text-neutral-900 hover:bg-white/90"
+                            : "bg-white/10 text-white hover:bg-white/15 ring-1 ring-white/15",
+                        ].join(" ")}
+                      >
+                        {t.ctaLabel}
+                      </Button>
+
+                      {t.footnote ? (
+                        <p className="mt-4 text-center text-xs text-white/50">
+                          {t.footnote}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
-
-                <div className="pt-1">
-                  <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80 ring-1 ring-white/10">
-                    {badge}
-                  </span>
-                </div>
               </div>
-
-              {/* divider */}
-              <div className="mt-8 h-px w-full bg-white/10" />
-
-              {/* Bullets */}
-              <div className="relative px-8 py-8 sm:px-10">
-                <ul className="space-y-4 text-left">
-                  {bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/10">
-                        <Check className="h-4 w-4 text-white/85" />
-                      </span>
-                      <p className="text-sm leading-relaxed text-white/85 sm:text-base">
-                        {b}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA */}
-                <div className="mt-10">
-                  <Button
-                    onClick={() => setModalOpen(true)}
-                    className="h-12 w-full rounded-full bg-white text-sm font-semibold text-neutral-900 hover:bg-white/90"
-                  >
-                    {cta}
-                  </Button>
-
-                  <p className="mt-4 text-center text-xs text-white/50">
-                    {footnote}
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </motion.div>
+
+          <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-neutral-500">
+            Starter is a one-time payment. Dashboard is billed annually.
+          </p>
         </div>
       </section>
 
+      {/* If your BeginJourneyModal doesn't accept tier yet, remove tier={selectedTier}. */}
       <BeginJourneyModal
         open={modalOpen}
         onOpenChange={setModalOpen}
+        // tier={selectedTier}
       />
     </>
   );
