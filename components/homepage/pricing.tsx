@@ -45,7 +45,7 @@ const dashboardBullets = [
   "Two advisor sessions",
   "Dashboard access for tracking and insights",
   "Financial snapshot setup (we collect and structure your inputs)",
-  "Our bot learns your context and keeps you on track",
+  "Our technology learns your context and keeps you on track",
   "Priority alerts + next steps tailored to you",
 ];
 
@@ -98,7 +98,7 @@ export default function EntryPointPricing({
       {
         key: "dashboard",
         label: "ADVISORY + DASHBOARD",
-        name: "Dashboard (Annual)",
+        name: "Core (Annual)",
         price: "300",
         currency,
         cadence: "annual",
@@ -254,11 +254,9 @@ export default function EntryPointPricing({
         </div>
       </section>
 
-      {/* If your BeginJourneyModal doesn't accept tier yet, remove tier={selectedTier}. */}
       <BeginJourneyModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        // tier={selectedTier}
       />
     </>
   );

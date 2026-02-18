@@ -5,12 +5,23 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "../hooks/useOnboardingStore";
-import { Loader2, Calendar, ArrowLeft, ShieldCheck, Mail, Phone, Target, DollarSign, TrendingUp } from "lucide-react";
+import { Loader2, Calendar, ArrowLeft, } from "lucide-react";
 
 declare global {
   interface Window {
-    gapi: any;
-    calendar: any;
+    gapi: {
+      load: (name: string, callback: () => void) => void;
+    };
+    calendar: {
+      schedulingButton: {
+        load: (config: {
+          url: string;
+          color: string;
+          label: string;
+          target: HTMLElement;
+        }) => void;
+      };
+    };
   }
 }
 
