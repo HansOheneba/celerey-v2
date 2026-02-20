@@ -25,12 +25,14 @@ export default function ChallengeSection({
     <section
       className={[
         "w-full bg-[#f4f3f2] text-neutral-900",
-        "py-16 sm:py-24",
+        "py-20 sm:py-28",
         className,
       ].join(" ")}
     >
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+      {/* ✅ wider, more “designed” container */}
+      <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16">
+        {/* ✅ slightly image-weighted layout for a premium feel */}
+        <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.1fr]">
           {/* LEFT: text */}
           <motion.div
             className="order-2 lg:order-1 max-w-3xl"
@@ -67,9 +69,9 @@ export default function ChallengeSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.05 }}
-            className="mx-auto w-full max-w-[520px] lg:mx-0 flex items-center justify-center"
+            className="order-1 lg:order-2 mx-auto w-full lg:mx-0 flex items-center justify-center lg:justify-end"
           >
-            <div className="aspect-square w-56 sm:w-72 md:w-96 rounded-full border border-black/10 bg-white/60 p-4 sm:p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm flex items-center justify-center">
+            <div className="aspect-square w-60 sm:w-80 md:w-[420px] rounded-full border border-black/10 bg-white/60 p-4 sm:p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm flex items-center justify-center">
               <div className="opacity-90 w-full h-full flex items-center justify-center">
                 <LottiePlayer
                   animationData={declutterAnimation}
