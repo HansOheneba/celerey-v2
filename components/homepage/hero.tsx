@@ -30,10 +30,9 @@ function useCountUp(target: number, isVisible: boolean) {
 
     let current = 0;
     let elapsed = 0;
-    const duration = 1800; // ms - increased for slower animation
+    const duration = 1800;
     const interval = setInterval(() => {
       elapsed += 30;
-      // Ease-out quint: 1 - (1-t)^5 (very strong deceleration)
       const progress = Math.min(elapsed / duration, 1);
       const easeProgress = 1 - Math.pow(1 - progress, 5);
       current = target * easeProgress;
@@ -50,6 +49,47 @@ function useCountUp(target: number, isVisible: boolean) {
   }, [isVisible, target]);
 
   return count;
+}
+
+function StatItem({
+  stat,
+  isVisible,
+}: {
+  stat: (typeof STATS)[number];
+  isVisible: boolean;
+}) {
+  const numericValue = parseInt(stat.value);
+  const isNumeric = !isNaN(numericValue);
+  const count = useCountUp(isNumeric ? numericValue : 0, isVisible);
+
+  const hasReg = stat.value.includes("®");
+  const baseValue = hasReg ? stat.value.replace("®", "") : stat.value;
+
+  return (
+    <motion.div
+      className="text-center"
+      initial={{ opacity: 0, y: 10 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="font-serif text-base text-white xs:text-xl sm:text-2xl md:text-3xl">
+        {isNumeric ? (
+          <>
+            {count}
+            {stat.value.includes("+") ? "+" : ""}
+          </>
+        ) : (
+          <span>
+            {baseValue}
+            {hasReg && <sup className="ml-1 text-[15px]">®</sup>}
+          </span>
+        )}
+      </div>
+      <div className="mt-1 text-[9px] tracking-[0.16em] text-white/80 xs:text-[10px] sm:text-[11px]">
+        {stat.label}
+      </div>
+    </motion.div>
+  );
 }
 
 export default function Hero() {
@@ -106,7 +146,7 @@ export default function Hero() {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.3 },
     );
 
     if (statsRef.current) observer.observe(statsRef.current);
@@ -137,9 +177,7 @@ export default function Hero() {
         ))}
       </div>
 
-      <div className="" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/40 to-black/40" />
-      <div className="" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto flex min-h-screen md:min-h-[95vh] max-w-6xl flex-col items-center justify-between px-3 pt-14 pb-10 text-center sm:px-6 sm:pt-20 sm:pb-16">
@@ -150,11 +188,6 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          {/* eyebrow */}
-          {/* <p className="text-[11px] sm:text-xs tracking-[0.22em] text-white">
-            MODERN WEALTH ADVISORY
-          </p> */}
-
           {/* headline */}
           <h1 className="mt-4 font-serif text-3xl leading-[1.1] text-white xs:text-4xl sm:text-5xl md:text-6xl">
             Wealth built with{" "}
@@ -164,8 +197,8 @@ export default function Hero() {
           {/* subtext */}
           <p className="mx-auto mt-4 max-w-[95vw] text-sm leading-relaxed text-white xs:text-base sm:text-lg sm:max-w-2xl">
             Celerey is combining intelligent technology with globally certified
-            advisors to bring structure, clarity, and long-term direction to your
-            financial life.
+            advisors to bring structure, clarity, and long-term direction to
+            your financial life.
           </p>
 
           {/* buttons */}
@@ -174,7 +207,7 @@ export default function Hero() {
               onClick={handleScrollToPricing}
               className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
             >
-              Start with $100
+              Start for Free
             </Button>
 
             <Button
@@ -188,50 +221,16 @@ export default function Hero() {
         </motion.div>
 
         {/* Begin journey modal (hero) */}
-        <BeginJourneyModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-        />
+        <BeginJourneyModal open={modalOpen} onOpenChange={setModalOpen} />
 
         {/* divider + stats */}
         <div ref={statsRef} className="mt-10 w-full max-w-5xl sm:mt-14">
           <div className="mx-auto h-px w-full bg-white/20" />
 
           <div className="mx-auto mt-7 grid w-full grid-cols-3 gap-3 sm:mt-10 sm:gap-8">
-            {STATS.map((s) => {
-              const numericValue = parseInt(s.value);
-              const isNumeric = !isNaN(numericValue);
-              const count = useCountUp(isNumeric ? numericValue : 0, statsVisible);
-
-              const hasReg = s.value.includes("®");
-              const baseValue = hasReg ? s.value.replace("®", "") : s.value;
-
-              return (
-                <motion.div
-                  key={s.label}
-                  className="text-center"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={statsVisible ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="font-serif text-base text-white xs:text-xl sm:text-2xl md:text-3xl">
-                    {isNumeric ? (
-                      count
-                    ) : (
-                      <span>
-                        {baseValue}
-                        {hasReg && (
-                          <sup className="ml-1 text-[15px]">®</sup>
-                        )}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 text-[9px] tracking-[0.16em] text-white/80 xs:text-[10px] sm:text-[11px]">
-                    {s.label}
-                  </div>
-                </motion.div>
-              );
-            })}
+            {STATS.map((s) => (
+              <StatItem key={s.label} stat={s} isVisible={statsVisible} />
+            ))}
           </div>
         </div>
       </div>

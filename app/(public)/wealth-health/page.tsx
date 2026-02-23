@@ -205,7 +205,7 @@ export default function WealthHealthPage() {
       name: pillar,
       score: data.score,
       color: getPillarColor(data.score),
-    })
+    }),
   );
 
   const getBadgeClass = (score: number) => {
@@ -236,8 +236,8 @@ export default function WealthHealthPage() {
             Your Financial Health Review
           </h1>
           <p className="text-gray-600 text-lg">
-            You've taken the first step. Now let's turn these insights into
-            action with personalized guidance.
+            You have taken the first step. Now you can start free access and
+            turn these insights into action.
           </p>
         </motion.div>
 
@@ -262,19 +262,19 @@ export default function WealthHealthPage() {
 
           <div className="inline-flex flex-col gap-3 items-center">
             <p className="text-sm text-gray-600">
-              This snapshot shows where you stand today. The real value comes
-              from understanding what to do next.
+              This snapshot shows where you stand today. Start your free trial
+              to unlock the dashboard and tools.
             </p>
             <Button
-              onClick={() => setModalOpen(true)}
+              onClick={() => router.push("/start")}
               className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white px-6 py-2 font-semibold"
             >
-              Let's Create Your Action Plan
+              Start for free
             </Button>
           </div>
 
           <div className="mt-4 text-xs text-gray-400">
-            Score calculated from 6 financial pillars
+            Score is calculated from 6 financial pillars
           </div>
         </motion.div>
 
@@ -293,7 +293,7 @@ export default function WealthHealthPage() {
             className="mb-10 bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
           >
             <h2 className="text-2xl font-semibold text-[#1B1856] mb-6 text-center">
-              How You&apos;re Doing Across Key Financial Areas
+              How you are doing across key financial areas
             </h2>
 
             <ResponsiveContainer width="100%" height={300}>
@@ -466,24 +466,26 @@ export default function WealthHealthPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
             <div className="max-w-2xl">
               <h2 className="text-2xl font-semibold mb-3">
-                Turn Insights Into Action
+                Unlock your dashboard for free
               </h2>
               <p className="text-white/90 mb-4">
-                Your score is just the starting point. The real transformation happens when you sit down with an advisor who can interpret these results, answer your specific questions, and build a clear path forward tailored to your situation.
+                Your score is the starting point. Start a free trial to access
+                your dashboard, track your progress, and use intelligent tools
+                to improve your financial structure.
               </p>
 
               <ul className="space-y-2 text-sm text-white/85">
                 <li className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  Understand what your score really means
+                  See your full dashboard breakdown
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  Get clarity on your biggest financial priority
+                  Track your pillars over time
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  Leave with a concrete first step
+                  Get tailored next steps and tools
                 </li>
               </ul>
             </div>
@@ -491,21 +493,21 @@ export default function WealthHealthPage() {
             <div className="flex flex-col gap-3 w-full md:w-auto">
               <div className="bg-white/10 border border-white/20 rounded-xl p-4 text-center">
                 <p className="text-sm text-white/80 mb-1">Start with</p>
-                <p className="text-3xl font-bold">$100</p>
+                <p className="text-3xl font-bold">Free</p>
                 <p className="text-xs text-white/70 mt-1">
-                  60-minute structured session
+                  7 day dashboard trial
                 </p>
               </div>
 
               <Button
-                onClick={() => setModalOpen(true)}
+                onClick={() => router.push("/start")}
                 className="bg-white text-[#1B1856] hover:bg-white/90 font-semibold px-6 py-3"
               >
-                Book Your Session <ArrowRight className="ml-2 w-4 h-4" />
+                Start for free <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
 
               <p className="text-xs text-white/70 text-center">
-                No obligation. Professional. Confidential.
+                No card required to begin, if you choose that option.
               </p>
             </div>
           </div>
@@ -519,22 +521,21 @@ export default function WealthHealthPage() {
           className="bg-blue-50 border border-blue-100 rounded-2xl p-6"
         >
           <h3 className="text-lg font-semibold text-[#1B1856] mb-4">
-            How to Read Your Financial MOT
+            How to read your Financial MOT
           </h3>
           <div className="text-sm text-gray-700 space-y-3 max-w-2xl">
             <p>
               <strong className="text-[#1B1856]">Your Main Score:</strong> A
-              single metric (0–100) reflecting your overall financial structure
-              and stability.
+              single metric (0 to 100) reflecting your overall financial
+              structure and stability.
             </p>
             <p>
-              <strong className="text-[#1B1856]">6 Financial Pillars:</strong>{" "}
-              Break down where you're strongest and where there's room to grow.
-              Color-coded for quick understanding.
+              <strong className="text-[#1B1856]">6 Financial Pillars:</strong> A
+              breakdown of where you are strongest and where you can improve,
+              color coded for quick understanding.
             </p>
             <p className="italic text-gray-600">
-              💡 <strong>Tip:</strong> Retake this assessment in 90 days to
-              track your progress after working with an advisor.
+              Tip: Retake this assessment in 90 days to track progress.
             </p>
           </div>
         </motion.div>
@@ -547,19 +548,18 @@ export default function WealthHealthPage() {
           className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-8 text-center"
         >
           <h3 className="text-xl font-semibold text-[#1B1856] mb-2">
-            Ready to Go Deeper?
+            Ready to continue?
           </h3>
           <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-            These numbers tell a story — but only an advisor can help you write
-            the next chapter. Get personalized guidance based on your unique
-            situation.
+            Start free access to your dashboard and turn this report into a
+            clear plan you can follow.
           </p>
 
           <Button
-            onClick={() => setModalOpen(true)}
+            onClick={() => router.push("/start")}
             className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white px-8 py-3 font-semibold"
           >
-            Schedule Your $100 Session
+            Start for free
           </Button>
         </motion.div>
 
@@ -567,17 +567,14 @@ export default function WealthHealthPage() {
         <div className="text-center mt-12 text-gray-600">
           <TrendingUp className="mx-auto mb-3 text-[#1B1856]" />
           <p>
-            This assessment revealed where you stand. Now let's focus on where
-            you're going.
+            This assessment shows where you stand. Now you can start building
+            where you are going.
           </p>
         </div>
       </div>
 
       {/* Modal */}
-      <BeginJourneyModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-      />
+      <BeginJourneyModal open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   );
 }

@@ -293,7 +293,7 @@ export default function Header() {
             onClick={handleScrollToPricing}
             className="h-10 px-4 text-sm cursor-pointer"
           >
-            Start with $100
+            Start for Free
           </Button>
         </div>
 
