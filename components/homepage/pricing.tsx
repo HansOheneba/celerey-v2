@@ -21,6 +21,7 @@ type Tier = {
   description: string;
   bullets: string[];
   ctaLabel: string;
+  paymentUrl: string;
   footnote?: string;
   emphasis?: boolean;
   highlight?: string;
@@ -137,6 +138,7 @@ export default function EntryPointPricing({
   tiers,
 }: EntryPointPricingProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPaymentUrl, setSelectedPaymentUrl] = useState("");
   const [expanded, setExpanded] = useState<Record<TierKey, boolean>>({
     foundation: true,
     dashboard: true,
@@ -156,6 +158,7 @@ export default function EntryPointPricing({
           "Get clarity, a plan, and priorities you can act on immediately.",
         bullets: foundationBullets,
         ctaLabel: "Book Foundation Session",
+        paymentUrl: "https://buy.stripe.com/test_fZu9AT3b42k9fcT2s99Ve01", // $100 actual link
         footnote: "One session. No dashboard access.",
       },
       {
@@ -165,59 +168,38 @@ export default function EntryPointPricing({
         price: "299.99",
         currency,
         cadence: "annual",
-        badge: "Most chosen",
+        badge: "7-day free trial",
         highlight: "Best for ongoing progress and visibility",
-        description: "Year-round guidance, tracking, and continuous insights.",
+        description:
+          "Start free for 7 days. Year-round guidance, tracking, and continuous insights.",
         bullets: dashboardBullets,
-        ctaLabel: "Start Core Plan",
+        ctaLabel: "Start for Free",
+        paymentUrl: "https://buy.stripe.com/test_7sYdR94f86ApggXgiZ9Ve02", // $300 actual link
         emphasis: true,
-        footnote: "Billed annually. Cancel at renewal.",
+        footnote: "7-day free trial. Then billed annually. Cancel anytime.",
       },
     ],
     [currency],
   );
-
-  const allTiers = tiers?.length ? tiers : defaultTiers;
+  const allTiers = tiers ?? defaultTiers;
 
   return (
     <>
-      <section id={id} className="w-full bg-white py-16 sm:py-24">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80"
-          >
+      <section id={id} className="py-24">
+        <div className="px-4 text-center">
+          <p className="text-xs tracking-[0.18em] text-neutral-500">
             {eyebrow}
-          </motion.p>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="mt-6 font-serif text-4xl leading-[1.08] text-neutral-900 sm:text-5xl md:text-6xl"
-          >
-            {title}
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ delay: 0.12, duration: 0.6 }}
-            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-700 sm:text-lg"
-          >
+          </p>
+          <h2 className="mt-3 font-serif text-4xl text-neutral-900">{title}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-500">
             {subtitle}
-          </motion.p>
+          </p>
 
           <motion.div
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ delay: 0.06, duration: 0.7, ease: "easeOut" }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
             className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2"
           >
             {allTiers.map((t) => {
@@ -238,7 +220,7 @@ export default function EntryPointPricing({
 
                   {isCore ? (
                     <div className="absolute right-6 top-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 ring-1 ring-white/15">
-                      Most chosen
+                      7-day free trial
                     </div>
                   ) : null}
 
@@ -321,7 +303,10 @@ export default function EntryPointPricing({
 
                       <div className="mt-auto pt-10">
                         <Button
-                          onClick={() => setModalOpen(true)}
+                          onClick={() => {
+                            setSelectedPaymentUrl(t.paymentUrl);
+                            setModalOpen(true);
+                          }}
                           className={[
                             "h-12 w-full rounded-full text-sm font-semibold",
                             t.emphasis
@@ -346,12 +331,17 @@ export default function EntryPointPricing({
           </motion.div>
 
           <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-neutral-500">
-            Foundation is a one-time payment. Core is billed annually.
+            Foundation is a one-time payment. Core includes a 7-day free trial,
+            then billed annually.
           </p>
         </div>
       </section>
 
-      <BeginJourneyModal open={modalOpen} onOpenChange={setModalOpen} />
+      <BeginJourneyModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        paymentUrl={selectedPaymentUrl}
+      />
     </>
   );
 }

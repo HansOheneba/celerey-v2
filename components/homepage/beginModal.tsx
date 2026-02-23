@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { X, MailCheck, MapPin, Search, CreditCard } from "lucide-react";
+import { X, MailCheck, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,8 @@ type BeginJourneyValues = {
 type BeginJourneyModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  apiUrl?: string; 
+  apiUrl?: string;
+  paymentUrl?: string;
 };
 
 // API Response Types
@@ -43,26 +44,17 @@ interface BeginJourneyResponse {
   details?: Record<string, string>;
 }
 
-interface CheckoutResponse {
-  ok: boolean;
-  sessionId: string;
-  url: string;
-  expires_at: number;
-  error?: string;
-  message?: string;
-}
-
 export function BeginJourneyModal({
   open,
   onOpenChange,
   apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`,
+  paymentUrl,
 }: BeginJourneyModalProps) {
   const router = useRouter();
   const { updateData } = useOnboardingStore();
-  
-  const [step, setStep] = React.useState<"form" | "payment" | "success">("form");
+
+  const [step, setStep] = React.useState<"form" | "success">("form");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [userId, setUserId] = React.useState<string | null>(null);
 
@@ -81,7 +73,6 @@ export function BeginJourneyModal({
   const resetAll = React.useCallback(() => {
     setStep("form");
     setIsSubmitting(false);
-    setIsProcessingPayment(false);
     setSubmitError(null);
     setTouched({});
     setValues({
@@ -106,7 +97,7 @@ export function BeginJourneyModal({
 
   const setField = <K extends keyof BeginJourneyValues>(
     key: K,
-    value: BeginJourneyValues[K]
+    value: BeginJourneyValues[K],
   ) => {
     setValues((v) => ({ ...v, [key]: value }));
   };
@@ -149,55 +140,62 @@ export function BeginJourneyModal({
 
     try {
       setIsSubmitting(true);
-      
-      console.log("Submitting to:", apiUrl);
-      console.log("Payload:", values);
 
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-        credentials: "include",
-      });
-
-      console.log("Response status:", response.status);
-      const result: BeginJourneyResponse = await response.json();
-      console.log("Response body:", result);
-
-      if (!result.ok) {
-        if (result.error === "VALIDATION_ERROR" && result.details) {
-          const errorMessages = Object.values(result.details).join(", ");
-          throw new Error(errorMessages);
-        }
-        throw new Error(result.message || "Submission failed");
-      }
-      
-      // Store the userId from the response
-      const newUserId = result.userId;
-      setUserId(newUserId);
-      
-      // Save data to the onboarding store with userId
+      // Save data to the onboarding store
       updateData({
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         phone: values.phone,
-        timeZone: values.timeZone, // This now contains the user's location input
+        timeZone: values.timeZone,
         agree: values.agree,
-        userId: newUserId,
         currentStep: 1,
       });
 
-      // Also store in localStorage for persistence across page navigation
-      if (typeof window !== 'undefined') {
-        localStorage.setItem("celerey_user_id", newUserId);
+      // Try to register user via API (non-blocking — if API is unavailable, still redirect)
+      let newUserId: string | null = null;
+      try {
+        if (apiUrl && !apiUrl.startsWith("undefined")) {
+          const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(values),
+            credentials: "include",
+          });
+
+          const result: BeginJourneyResponse = await response.json();
+
+          if (result.ok && result.userId) {
+            newUserId = result.userId;
+            setUserId(newUserId);
+            updateData({ userId: newUserId });
+
+            if (typeof window !== "undefined") {
+              localStorage.setItem("celerey_user_id", newUserId);
+            }
+          }
+        }
+      } catch {
+        // API unavailable — continue to Stripe anyway
+        console.warn("API call to /start failed — proceeding to payment link");
       }
 
-      // Move to payment step
-      setStep("payment");
-      
+      // Redirect to Stripe payment link (pre-filled with user email)
+      onOpenChange(false);
+      if (paymentUrl) {
+        const url = new URL(paymentUrl);
+        url.searchParams.set("prefilled_email", values.email);
+        url.searchParams.set(
+          "success_url",
+          process.env.NEXT_PUBLIC_STRIPE_SUCCESS_URL ||
+            "https://celereyv2.vercel.app/onboarding",
+        );
+        window.location.href = url.toString();
+      } else {
+        router.push(
+          process.env.NEXT_PUBLIC_STRIPE_SUCCESS_URL || "/onboarding",
+        );
+      }
     } catch (err) {
       const message =
         err instanceof Error
@@ -206,66 +204,6 @@ export function BeginJourneyModal({
       setSubmitError(message);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleProceedToPayment = async () => {
-    if (!userId) {
-      setSubmitError("User ID not found. Please try again.");
-      return;
-    }
-
-    setIsProcessingPayment(true);
-    setSubmitError(null);
-
-    try {
-      // Call your backend to create a Stripe Checkout session
-      const checkoutApiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/billing/checkout`;
-      
-      console.log("Creating checkout session for user:", userId);
-      console.log("Checkout API URL:", checkoutApiUrl);
-
-      const response = await fetch(checkoutApiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId }),
-        credentials: "include",
-      });
-
-      const result: CheckoutResponse = await response.json();
-      console.log("Checkout response:", result);
-
-      if (!result.ok) {
-        if (result.error === "ALREADY_PAID") {
-          // User already paid - redirect them to success/dashboard
-          setSubmitError("ALREADY_PAID:You already have access. Redirecting...");
-          setTimeout(() => {
-            router.push("/onboarding");
-          }, 2000);
-          return;
-        }
-        throw new Error(result.message || "Failed to create payment session");
-      }
-
-      // Redirect to Stripe Checkout URL
-      if (result.url) {
-        console.log("Redirecting to Stripe Checkout:", result.url);
-        window.location.href = result.url;
-      } else {
-        throw new Error("No payment URL received");
-      }
-      
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Payment setup failed. Please try again.";
-      setSubmitError(message);
-      console.error("Payment error:", err);
-    } finally {
-      setIsProcessingPayment(false);
     }
   };
 
@@ -291,7 +229,7 @@ export function BeginJourneyModal({
                     Begin Your Journey
                   </DialogTitle>
                   <p className="mt-2 text-sm text-neutral-600 sm:text-base">
-                    Create your account to schedule your advisory session
+                    Enter your details to get started
                   </p>
                 </DialogHeader>
 
@@ -328,7 +266,9 @@ export function BeginJourneyModal({
                         className="h-12 rounded-xl border-black/10 bg-white"
                       />
                       {touched.lastName && errors.lastName ? (
-                        <p className="text-xs text-red-600">{errors.lastName}</p>
+                        <p className="text-xs text-red-600">
+                          {errors.lastName}
+                        </p>
                       ) : null}
                     </div>
                   </div>
@@ -388,7 +328,8 @@ export function BeginJourneyModal({
                       <p className="text-xs text-red-600">{errors.timeZone}</p>
                     ) : null}
                     <p className="text-xs text-neutral-500">
-                      We'll use this to schedule sessions at convenient times for you
+                      We&#39;ll use this to schedule sessions at convenient times
+                      for you
                     </p>
                   </div>
 
@@ -402,7 +343,10 @@ export function BeginJourneyModal({
                         onBlur={() => markTouched("agree")}
                         className="mt-1"
                       />
-                      <Label htmlFor="agree" className="text-sm text-neutral-700">
+                      <Label
+                        htmlFor="agree"
+                        className="text-sm text-neutral-700"
+                      >
                         I agree to the{" "}
                         <Link
                           href="/terms"
@@ -428,11 +372,13 @@ export function BeginJourneyModal({
 
                   {/* Server/API error */}
                   {submitError ? (
-                    <div className={`rounded-xl border px-4 py-3 text-sm ${
-                      submitError.startsWith("ALREADY_PAID:")
-                        ? "border-blue-200 bg-blue-50 text-blue-700"
-                        : "border-red-200 bg-red-50 text-red-700"
-                    }`}>
+                    <div
+                      className={`rounded-xl border px-4 py-3 text-sm ${
+                        submitError.startsWith("ALREADY_PAID:")
+                          ? "border-blue-200 bg-blue-50 text-blue-700"
+                          : "border-red-200 bg-red-50 text-red-700"
+                      }`}
+                    >
                       {submitError.replace("ALREADY_PAID:", "")}
                     </div>
                   ) : null}
@@ -443,9 +389,7 @@ export function BeginJourneyModal({
                     disabled={!canSubmit}
                     className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90 disabled:opacity-60"
                   >
-                    {isSubmitting
-                      ? "Creating your account..."
-                      : "Create Account & Continue"}
+                    {isSubmitting ? "Creating your account..." : "Continue"}
                   </Button>
 
                   {/* Footer */}
@@ -460,96 +404,6 @@ export function BeginJourneyModal({
                     </Link>
                   </p>
                 </form>
-              </>
-            ) : step === "payment" ? (
-              <>
-                <DialogHeader className="text-left">
-                  <DialogTitle className="font-serif text-3xl text-neutral-900 sm:text-4xl">
-                    Secure Payment
-                  </DialogTitle>
-                  <p className="mt-2 text-sm text-neutral-600 sm:text-base">
-                    Complete your payment to unlock your advisory session
-                  </p>
-                </DialogHeader>
-
-                <div className="mt-8 space-y-6">
-                  {/* User Information Card */}
-                  <div className="rounded-xl border border-black/10 bg-white p-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100">
-                          <MailCheck className="h-5 w-5 text-neutral-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-neutral-900">Account Created</p>
-                          <p className="text-xs text-neutral-600">{values.email}</p>
-                        </div>
-                      </div>
-                      <div className="border-t pt-3">
-                        <p className="text-xs text-neutral-500">
-                          Location: <span className="font-medium">{values.timeZone}</span>
-                        </p>
-                        <p className="text-xs text-neutral-500">
-                          User ID: <span className="font-mono text-xs">{userId ? userId.substring(0, 8) + "..." : "Loading..."}</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Payment Details Card */}
-                  <div className="rounded-xl border border-black/10 bg-white p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900">Advisory Session</p>
-                        <p className="text-xs text-neutral-600">One-time payment</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-neutral-900">$100.00</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {submitError ? (
-                    <div className={`rounded-xl border px-4 py-3 text-sm ${
-                      submitError.startsWith("ALREADY_PAID:")
-                        ? "border-blue-200 bg-blue-50 text-blue-700"
-                        : "border-red-200 bg-red-50 text-red-700"
-                    }`}>
-                      {submitError.replace("ALREADY_PAID:", "")}
-                    </div>
-                  ) : null}
-
-                  {/* Updated Button */}
-                  <Button
-                    onClick={handleProceedToPayment}
-                    disabled={isProcessingPayment || !userId}
-                    className="h-12 w-full rounded-full bg-[#1B1856] text-white hover:bg-[#1B1856]/90 disabled:opacity-60"
-                  >
-                    {isProcessingPayment ? (
-                      <span className="flex items-center gap-2">
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                        Setting up secure payment...
-                      </span>
-                    ) : (
-                      "Proceed to Secure Payment"
-                    )}
-                  </Button>
-
-                  <p className="text-center text-xs text-neutral-500">
-                    You'll be redirected to our secure payment processor
-                  </p>
-                  
-                  {/* Back button for flexibility */}
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => setStep("form")}
-                      className="text-sm text-neutral-600 hover:text-neutral-900 underline underline-offset-2"
-                    >
-                      Go back to edit information
-                    </button>
-                  </div>
-                </div>
               </>
             ) : (
               <>
