@@ -328,8 +328,8 @@ export function BeginJourneyModal({
                       <p className="text-xs text-red-600">{errors.timeZone}</p>
                     ) : null}
                     <p className="text-xs text-neutral-500">
-                      We&#39;ll use this to schedule sessions at convenient times
-                      for you
+                      We&#39;ll use this to schedule sessions at convenient
+                      times for you
                     </p>
                   </div>
 
