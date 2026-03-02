@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
+import Header from "@/layout/header";
+import Footer from "@/layout/footer";
 // import { ClerkProvider } from "@clerk/nextjs";
 
 // PP Cirka Font (note the correct spelling: Cirka, not Circa)
@@ -124,7 +126,13 @@ export default function RootLayout({
           className="hidden"
         />
 
-        {children}
+         <Header />
+             
+              {/* Main content */}
+              <main className="mx-auto pt-24">{children}</main>
+        
+              {/* Footer*/}
+              <Footer />
         <Toaster position="bottom-center" />
       </body>
     </html>

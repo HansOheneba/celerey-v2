@@ -6,11 +6,11 @@ import { ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="relative min-h-screen bg-[#070A14] text-white overflow-hidden -mt-24">
+    <div className="relative min-h-screen bg-white text-black overflow-hidden -mt-24">
       {/* Subtle brand glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-32 -left-40 h-[520px] w-[520px] rounded-full bg-purple-500/20 blur-[120px]" />
-        <div className="absolute bottom-[-160px] right-[-180px] h-[560px] w-[560px] rounded-full bg-[#1B1856]/25 blur-[130px]" />
+        <div className="absolute bottom-[120px] right-[-180px] h-[560px] w-[560px] rounded-full bg-[#1B1856]/25 blur-[130px]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_55%)]" />
       </div>
 
@@ -22,15 +22,15 @@ export default function NotFound() {
           className="max-w-xl "
         >
           {/* Small label */}
-          <p className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
+          <p className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-black/80">
             Error 404
           </p>
 
-          <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-white">
+          <h1 className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight text-black">
             This page doesn’t exist.
           </h1>
 
-          <p className="mt-4 text-white/70 text-base md:text-lg leading-relaxed">
+          <p className="mt-4 text-black/70 text-base md:text-lg leading-relaxed">
             The link may be broken, or the page may have been moved. Try going
             back home.
           </p>
@@ -57,7 +57,7 @@ export default function NotFound() {
           <div className="mt-4 flex ">
             <Link
               href="/resources"
-              className="text-sm text-white/60 hover:text-white transition-colors"
+              className="text-sm text-black/60 hover:text-black transition-colors"
             >
               Browse resources →
             </Link>

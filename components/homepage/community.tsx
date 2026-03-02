@@ -128,7 +128,7 @@ export default function Community() {
           </p>
         </motion.div>
 
-        {/* Secondary CTA (optional) */}
+        {/* Secondary CTA (optional)
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -151,7 +151,7 @@ export default function Community() {
           >
             <Link href="/advisors">Speak to an Advisor</Link>
           </Button>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

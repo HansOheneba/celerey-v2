@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { BeginJourneyModal } from "@/components/homepage/beginModal";
+import { Router } from "next/router";
 
 const videoList = [
   "/videos/vid9.mp4",
@@ -103,10 +104,6 @@ export default function Hero() {
     setModalOpen(true);
   };
 
-  const handleScrollToPricing = () => {
-    const el = document.getElementById("entry-pricing");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   const handleScrollToWealthScan = () => {
     const el = document.getElementById("wealth-scan");
@@ -203,12 +200,14 @@ export default function Hero() {
 
           {/* buttons */}
           <div className="mx-auto mt-7 flex w-full max-w-xs flex-col items-center justify-center gap-2 sm:mt-10 sm:max-w-xl sm:flex-row sm:gap-3">
-            <Button
-              onClick={handleScrollToPricing}
-              className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
-            >
-              Start for Free
-            </Button>
+            <a href="/pricing">
+              {" "}
+              <Button
+                className="w-full rounded-full px-5 py-4 text-xs font-medium text-white sm:w-auto sm:px-7 sm:py-6 sm:text-sm"
+              >
+                Start for Free
+              </Button>
+            </a>
 
             <Button
               onClick={handleScrollToWealthScan}

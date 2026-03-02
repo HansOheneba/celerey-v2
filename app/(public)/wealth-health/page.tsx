@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -46,13 +46,24 @@ interface WealthHealthResults {
   recommendations: string[];
   topPillars: string[];
   bottomPillars: string[];
-  email: string; // ✅ ADD THIS
-  submittedAt: string; // ✅ ADD THIS
+  email: string;
+  submittedAt: string;
 }
+
+// Accent + supporting tones (warm-led)
+const ACCENT = "#b07d3d";
+const INK = "#1B1856";
+
+// Moved outside component so it's never part of the hook call order
+const getPillarColor = (score: number): string => {
+  if (score >= 75) return INK; // strong
+  if (score >= 50) return "#8F86B8"; // softer mid tone
+  return "#D46A55"; // warm warning
+};
 
 export default function WealthHealthPage() {
   const [results, setResults] = useState<WealthHealthResults | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // ✅ ADD LOADING STATE
+  const [isLoading, setIsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const router = useRouter();
 
@@ -61,42 +72,45 @@ export default function WealthHealthPage() {
     if (storedResults) {
       try {
         const parsedResults = JSON.parse(storedResults);
-        // ✅ CHECK IF EMAIL EXISTS IN RESULTS
-        if (parsedResults.email) {
-          setResults(parsedResults);
-        } else {
-          // ✅ REDIRECT BACK TO SCAN IF NO EMAIL FOUND
-          router.push("/#wealth-scan");
-        }
-      } catch (error) {
-        // ✅ REDIRECT IF JSON PARSING FAILS
+        if (parsedResults.email) setResults(parsedResults);
+        else router.push("/#wealth-scan");
+      } catch {
         router.push("/#wealth-scan");
       }
     } else {
-      // ✅ REDIRECT IF NO RESULTS FOUND
       router.push("/#wealth-scan");
     }
-    setIsLoading(false); // ✅ SET LOADING TO FALSE AFTER CHECK
+    setIsLoading(false);
   }, [router]);
 
-  // ✅ SHOW LOADING STATE
+  // Must be before any early returns
+  const chartData = useMemo(
+    () =>
+      Object.entries(results?.pillarScores ?? {}).map(([pillar, data]) => ({
+        name: pillar,
+        score: data.score,
+        color: getPillarColor(data.score),
+      })),
+    [results?.pillarScores],
+  );
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg text-gray-600">Loading your results...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EF]">
+        <p className="text-lg text-neutral-700">Loading your results...</p>
       </div>
     );
   }
 
-  // ✅ SHOW ERROR STATE IF NO RESULTS (after loading)
   if (!results) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F4EF]">
         <div className="text-center">
-          <p className="text-lg text-gray-600 mb-4">No results found</p>
+          <p className="text-lg text-neutral-700 mb-4">No results found</p>
           <Button
             onClick={() => router.push("/#wealth-scan")}
-            className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white"
+            className="text-white"
+            style={{ backgroundColor: INK }}
           >
             Take the Assessment
           </Button>
@@ -105,475 +119,515 @@ export default function WealthHealthPage() {
     );
   }
 
-  // Dynamic feedback for each category
   const getCategoryNarrative = (category: string) => {
     switch (category) {
       case "Strategic Planner":
         return {
+          headline: "You are operating with structure.",
           summary:
-            "You've built an intelligent financial framework — disciplined, strategic, and focused on long-term growth.",
-          insight:
-            "Your structure gives you stability, but remember to balance optimization with flexibility. Review your portfolio yearly and consider professional advisory for tax and legacy strategies.",
+            "Your answers suggest strong habits and clear direction across most areas. This is a solid base to build from.",
+          valueLine:
+            "Your biggest edge is consistency. Keeping things simple and repeatable is what makes progress feel calm.",
         };
       case "Structured Achiever":
         return {
+          headline: "You are doing a lot right.",
           summary:
-            "You're organized, consistent, and making confident money moves. You know where your money goes — and it shows.",
-          insight:
-            "Now it's time to fine-tune: small changes like optimizing investments and reducing redundant expenses can compound your success.",
+            "Your answers suggest consistency and control, with a few areas that may need sharper structure to feel effortless.",
+          valueLine:
+            "Small gaps can create mental noise. A clearer system can make decisions feel lighter.",
         };
       case "Building Confidence":
         return {
+          headline: "You are building momentum.",
           summary:
-            "You're developing positive habits and taking real steps toward financial control.",
-          insight:
-            "Focus on building consistency — automating savings and setting boundaries on spending will strengthen your foundation.",
+            "Your answers suggest progress, but also gaps that can make money feel unpredictable at times.",
+          valueLine:
+            "The goal is not perfection. It is clarity, so your next move is obvious.",
         };
       case "Foundation Builder":
         return {
+          headline: "You are at the starting line.",
           summary:
-            "You're at the early stage of building your financial story — and that's powerful.",
-          insight:
-            "Focus on structure over perfection: start simple with a weekly spending plan and save small amounts regularly.",
+            "Your answers suggest that a few core areas may feel unstable right now, which can make everything else feel harder.",
+          valueLine:
+            "When the basics feel shaky, it is hard to think long-term. Structure is what makes growth possible.",
         };
       default:
         return {
+          headline: "Your results show a clear direction.",
           summary:
-            "You're on a promising path — your results reveal clear areas of progress and growth.",
-          insight:
-            "Consistency and clarity will take your financial journey from reactive to proactive.",
+            "You have a mix of strengths and gaps that can be improved with the right structure.",
+          valueLine:
+            "Clarity comes from seeing what matters, then focusing on it in the right order.",
         };
     }
   };
 
   const narrative = getCategoryNarrative(results.category.label);
 
-  // Calculate weighted average for debugging/verification
-  const calculateWeightedAverage = () => {
-    let weightedSum = 0;
-    Object.entries(results.pillarScores).forEach(([pillar, data]) => {
-      // Convert pillar score back to weighted contribution
-      const weight = getPillarWeight(pillar);
-      const maxPillarScore = 4 * weight * 25; // Maximum possible for this pillar
-      const actualContribution = (data.score / 100) * maxPillarScore;
-      weightedSum += actualContribution;
-    });
-    return weightedSum;
-  };
-
-  const getPillarWeight = (pillar: string): number => {
-    const weights: { [key: string]: number } = {
-      "Income Stability": 0.15,
-      "Spending & Saving": 0.2,
-      Resilience: 0.2,
-      "Debt & Credit Health": 0.15,
-      "Growth Readiness": 0.15,
-      "Planning & Direction": 0.15,
-    };
-    return weights[pillar] || 0.15;
-  };
-
-  // const getScoreColor = (score: number): string => {
-  //   if (score >= 80) return "text-green-600";
-  //   if (score >= 60) return "text-blue-600";
-  //   if (score >= 40) return "text-yellow-600";
-  //   return "text-orange-600";
-  // };
-
-  // Fixed color functions for the chart
-  const getPillarColor = (score: number): string => {
-    if (score >= 75) return "#1B1856"; // Dark blue for strong
-    if (score >= 50) return "#7F7CAF"; // Medium blue for developing
-    return "#DD614A"; // Red for needs attention
-  };
-
-  // const getPillarColorClass = (score: number): string => {
-  //   if (score >= 75) return "text-[#080727]";
-  //   if (score >= 50) return "text-[#19647E]";
-  //   return "text-[#B3001B]";
-  // };
-
-  // const getPillarBgColorClass = (score: number): string => {
-  //   if (score >= 75) return "bg-[#080727]";
-  //   if (score >= 50) return "bg-[#19647E]";
-  //   return "bg-[#B3001B]";
-  // };
-
-  // Prepare chart data with colors
-  const chartData = Object.entries(results.pillarScores).map(
-    ([pillar, data]) => ({
-      name: pillar,
-      score: data.score,
-      color: getPillarColor(data.score),
-    }),
-  );
-
   const getBadgeClass = (score: number) => {
     if (score >= 75)
-      return "bg-green-100 text-green-700 border border-green-200";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-200";
     if (score >= 50)
-      return "bg-yellow-100 text-yellow-700 border border-yellow-200";
-    return "bg-red-100 text-red-700 border border-red-200";
+      return "bg-amber-50 text-amber-900 border border-amber-200";
+    return "bg-rose-50 text-rose-700 border border-rose-200";
   };
 
   const getBadgeLabel = (score: number) => {
-    if (score >= 75) return "Well-Anchored";
-    if (score >= 50) return "Developing Strength";
-    return "Needs Reinforcement";
+    if (score >= 75) return "Strong";
+    if (score >= 50) return "Developing";
+    return "Needs support";
+  };
+
+  const getMeaning = (pillar: string, score: number) => {
+    const lead = "What this suggests:";
+    switch (pillar) {
+      case "Income Stability":
+        if (score >= 75)
+          return `${lead} your income feels steady, which supports planning and consistency.`;
+        if (score >= 50)
+          return `${lead} income is mostly steady, but variations may make long-term planning harder.`;
+        return `${lead} income may be unpredictable, which can make progress feel slower even with effort.`;
+      case "Spending & Saving":
+        if (score >= 75)
+          return `${lead} you are creating space between income and expenses, which supports stability.`;
+        if (score >= 50)
+          return `${lead} you have some balance, but it may not feel consistent month to month.`;
+        return `${lead} expenses may be taking most of your income, reducing flexibility.`;
+      case "Resilience":
+        if (score >= 75)
+          return `${lead} you may be buffered against unexpected events.`;
+        if (score >= 50)
+          return `${lead} you may have some buffer, but surprises can still disrupt plans.`;
+        return `${lead} unexpected events may hit hard without a strong cushion.`;
+      case "Debt & Credit Health":
+        if (score >= 75)
+          return `${lead} debt feels controlled and does not limit flexibility much.`;
+        if (score >= 50)
+          return `${lead} debt is manageable, but may require attention to avoid pressure.`;
+        return `${lead} debt may be weighing down progress and limiting options.`;
+      case "Growth Readiness":
+        if (score >= 75)
+          return `${lead} you are positioned to focus on longer-term growth.`;
+        if (score >= 50)
+          return `${lead} you are preparing for growth, but the path may not feel fully clear yet.`;
+        return `${lead} growth may not feel possible yet because foundational areas need support first.`;
+      case "Planning & Direction":
+        if (score >= 75)
+          return `${lead} you have direction, which makes decisions easier and more consistent.`;
+        if (score >= 50)
+          return `${lead} you have some structure, but may still be reacting to situations.`;
+        return `${lead} direction may be unclear, which can make progress feel inconsistent.`;
+      default:
+        return "";
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-16 px-4 mt-16">
-      <div className="max-w-4xl mx-auto space-y-12">
+    <div className="min-h-screen pt-24 pb-20 px-4 bg-[#ffffff]">
+      <div className="mx-auto w-full max-w-6xl space-y-12">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h1 className="text-4xl font-bold text-[#1B1856] mb-4">
+          <p className="text-[11px] tracking-[0.22em] text-neutral-600">
+            YOUR RESULTS
+          </p>
+
+          <h1 className="mt-4 text-4xl sm:text-5xl font-semibold text-neutral-900">
             Your Financial Health Review
           </h1>
-          <p className="text-gray-600 text-lg">
-            You have taken the first step. Now you can start free access and
-            turn these insights into action.
+
+          <p className="mt-4 text-neutral-700 text-base sm:text-lg max-w-2xl mx-auto">
+            Thank you for taking the time. This snapshot reflects your answers
+            and highlights where things look stable and where support may be
+            useful.
+          </p>
+
+          <p className="mt-3 text-xs text-neutral-600">
+            Educational overview only. No financial advice is being provided.
           </p>
         </motion.div>
 
-        {/* Overview Card */}
+        {/* Hero summary (warmer + calmer CTAs) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white rounded-2xl shadow-md p-8 text-center border border-gray-100"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="rounded-[28px] bg-white border border-black/5 shadow-[0_25px_70px_rgba(0,0,0,0.08)] p-8 sm:p-10"
         >
-          <h2 className="text-2xl font-semibold text-[#1B1856] mb-3">
-            {results.category.label}
-          </h2>
-          <div className="flex items-baseline justify-center space-x-1 mb-4">
-            <p className="text-6xl font-bold text-[#1B1856]">{results.score}</p>
-            <span className="text-3xl text-[#1B1856]/70 font-semibold">
-              /100
-            </span>
-          </div>
+          <div className="grid gap-10 lg:grid-cols-[1fr_360px] lg:items-center">
+            {/* Left */}
+            <div>
+              <p className="text-[11px] tracking-[0.22em] text-neutral-600">
+                RESULT SUMMARY
+              </p>
 
-          <p className="text-gray-700 mb-6 text-lg">{narrative.summary}</p>
+              <h2 className="mt-3 text-2xl sm:text-3xl font-semibold text-neutral-900">
+                {results.category.label}
+              </h2>
 
-          <div className="inline-flex flex-col gap-3 items-center">
-            <p className="text-sm text-gray-600">
-              This snapshot shows where you stand today. Start your free trial
-              to unlock the dashboard and tools.
-            </p>
-            <Button
-              onClick={() => router.push("/start")}
-              className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white px-6 py-2 font-semibold"
-            >
-              Start for free
-            </Button>
-          </div>
+              <div className="mt-5 rounded-2xl border border-black/5 bg-[#FBF7F1] p-5">
+                <p className="text-base text-neutral-900">
+                  <span className="font-semibold">{narrative.headline}</span>{" "}
+                  <span className="text-neutral-700">{narrative.summary}</span>
+                </p>
 
-          <div className="mt-4 text-xs text-gray-400">
-            Score is calculated from 6 financial pillars
+                <p className="mt-3 text-sm text-neutral-700">
+                  {narrative.valueLine}
+                </p>
+              </div>
+
+              {/* Value-forward, not sales */}
+              <div className="mt-6 space-y-3">
+                <p className="text-sm text-neutral-700">
+                  This report is designed to do three things for you:
+                </p>
+
+                <ul className="space-y-2 text-sm text-neutral-800">
+                  <li className="flex gap-3">
+                    <span
+                      className="mt-[7px] h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: ACCENT }}
+                    />
+                    <span>
+                      <span className="font-semibold">Reflect reality:</span>{" "}
+                      how stable or unstable things feel based on your answers.
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span
+                      className="mt-[7px] h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: ACCENT }}
+                    />
+                    <span>
+                      <span className="font-semibold">Reveal friction:</span>{" "}
+                      the areas most likely to create stress, uncertainty, or
+                      stop-start progress.
+                    </span>
+                  </li>
+                  <li className="flex gap-3">
+                    <span
+                      className="mt-[7px] h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: ACCENT }}
+                    />
+                    <span>
+                      <span className="font-semibold">Give direction:</span>{" "}
+                      which pillars are worth paying attention to first, before
+                      anything else.
+                    </span>
+                  </li>
+                </ul>
+
+                <p className="text-xs text-neutral-600">
+                  This is an educational snapshot based on your inputs. It does
+                  not provide financial advice.
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Score panel (no CTA) */}
+            <div className="rounded-2xl border border-black/5 bg-[#FAF6EF] p-6 text-center">
+              <p className="text-sm text-neutral-700">Overall score</p>
+
+              <div className="mt-2 flex items-end justify-center gap-2">
+                <p className="text-6xl font-semibold text-neutral-900">
+                  {results.score}
+                </p>
+                <span className="text-xl text-neutral-500 font-semibold">
+                  /100
+                </span>
+              </div>
+
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-neutral-700">
+                <span
+                  className="inline-block h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: ACCENT }}
+                />
+                <span>Built from 6 core areas</span>
+              </div>
+
+              <div className="mt-6 rounded-xl bg-white border border-black/5 p-4 text-left">
+                <p className="text-sm font-semibold text-neutral-900">
+                  How to interpret this number
+                </p>
+                <p className="mt-2 text-sm text-neutral-700 leading-relaxed">
+                  Higher scores usually indicate more stability and clearer
+                  direction. Lower scores usually indicate gaps in structure
+                  that can make progress feel harder, even with effort.
+                </p>
+              </div>
+
+              <p className="mt-4 text-xs text-neutral-600">
+                You are not being judged. This is a starting point.
+              </p>
+
+              <p className="mt-2 text-[11px] text-neutral-500">
+                Saved for this session only.
+              </p>
+            </div>
           </div>
         </motion.div>
 
-        {/* Pillar Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-md p-8 border border-gray-100"
-        >
+        {/* Chart + highlights */}
+        <div className="grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
           {/* Chart */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mb-10 bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="rounded-[24px] bg-white border border-black/5 shadow-[0_18px_50px_rgba(0,0,0,0.06)] p-6 sm:p-8"
           >
-            <h2 className="text-2xl font-semibold text-[#1B1856] mb-6 text-center">
-              How you are doing across key financial areas
-            </h2>
+            <div className="flex items-end justify-between gap-4 flex-wrap">
+              <div>
+                <h3 className="text-xl font-semibold text-neutral-900">
+                  Your six-area snapshot
+                </h3>
+                <p className="mt-2 text-sm text-neutral-700">
+                  Higher scores often feel calmer and more predictable. Lower
+                  scores often show up as friction, stress, or inconsistency.
+                </p>
+              </div>
 
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={chartData}
-                layout="vertical"
-                margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                <XAxis
-                  type="number"
-                  domain={[0, 100]}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
-                />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  width={150}
-                  tick={{ fill: "#1B1856", fontWeight: 500, fontSize: 13 }}
-                />
-                <Tooltip
-                  formatter={(value: number) => [`${value}%`, "Score"]}
-                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
-                />
-                <Bar dataKey="score" radius={[8, 8, 8, 8]}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+              <div className="text-xs text-neutral-600">
+                Color key <span className="mx-1">•</span>{" "}
+                <span className="inline-flex items-center gap-2">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: INK }}
+                  />
+                  Strong
+                </span>
+                <span className="mx-2" />
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#8F86B8]" />
+                  Developing
+                </span>
+                <span className="mx-2" />
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#D46A55]" />
+                  Needs support
+                </span>
+              </div>
+            </div>
 
-            <div className="flex justify-center gap-6 text-sm mt-6 text-gray-600">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#1B1856]"></span>{" "}
-                Strong (75-100%)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#7F7CAF]"></span>{" "}
-                Developing (50-74%)
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#DD614A]"></span>{" "}
-                Needs Attention (0-49%)
-              </div>
+            <div className="mt-6">
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E8E2D8" />
+                  <XAxis
+                    type="number"
+                    domain={[0, 100]}
+                    tick={{ fill: "#6B7280", fontSize: 12 }}
+                  />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    width={160}
+                    tick={{ fill: "#111827", fontWeight: 500, fontSize: 13 }}
+                  />
+                  <Tooltip
+                    formatter={(value: number) => [`${value}%`, "Score"]}
+                    cursor={{ fill: "rgba(176,125,61,0.08)" }}
+                  />
+                  <Bar dataKey="score" radius={[8, 8, 8, 8]}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Insight panel instead of CTA */}
+            <div className="mt-8 rounded-2xl border border-black/5 bg-[#FBF7F1] p-5">
+              <p className="text-sm text-neutral-800 leading-relaxed">
+                Patterns matter more than individual scores. If two or more
+                areas sit in the lower range, they often influence each other.
+                For example, income instability can affect saving consistency,
+                which then affects resilience. Stability usually builds in
+                layers.
+              </p>
             </div>
           </motion.div>
 
-          {/* Pillar cards - with explanations, no financial advice */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(results.pillarScores).map(([pillar, data], i) => {
-              const { score } = data;
+          {/* Highlights */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="space-y-6"
+          >
+            <div className="rounded-[24px] bg-white border border-black/5 shadow-[0_18px_50px_rgba(0,0,0,0.06)] p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 style={{ color: ACCENT }} />
+                <h4 className="font-semibold text-neutral-900">
+                  What looks steady
+                </h4>
+              </div>
+              <ul className="text-sm text-neutral-700 space-y-2">
+                {results.topPillars.map((pillar) => (
+                  <li key={pillar}>• {pillar}</li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs text-neutral-600">
+                These areas are likely supporting your confidence and
+                decision-making.
+              </p>
+            </div>
 
-              // --- Meaning / Interpretation based on score ---
-              const meaning = (() => {
-                switch (pillar) {
-                  case "Income Stability":
-                    if (score >= 75)
-                      return "Your income is predictable and dependable, giving you a strong base for long-term planning.";
-                    if (score >= 50)
-                      return "Your income is somewhat steady, but there are variations that could affect long-term commitments.";
-                    return "Your income fluctuates often, making it harder to plan or commit to long-term financial decisions.";
-                  case "Spending & Saving":
-                    if (score >= 75)
-                      return "You consistently keep expenses below income, showing strong financial discipline.";
-                    if (score >= 50)
-                      return "You balance spending and saving, though your margin for growth is limited.";
-                    return "Your spending habits reduce your capacity to save and build financial momentum.";
-                  case "Resilience":
-                    if (score >= 75)
-                      return "You have solid financial protection and can comfortably handle unexpected events.";
-                    if (score >= 50)
-                      return "You have some buffer, but unexpected shocks could still affect your plans.";
-                    return "You are financially exposed to emergencies or income interruptions.";
-                  case "Debt & Credit Health":
-                    if (score >= 75)
-                      return "Your debt levels are controlled and manageable, with minimal financial stress.";
-                    if (score >= 50)
-                      return "Your debt is manageable, but requires active oversight to avoid pressure.";
-                    return "Debt may be limiting your flexibility and reducing your ability to save or invest.";
-                  case "Growth Readiness":
-                    if (score >= 75)
-                      return "You're actively building wealth and positioned for long-term financial growth.";
-                    if (score >= 50)
-                      return "You're preparing for growth, but there's room to strengthen your investment strategy.";
-                    return "You're currently missing out on long-term wealth-building opportunities.";
-                  case "Planning & Direction":
-                    if (score >= 75)
-                      return "You have clear goals and structured plans guiding your decisions.";
-                    if (score >= 50)
-                      return "You have some structure, but you're likely reacting to situations rather than anticipating them.";
-                    return "Your financial approach may lack direction, making progress less predictable.";
-                  default:
-                    return "";
-                }
-              })();
+            <div className="rounded-[24px] bg-white border border-black/5 shadow-[0_18px_50px_rgba(0,0,0,0.06)] p-6">
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="text-amber-600" />
+                <h4 className="font-semibold text-neutral-900">
+                  What may be creating friction
+                </h4>
+              </div>
+              <ul className="text-sm text-neutral-700 space-y-2">
+                {results.bottomPillars.map((pillar) => (
+                  <li key={pillar}>• {pillar}</li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs text-neutral-600">
+                These are signals, not labels. Many people experience this phase
+                before building stronger financial structure.
+              </p>
+            </div>
+
+            {/* Calm reflection box instead of CTA */}
+            <div
+              className="rounded-[24px] border border-black/5 bg-white p-6"
+      
+            >
+              <p className="text-sm text-neutral-800 leading-relaxed">
+                Financial clarity tends to improve when unstable areas become
+                predictable. The goal is not perfection. It is consistency.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+        {/* Pillar cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="rounded-[28px] bg-white border border-black/5 shadow-[0_18px_50px_rgba(0,0,0,0.06)] p-8 sm:p-10"
+        >
+          <div className="flex items-end justify-between gap-6 flex-wrap">
+            <div>
+              <h3 className="text-2xl font-semibold text-neutral-900">
+                What each area suggests
+              </h3>
+              <p className="mt-2 text-sm text-neutral-700 max-w-2xl">
+                These are interpretations of your answers, not personalised
+                financial advice. They highlight where structure, support, or
+                better visibility may help.
+              </p>
+            </div>
+
+            {/* Keep this subtle */}
+            <button
+              type="button"
+              onClick={() => router.push("/pricing")}
+              className="text-sm font-semibold hover:opacity-80 transition"
+              style={{ color: ACCENT }}
+            >
+              See support options{" "}
+              <ArrowRight className="inline-block ml-1 h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Object.entries(results.pillarScores).map(([pillar, data], i) => {
+              const score = data.score;
+              const meaning = getMeaning(pillar, score);
 
               return (
                 <motion.div
                   key={pillar}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
-                  className="p-5 bg-gray-50 rounded-xl border border-gray-100 h-full"
+                  transition={{ duration: 0.4, delay: 0.15 + i * 0.06 }}
+                  className="rounded-2xl border border-black/5 bg-[#FBF7F1] p-6"
                 >
-                  <div className="mb-3">
-                    <h3 className="font-semibold text-[#1B1856] mb-2">
-                      {pillar}
-                    </h3>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h4 className="font-semibold text-neutral-900">
+                        {pillar}
+                      </h4>
+                      <p className="mt-2 text-sm text-neutral-700">
+                        Score:{" "}
+                        <span className="font-semibold text-neutral-900">
+                          {score}%
+                        </span>
+                      </p>
+                    </div>
+
                     <span
-                      className={`text-xs px-2 py-1 rounded-md font-semibold inline-block ${getBadgeClass(
-                        score,
-                      )}`}
+                      className={`shrink-0 text-xs px-2.5 py-1 rounded-md font-semibold ${getBadgeClass(score)}`}
                     >
                       {getBadgeLabel(score)}
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-600 mb-3">
-                    Score: <span className="font-semibold">{score}%</span>
-                  </p>
-
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    <span className="font-medium text-[#1B1856]/80">
-                      What this means:
-                    </span>{" "}
+                  <p className="mt-4 text-sm text-neutral-800 leading-relaxed">
                     {meaning}
                   </p>
                 </motion.div>
               );
             })}
           </div>
-
-          {/* Highlights */}
-          <div className="grid md:grid-cols-2 gap-6 mt-10">
-            <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
-              <div className="flex items-center space-x-2 mb-3">
-                <CheckCircle2 className="text-[#1B1856]" />
-                <h3 className="font-semibold text-[#1B1856]">Your Strengths</h3>
-              </div>
-              <ul className="text-sm text-[#1B1856]/80 space-y-2">
-                {results.topPillars.map((pillar) => (
-                  <li key={pillar}>• {pillar}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-yellow-50 rounded-xl p-5 border border-yellow-100">
-              <div className="flex items-center space-x-2 mb-3">
-                <AlertTriangle className="text-yellow-700" />
-                <h3 className="font-semibold text-yellow-800">
-                  Areas of Focus
-                </h3>
-              </div>
-              <ul className="text-sm text-yellow-700 space-y-2">
-                {results.bottomPillars.map((pillar) => (
-                  <li key={pillar}>• {pillar}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </motion.div>
 
-        {/* Main CTA Section */}
+        {/* Closing (warm, calm, appreciative) */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.55 }}
-          className="bg-[#1B1856] text-white rounded-2xl shadow-md p-8 border border-[#1B1856]/20"
+          transition={{ duration: 0.6, delay: 0.45 }}
+          className="rounded-[28px] bg-white border border-black/5 shadow-[0_18px_50px_rgba(0,0,0,0.06)] p-8 sm:p-10 text-center"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-            <div className="max-w-2xl">
-              <h2 className="text-2xl font-semibold mb-3">
-                Unlock your dashboard for free
-              </h2>
-              <p className="text-white/90 mb-4">
-                Your score is the starting point. Start a free trial to access
-                your dashboard, track your progress, and use intelligent tools
-                to improve your financial structure.
-              </p>
-
-              <ul className="space-y-2 text-sm text-white/85">
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  See your full dashboard breakdown
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  Track your pillars over time
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/60"></span>
-                  Get tailored next steps and tools
-                </li>
-              </ul>
-            </div>
-
-            <div className="flex flex-col gap-3 w-full md:w-auto">
-              <div className="bg-white/10 border border-white/20 rounded-xl p-4 text-center">
-                <p className="text-sm text-white/80 mb-1">Start with</p>
-                <p className="text-3xl font-bold">Free</p>
-                <p className="text-xs text-white/70 mt-1">
-                  7 day dashboard trial
-                </p>
-              </div>
-
-              <Button
-                onClick={() => router.push("/start")}
-                className="bg-white text-[#1B1856] hover:bg-white/90 font-semibold px-6 py-3"
-              >
-                Start for free <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-
-              <p className="text-xs text-white/70 text-center">
-                No card required to begin, if you choose that option.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* How to Use This Report */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="bg-blue-50 border border-blue-100 rounded-2xl p-6"
-        >
-          <h3 className="text-lg font-semibold text-[#1B1856] mb-4">
-            How to read your Financial MOT
+          <TrendingUp className="mx-auto mb-4" style={{ color: ACCENT }} />
+          <h3 className="text-2xl font-semibold text-neutral-900">
+            You have clarity now. That is the hard part.
           </h3>
-          <div className="text-sm text-gray-700 space-y-3 max-w-2xl">
-            <p>
-              <strong className="text-[#1B1856]">Your Main Score:</strong> A
-              single metric (0 to 100) reflecting your overall financial
-              structure and stability.
-            </p>
-            <p>
-              <strong className="text-[#1B1856]">6 Financial Pillars:</strong> A
-              breakdown of where you are strongest and where you can improve,
-              color coded for quick understanding.
-            </p>
-            <p className="italic text-gray-600">
-              Tip: Retake this assessment in 90 days to track progress.
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Secondary CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
-          className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-8 text-center"
-        >
-          <h3 className="text-xl font-semibold text-[#1B1856] mb-2">
-            Ready to continue?
-          </h3>
-          <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-            Start free access to your dashboard and turn this report into a
-            clear plan you can follow.
+          <p className="mt-3 text-neutral-700 max-w-2xl mx-auto">
+            If parts of your snapshot feel unstable or unclear, it usually means
+            the missing piece is structure and consistent support. If you want
+            to explore what that looks like, we have just the thing for you.
           </p>
 
-          <Button
-            onClick={() => router.push("/start")}
-            className="bg-[#1B1856] hover:bg-[#1B1856]/90 text-white px-8 py-3 font-semibold"
-          >
-            Start for free
-          </Button>
-        </motion.div>
+          <div className="mt-7 flex justify-center gap-3 flex-wrap">
+            <Button
+              onClick={() => router.push("/pricing")}
+              className="px-8 py-3 font-semibold"
+              style={{ backgroundColor: ACCENT, color: "white" }}
+            >
+              View pricing <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
 
-        {/* Closing Message */}
-        <div className="text-center mt-12 text-gray-600">
-          <TrendingUp className="mx-auto mb-3 text-[#1B1856]" />
-          <p>
-            This assessment shows where you stand. Now you can start building
-            where you are going.
+            <Button
+              variant="outline"
+              onClick={() => router.push("/#wealth-scan")}
+              className="px-8 py-3"
+            >
+              Retake
+            </Button>
+          </div>
+
+          <p className="mt-4 text-xs text-neutral-600">
+            Educational report only. No financial advice is being provided.
           </p>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Modal */}
       <BeginJourneyModal open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   );

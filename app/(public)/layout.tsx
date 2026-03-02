@@ -10,14 +10,13 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      {/* Header */}
-      <Header />
+   
+  
      
       {/* Main content */}
-      <main className="mx-auto pt-24">{children}</main>
+      <main className="">{children}</main>
 
-      {/* Footer*/}
-      <Footer />
+  
       <Script id="chatbase-loader" strategy="afterInteractive">
         {`
             (function(){

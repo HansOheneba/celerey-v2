@@ -1,10 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { BeginJourneyModal } from "./beginModal";
 
 type BillingCadence = "annual" | "one-time";
@@ -17,31 +16,34 @@ type Tier = {
   price: string;
   currency: string;
   cadence: BillingCadence;
-  badge: string;
+
   description: string;
   bullets: string[];
+
   ctaLabel: string;
   paymentUrl: string;
   footnote?: string;
+
   emphasis?: boolean;
   highlight?: string;
 };
 
 type EntryPointPricingProps = {
-  eyebrow?: string;
-  title?: string;
-  subtitle?: string;
   currency?: string;
   id?: string;
   tiers?: Tier[];
 };
 
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 const foundationBullets = [
-  "One private advisory session (up to 45 minutes)",
-  "High level review of your current position and goals",
-  "Clear next steps with a prioritized plan",
-  "Follow up summary shared after the call",
-  "No dashboard access",
+  "1:1 financial coaching call (up to 45 minutes)",
+  "Fast clarity on what to focus on right now (income, spending, debt, savings)",
+  "A simple, realistic action plan you can follow",
+  "Personalised recommendations aligned to your goals and lifestyle",
+  "Written recap with your key decisions and next steps after the session",
 ];
 
 const dashboardBullets = [
@@ -54,283 +56,289 @@ const dashboardBullets = [
   "Member webinars, masterclasses, and partner benefits",
 ];
 
-function PriceBlock({
+function PriceLine({
   price,
-  currency,
   cadence,
+
+  isCore,
 }: {
   price: string;
-  currency: string;
   cadence: BillingCadence;
+
+  isCore: boolean;
 }) {
-  const cadenceText = cadence === "annual" ? "per year" : "one-time";
+  const cadenceText =
+    cadence === "annual" ? "Billed annually" : "One-time access";
+
   return (
-    <div className="mt-4 flex items-end gap-2">
-      <span className="font-serif text-5xl leading-none">${price}</span>
-      <div className="pb-1">
-        <div className="text-sm text-white/70">{currency}</div>
-        <div className="text-xs text-white/55">{cadenceText}</div>
+    <div className="mt-3">
+      <div className="flex items-baseline gap-2">
+        <span
+          className={cn(
+            "font-serif text-5xl leading-none",
+            isCore ? "text-white" : "text-neutral-900",
+          )}
+        >
+          ${price}
+        </span>
       </div>
+
+      <p
+        className={cn(
+          "mt-2 text-sm",
+          isCore ? "text-white/70" : "text-neutral-600",
+        )}
+      >
+        {cadenceText}
+     
+  
+      </p>
     </div>
   );
 }
 
-function BulletList({
+function FeatureList({
   bullets,
-  expanded,
-  onToggle,
-  previewCount = 5,
-  showToggle,
+  isCore,
 }: {
   bullets: string[];
-  expanded: boolean;
-  onToggle: () => void;
-  previewCount?: number;
-  showToggle: boolean;
+  isCore: boolean;
 }) {
-  const items = expanded ? bullets : bullets.slice(0, previewCount);
-
   return (
-    <div>
-      <ul className="space-y-4 text-left">
-        {items.map((b) => (
-          <li key={b} className="flex items-start gap-3">
-            <span
-              className={[
-                "shrink-0 mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full",
-                "bg-white/10 ring-1 ring-white/10",
-              ].join(" ")}
-            >
-              <Check className="h-4 w-4 text-white/85" />
-            </span>
+    <ul className="mt-5 space-y-3">
+      {bullets.map((b) => (
+        <li key={b} className="flex items-start gap-3">
+          <span
+            className={cn(
+              "mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full ring-1",
+              isCore
+                ? "bg-white/10 ring-white/15"
+                : "bg-black/[0.03] ring-black/10",
+            )}
+          >
+            <Check
+              className={cn(
+                "h-4 w-4",
+                isCore ? "text-white/85" : "text-neutral-900",
+              )}
+            />
+          </span>
 
-            <p className="min-w-0 text-sm leading-6 text-white/85 sm:text-base sm:leading-7">
-              {b}
-            </p>
-          </li>
-        ))}
-      </ul>
-
-      {showToggle && bullets.length > previewCount ? (
-        <button
-          type="button"
-          onClick={onToggle}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white/85 ring-1 ring-white/15 hover:bg-white/15"
-        >
-          {expanded ? "Hide full list" : "View all benefits"}
-          {expanded ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </button>
-      ) : null}
-    </div>
+          <p
+            className={cn(
+              "text-sm leading-7",
+              isCore ? "text-white/85" : "text-neutral-700",
+            )}
+          >
+            {b}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 export default function EntryPointPricing({
-  eyebrow = "PRICING",
-  title = "Choose your starting point",
-  subtitle = "Start with a focused advisory session, or choose dashboard access for ongoing visibility, structured financial capture, and deeper guidance.",
   currency = "USD",
   id = "entry-pricing",
   tiers,
 }: EntryPointPricingProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPaymentUrl, setSelectedPaymentUrl] = useState("");
-  const [expanded, setExpanded] = useState<Record<TierKey, boolean>>({
-    foundation: true,
-    dashboard: true,
-  });
 
   const defaultTiers: Tier[] = useMemo(
     () => [
       {
         key: "foundation",
-        label: "ADVISORY SESSION",
-        name: "Foundation Session",
-        price: "100",
+        label: "Essentials",
+        name: "Financial Coaching Session",
+        price: "99.99",
         currency,
         cadence: "one-time",
-        badge: "One-time",
         description:
-          "Get clarity, a plan, and priorities you can act on immediately.",
+          "Young professionals and first-time planners who want accountability, financial discipline, and small but consistent steps toward stability.",
+        highlight: "Stay on track with light, flexible access.",
         bullets: foundationBullets,
-        ctaLabel: "Book Foundation Session",
-        paymentUrl: "https://buy.stripe.com/test_fZu9AT3b42k9fcT2s99Ve01", // $100 actual link
-        footnote: "One session. No dashboard access.",
+        ctaLabel: "Book a Coaching Session",
+        paymentUrl: "https://buy.stripe.com/test_fZu9AT3b42k9fcT2s99Ve01",
+        footnote: "One session. Dashboard access is not included.",
       },
       {
         key: "dashboard",
-        label: "ADVISORY + DASHBOARD",
+        label: "Core",
         name: "Core (Annual)",
         price: "299.99",
         currency,
         cadence: "annual",
-        badge: "7-day free trial",
-        highlight: "Best for ongoing progress and visibility",
         description:
-          "Start free for 7 days. Year-round guidance, tracking, and continuous insights.",
+          "Families and professionals who want structured support, accountability, and a personalised plan to grow and protect their wealth.",
+        highlight: "Your financial plan, structured and supported.",
         bullets: dashboardBullets,
-        ctaLabel: "Start for Free",
-        paymentUrl: "https://buy.stripe.com/test_7sYdR94f86ApggXgiZ9Ve02", // $300 actual link
+        ctaLabel: "Begin with a Free Trial",
+        paymentUrl: "https://buy.stripe.com/test_7sYdR94f86ApggXgiZ9Ve02",
         emphasis: true,
         footnote: "7-day free trial. Then billed annually. Cancel anytime.",
       },
     ],
     [currency],
   );
+
   const allTiers = tiers ?? defaultTiers;
 
   return (
     <>
-      <section id={id} className="py-24">
-        <div className="px-4 text-center">
-          <p className="text-xs tracking-[0.18em] text-neutral-500">
-            {eyebrow}
+      <section id={id} className="py-10 sm:py-24">
+        <div className="flex flex-col items-center text-center pb-10">
+          <h2 className="mt-10 font-serif font-thin text-2xl text-neutral-900 sm:text-4xl">
+            Subscription Plans
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-neutral-600">
+            Choose a single coaching session for immediate clarity, or choose
+            Core for ongoing visibility and structured guidance across the year.
           </p>
-          <h2 className="mt-3 font-serif text-4xl text-neutral-900">{title}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-neutral-500">
-            {subtitle}
-          </p>
+        </div>
 
+        <div className="px-4">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2"
+            transition={{ duration: 0.55 }}
+            className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2"
           >
             {allTiers.map((t) => {
               const isCore = t.key === "dashboard";
-              const isExpanded = expanded[t.key];
 
               return (
-                <div
+                <article
                   key={t.key}
-                  className={[
-                    "relative flex h-full flex-col overflow-hidden rounded-[28px] text-white shadow-[0_18px_55px_rgba(0,0,0,0.16)] ring-1 ring-white/10",
-                    isCore ? "bg-[#1B1856]" : "bg-[#141246]",
-                    t.emphasis ? "md:scale-[1.01]" : "",
-                  ].join(" ")}
+                  className={cn(
+                    "relative overflow-hidden rounded-[26px] border p-10 sm:p-12",
+                    // IMPORTANT: make card a column so footer can stick to bottom
+                    "flex flex-col",
+                    isCore
+                      ? "bg-[#1a1856] border-white/15"
+                      : "bg-white border-black/10",
+                    isCore
+                      ? "shadow-[0_28px_80px_rgba(0,0,0,0.22)]"
+                      : "shadow-[0_18px_55px_rgba(0,0,0,0.08)]",
+                  )}
                 >
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.14),transparent_55%)]" />
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
+                  {/* subtle top glow */}
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute inset-0",
+                      isCore
+                        ? "bg-[radial-gradient(circle_at_30%_15%,rgba(255,255,255,0.14),transparent_55%)]"
+                        : "bg-[radial-gradient(circle_at_30%_15%,rgba(176,125,61,0.10),transparent_60%)]",
+                    )}
+                  />
 
-                  {isCore ? (
-                    <div className="absolute right-6 top-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/85 ring-1 ring-white/15">
-                      7-day free trial
-                    </div>
-                  ) : null}
-
-                  <div className="relative flex flex-1 flex-col px-8 pt-8 sm:px-10">
+                  {/* Body */}
+                  <div className="relative flex flex-1 flex-col">
+                    {/* Top content */}
                     <div className="text-left">
-                      <p className="text-xs tracking-[0.18em] text-white/70">
+                      <h3
+                        className={cn(
+                          "font-serif text-3xl",
+                          isCore ? "text-white" : "text-neutral-900",
+                        )}
+                      >
                         {t.label}
-                      </p>
+                      </h3>
 
-                      <div className="mt-3 flex items-start justify-between gap-4">
-                        <div>
-                          <h3 className="text-lg font-semibold text-white">
-                            {t.name}
-                          </h3>
-                          {t.highlight ? (
-                            <p className="mt-1 text-sm text-white/70">
-                              {t.highlight}
-                            </p>
-                          ) : null}
-                        </div>
-
-                        {!isCore ? (
-                          <Badge
-                            variant="outline"
-                            className="bg-white/10 text-white/80 ring-white/10"
-                          >
-                            {t.badge}
-                          </Badge>
-                        ) : null}
-                      </div>
-
-                      <PriceBlock
+                      <PriceLine
                         price={t.price}
-                        currency={t.currency}
                         cadence={t.cadence}
+                        isCore={isCore}
                       />
 
-                      <p className="mt-4 text-sm text-white/70">
-                        {t.description}
-                      </p>
+                      <div
+                        className={cn(
+                          "mt-6 h-px w-full",
+                          isCore ? "bg-white/15" : "bg-black/10",
+                        )}
+                      />
 
-                      {!isCore ? (
-                        <div className="mt-6 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-                          <p className="text-xs font-semibold tracking-[0.16em] text-white/70">
-                            BEST FOR
+                      {/* Ideal for */}
+                      <section className="mt-8">
+                        <p className="text-sm font-semibold text-[#b07d3d]">
+                          Ideal for:
+                        </p>
+
+                        <p
+                          className={cn(
+                            "mt-3 text-sm leading-7",
+                            isCore ? "text-white/80" : "text-neutral-700",
+                          )}
+                        >
+                          {t.description}
+                        </p>
+
+                        <div
+                          className={cn(
+                            "mt-8 h-px w-full",
+                            isCore ? "bg-white/15" : "bg-black/10",
+                          )}
+                        />
+                      </section>
+
+                      {/* Features */}
+                      <section className="mt-8">
+                        <p className="text-sm font-semibold text-[#b07d3d]">
+                          Features
+                        </p>
+
+                        {t.highlight ? (
+                          <p
+                            className={cn(
+                              "mt-3 text-sm italic leading-7",
+                              isCore ? "text-white/75" : "text-neutral-700",
+                            )}
+                          >
+                            {t.highlight}
                           </p>
-                          <ul className="mt-3 space-y-2 text-sm text-white/85">
-                            <li className="flex items-start gap-2">
-                              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
-                              Clarifying your goals and priorities
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
-                              Getting a practical plan you can act on
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-white/60" />
-                              Deciding if ongoing support is right for you
-                            </li>
-                          </ul>
-                        </div>
+                        ) : null}
+
+                        <FeatureList bullets={t.bullets} isCore={isCore} />
+                      </section>
+                    </div>
+
+                    {/* Footer pinned to bottom */}
+                    <div className="mt-auto pt-10">
+                      <Button
+                        onClick={() => {
+                          setSelectedPaymentUrl(t.paymentUrl);
+                          setModalOpen(true);
+                        }}
+                        className={cn(
+                          "h-12 w-full rounded-full text-sm font-semibold transition",
+                          isCore
+                            ? "bg-white text-neutral-900 hover:bg-white/90"
+                            : "bg-transparent text-neutral-900 ring-1 ring-black/20 hover:bg-black/[0.04]",
+                        )}
+                      >
+                        {t.ctaLabel}
+                      </Button>
+
+                      {t.footnote ? (
+                        <p
+                          className={cn(
+                            "mt-4 text-center text-xs",
+                            isCore ? "text-white/55" : "text-neutral-500",
+                          )}
+                        >
+                          {t.footnote}
+                        </p>
                       ) : null}
                     </div>
-
-                    <div className="mt-8 h-px w-full bg-white/10" />
-
-                    <div className="flex flex-1 flex-col py-8">
-                      <BulletList
-                        bullets={t.bullets}
-                        expanded={isExpanded}
-                        onToggle={() =>
-                          setExpanded((prev) => ({
-                            ...prev,
-                            [t.key]: !prev[t.key],
-                          }))
-                        }
-                        previewCount={99}
-                        showToggle={false}
-                      />
-
-                      <div className="mt-auto pt-10">
-                        <Button
-                          onClick={() => {
-                            setSelectedPaymentUrl(t.paymentUrl);
-                            setModalOpen(true);
-                          }}
-                          className={[
-                            "h-12 w-full rounded-full text-sm font-semibold",
-                            t.emphasis
-                              ? "bg-white text-neutral-900 hover:bg-white/90"
-                              : "bg-white/10 text-white hover:bg-white/15 ring-1 ring-white/15",
-                          ].join(" ")}
-                        >
-                          {t.ctaLabel}
-                        </Button>
-
-                        {t.footnote ? (
-                          <p className="mt-4 text-center text-xs text-white/50">
-                            {t.footnote}
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </motion.div>
 
-          <p className="mx-auto mt-6 max-w-3xl text-center text-xs text-neutral-500">
+          <p className="mx-auto mt-10 max-w-3xl text-center text-xs text-neutral-500">
             Foundation is a one-time payment. Core includes a 7-day free trial,
             then billed annually.
           </p>

@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import LottiePlayer from "./lottieplayer";
-import declutterAnimation from "@/lottie/declutter.json";
 
 type ChallengeSectionProps = {
   eyebrow?: string;
@@ -15,33 +13,45 @@ type ChallengeSectionProps = {
 
 export default function ChallengeSection({
   eyebrow = "THE CHALLENGE",
-  title = "You don't need more\nfinancial products.",
-  subtitle = "You need structure. Perspective. A clear plan that connects today's decisions to tomorrow's outcomes.",
-  body = "The financial industry offers complexity when it should offer clarity. It pushes products when it should provide guidance. It optimizes for transactions when it should optimize for trust.",
-  emphasis = "We built Celerey to be different.",
+  title = "There is plenty of advice.\nNot enough direction.",
+  subtitle = "Money gets loud fast. Opinions, rules, products, and noise. What you really need is a clear path you can trust.",
+  body = "Celerey helps you understand where you are, what matters next, and how to move forward with confidence. Simple guidance that connects today’s choices to tomorrow’s outcomes.",
+  emphasis = "Clarity first. Strategy second. Momentum always.",
   className = "",
 }: ChallengeSectionProps) {
   return (
     <section
       className={[
-        "w-full bg-[#f4f3f2] text-neutral-900",
-        "py-20 sm:py-28",
+        "relative w-full min-h-screen bg-[#f4f3f2] text-neutral-900",
         className,
       ].join(" ")}
     >
-      {/* ✅ wider, more “designed” container */}
-      <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16">
-        {/* ✅ slightly image-weighted layout for a premium feel */}
-        <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.1fr]">
-          {/* LEFT: text */}
-          <motion.div
-            className="order-2 lg:order-1 max-w-3xl"
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <p className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80">
+      <div className="grid min-h-screen lg:grid-cols-2">
+        {/* LEFT — Full Bleed Video */}
+        <div className="relative h-[60vh] lg:h-auto">
+          <video
+            src="/videos/nav.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+
+          {/* subtle dark gradient for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+        </div>
+
+        {/* RIGHT — Text */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex items-center justify-center px-8 py-16 sm:px-16 lg:px-24"
+        >
+          <div className="max-w-xl">
+            <p className="text-[11px] tracking-[0.22em] text-[#b07d3d]">
               {eyebrow}
             </p>
 
@@ -61,26 +71,12 @@ export default function ChallengeSection({
             <p className="mt-8 text-base font-semibold text-neutral-900 sm:text-lg">
               {emphasis}
             </p>
-          </motion.div>
 
-          {/* RIGHT: lottie */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut", delay: 0.05 }}
-            className="order-1 lg:order-2 mx-auto w-full lg:mx-0 flex items-center justify-center lg:justify-end"
-          >
-            <div className="aspect-square w-60 sm:w-80 md:w-[420px] rounded-full border border-black/10 bg-white/60 p-4 sm:p-6 shadow-[0_30px_80px_rgba(0,0,0,0.08)] backdrop-blur-sm flex items-center justify-center">
-              <div className="opacity-90 w-full h-full flex items-center justify-center">
-                <LottiePlayer
-                  animationData={declutterAnimation}
-                  className="h-full w-full"
-                />
-              </div>
-            </div>
-          </motion.div>
-        </div>
+            <p className="mt-3 text-sm text-neutral-600">
+              You do not need to guess. You need a compass.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useEffect, useMemo, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -24,34 +24,116 @@ interface AdvisorPageProps {
   params: Promise<{ slug: string }>;
 }
 
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+function SoftSpinner({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-6 py-24">
+      <div className="relative h-12 w-12">
+        <div className="absolute inset-0 rounded-full border border-black/10" />
+        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-black/40 animate-spin" />
+      </div>
+      <p className="text-sm text-neutral-600">{label}</p>
+    </div>
+  );
+}
+
+function AdvisorImage({ src, alt }: { src?: string; alt: string }) {
+  const fallback = "/placeholder-avatar.png";
+  const [imgSrc, setImgSrc] = useState(src || fallback);
+
+  useEffect(() => {
+    setImgSrc(src || fallback);
+  }, [src]);
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className="object-cover"
+      sizes="(min-width: 1024px) 900px, 100vw"
+      onError={() => setImgSrc(fallback)}
+      priority
+    />
+  );
+}
+
+function DetailSkeleton() {
+  return (
+    <section className="min-h-screen bg-[#fbfaf8]">
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="space-y-10">
+            <div className="h-4 w-24 animate-pulse rounded bg-black/[0.06]" />
+            <div className="h-10 w-3/4 animate-pulse rounded bg-black/[0.06]" />
+            <div className="h-4 w-1/3 animate-pulse rounded bg-black/[0.06]" />
+
+            <div className="overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
+              <div className="relative h-80 w-full">
+                <div className="absolute inset-0 animate-pulse bg-black/[0.06]" />
+              </div>
+              <div className="p-6">
+                <div className="h-4 w-48 animate-pulse rounded bg-black/[0.06]" />
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-black/10 bg-white p-8 shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
+              <div className="h-4 w-28 animate-pulse rounded bg-black/[0.06]" />
+              <div className="mt-4 space-y-3">
+                <div className="h-4 w-full animate-pulse rounded bg-black/[0.06]" />
+                <div className="h-4 w-11/12 animate-pulse rounded bg-black/[0.06]" />
+                <div className="h-4 w-10/12 animate-pulse rounded bg-black/[0.06]" />
+              </div>
+
+              <div className="mt-10">
+                <SoftSpinner label="Preparing your advisor profile" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
   const [advisor, setAdvisor] = useState<Advisor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
+  const router = useRouter();
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
   const slug = use(params).slug;
+
+  const pageTitle = useMemo(
+    () => advisor?.name ?? "Advisor Profile",
+    [advisor],
+  );
 
   useEffect(() => {
     const fetchAdvisor = async () => {
       try {
         setIsLoading(true);
+        setError(null);
+
         const res = await fetch(`${apiBase}/advisors/${slug}`);
 
         if (!res.ok) {
           if (res.status === 404) {
-            setError("Advisor not found");
+            setError("Advisor not found.");
             return;
           }
           throw new Error(`Failed to fetch advisor: ${res.status}`);
         }
 
-        const data = await res.json();
+        const data = (await res.json()) as Advisor;
         setAdvisor(data);
       } catch (err) {
         console.error("Error fetching advisor:", err);
-        setError("Failed to load advisor details. Please try again later.");
+        setError("We could not load this advisor. Please try again shortly.");
       } finally {
         setIsLoading(false);
       }
@@ -60,94 +142,159 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
     fetchAdvisor();
   }, [slug, apiBase]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <div className="text-lg text-gray-600">Loading advisor details...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <DetailSkeleton />;
 
   if (error || !advisor) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <p className="text-gray-600 text-lg mb-4">
-          {error || "Advisor not found or unavailable."}
-        </p>
-        <Button
-          onClick={() => router.push("/advisors")}
-          className="bg-[#1B1856] text-white rounded-full"
-        >
-          Back to Advisors
-        </Button>
-      </div>
+      <section className="min-h-screen bg-[#fbfaf8]">
+        <div className="mx-auto max-w-3xl px-6 py-20 sm:py-24 text-center">
+          <p className="text-[11px] tracking-[0.22em] text-[#b07d3d]">
+            ADVISOR PROFILE
+          </p>
+          <h1 className="mt-5 font-serif text-3xl text-neutral-900">
+            {error || "Advisor unavailable."}
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-600">
+            Please return to the advisory list and select another profile.
+          </p>
+
+          <div className="mx-auto mt-10 max-w-xs">
+            <Button
+              onClick={() => router.push("/advisors")}
+              className="h-11 w-full rounded-full bg-transparent text-neutral-900 ring-1 ring-black/20 hover:bg-black/[0.04]"
+            >
+              Back to Advisors
+            </Button>
+          </div>
+        </div>
+      </section>
     );
   }
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-20 px-6 mt-10">
-      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-        {/* Image */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative h-80 w-full rounded-2xl overflow-hidden shadow-md"
-        >
-          <Image
-            src={advisor.image || "/placeholder-avatar.png"}
-            alt={advisor.name}
-            fill
-            className="object-cover"
-            onError={(e) => {
-              e.currentTarget.src = "/placeholder-avatar.png";
-            }}
-          />
-        </motion.div>
+    <section className="min-h-screen bg-[#fbfaf8]">
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl">
+          {/* Top */}
+          <div className="mb-10">
+            <p className="text-[11px] tracking-[0.22em] text-[#b07d3d]">
+              ADVISOR PROFILE
+            </p>
 
-        {/* Info */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-3xl md:text-4xl font-semibold text-[#1B1856] mb-2">
-            {advisor.name}
-          </h1>
-          <p className="text-blue-700 font-medium mb-4">{advisor.title}</p>
-          <p className="text-gray-700 leading-relaxed mb-6">{advisor.bio}</p>
+            <h1 className="mt-4 font-serif text-4xl leading-[1.1] text-neutral-900 sm:text-5xl">
+              {pageTitle}
+            </h1>
 
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-[#1B1856] mb-2">
-              Areas of Expertise
-            </h3>
-            <ul className="flex flex-wrap gap-2">
-              {advisor.expertise.map((skill, index) => (
-                <li
-                  key={index}
-                  className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium"
-                >
-                  {skill}
-                </li>
-              ))}
-            </ul>
+            <p className="mt-3 text-sm text-neutral-700">{advisor.title}</p>
+
+            <div className="mt-7 h-px w-full bg-black/10" />
           </div>
 
-          <Button className="bg-[#1B1856] hover:bg-[#1B1856]/80 text-white rounded-full">
-            Book Session
-          </Button>
-        </motion.div>
-      </div>
+          {/* NEW LAYOUT:
+              - Image spans full width
+              - Description is a wide “editorial” column
+              - Expertise + CTA sits in a right sidebar on lg, stacks on mobile
+          */}
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            {/* Left column */}
+            <div className="space-y-10">
+              {/* Image full-width */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55 }}
+                className="overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.08)]"
+              >
+                <div className="relative aspect-[16/10] w-full sm:aspect-[16/9]">
+                  <AdvisorImage src={advisor.image} alt={advisor.name} />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0 opacity-80" />
+                </div>
 
-      {/* Experience Section */}
-      <div className="max-w-5xl mx-auto mt-16 text-center border-t border-gray-200 pt-10">
-        <p className="text-gray-600 text-lg">{advisor.experience}</p>
-        <div className="mt-8">
-          <Link href="/advisors">
-            <Button className="border border-[#1B1856] text-[#1B1856] hover:bg-[#1B1856] bg-transparent hover:text-white rounded-full">
-              Back to All Advisors
-            </Button>
-          </Link>
+                <div className="flex items-center justify-between gap-4 p-6">
+                  <p className="text-xs text-neutral-600">
+                    Celerey Advisory Network
+                  </p>
+                  <Link
+                    href="/advisors"
+                    className="text-xs text-neutral-600 underline-offset-4 hover:underline"
+                  >
+                    Back to advisors
+                  </Link>
+                </div>
+              </motion.div>
+
+              {/* Overview as wide editorial text */}
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.05 }}
+                className="rounded-[24px] border border-black/10 bg-white p-8 shadow-[0_18px_55px_rgba(0,0,0,0.06)]"
+              >
+                <p className="text-sm font-semibold text-[#b07d3d]">Overview</p>
+
+                <div className="mt-4 max-w-none">
+                  <p className="text-sm leading-8 text-neutral-700">
+                    {advisor.bio}
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Experience as wide section */}
+              <div className="rounded-[24px] border border-black/10 bg-white p-8 text-left shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
+                <p className="text-sm font-semibold text-[#b07d3d]">
+                  Experience
+                </p>
+                <p className="mt-4 text-sm leading-8 text-neutral-700">
+                  {advisor.experience}
+                </p>
+              </div>
+            </div>
+
+            {/* Right column (sticky on large screens) */}
+            <motion.aside
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.1 }}
+              className="lg:sticky lg:top-24"
+            >
+              <div className="rounded-[24px] border border-black/10 bg-white p-8 shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
+                <p className="text-sm font-semibold text-[#b07d3d]">
+                  Areas of expertise
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {advisor.expertise.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full border border-black/10 bg-black/[0.02] px-3 py-1 text-xs text-neutral-700"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="mt-10">
+                  <Button className="h-11 w-full rounded-full bg-[#1a1856] text-white hover:bg-[#1a1856]/90">
+                    Book a Session
+                  </Button>
+
+                  <p className="mt-3 text-center text-xs text-neutral-500">
+                    Availability is being confirmed after request.
+                  </p>
+                </div>
+
+                <div className="mt-8 h-px w-full bg-black/10" />
+
+                <div className="mt-8">
+                  <Link href="/advisors">
+                    <Button className="h-11 w-full rounded-full bg-transparent text-neutral-900 ring-1 ring-black/20 hover:bg-black/[0.04]">
+                      Back to All Advisors
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.aside>
+          </div>
         </div>
       </div>
     </section>

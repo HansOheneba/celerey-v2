@@ -1,7 +1,6 @@
 import Hero from "@/components/homepage/hero";
 import FeaturesSection from "@/components/homepage/featuresSection";
 // import {Journey} from "@/components/homepage/journey";
-import Partners from "@/components/homepage/partners";
 import WealthScan from "@/components/homepage/wealthScan";
 import Pricing from "@/components/homepage/pricing";
 // import Advisors from "@/components/homepage/advisors";
@@ -16,26 +15,26 @@ export default function Home() {
     <div className="min-h-screen">
       <Hero />
 
-
       <ApproachSection />
-      {/* Philosophy / Challenge section — target: #challenge */}
-      <div id="challenge">
         <ChallengeSection />
+
+      {/* Philosophy / Challenge section — target: #challenge */}
+      <WealthScan />
+      <div id="challenge">
       </div>
-      <FeaturesSection />
 
       {/* Pricing / Entry point — target: #entry-pricing */}
-      <div id="entry-pricing">
-        <Pricing id="entry-pricing" />
-      </div>
+      {/* <div id="entry-pricing"> */}
+        {/* <Pricing id="entry-pricing" /> */}
+      {/* </div> */}
 
       {/* A la carte services — target: #ala-carte */}
-      <div id="ala-carte">
-        <AlaCarteServices />
-      </div>
-
-      <WealthScan />
       <InsightsSection />
+      <FeaturesSection />
+      {/* <div id="ala-carte">
+        <AlaCarteServices />
+      </div> */}
+
       <Community />
       {/* <Advisors /> */}
       {/* <Partners /> */}

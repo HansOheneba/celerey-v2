@@ -1,24 +1,18 @@
 "use client";
 
+import * as React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import {
-  ArrowUpRight,
-  Briefcase,
-  Building2,
-  Home,
-  LineChart,
-  PiggyBank,
-  Sun,
-  Users,
-} from "lucide-react";
+  ServiceInquiryDialog,
+  type ConciergeService,
+} from "@/components/services/serviceForm";
 
 type ServiceCard = {
   title: string;
   description: string;
-  priceNote: string; // e.g. "From $250" | "Priced on complexity"
-  icon: React.ComponentType<{ className?: string }>;
-  serviceId: string; // Link to SERVICES array id
+  serviceId: string;
 };
 
 type AlaCarteServicesProps = {
@@ -26,195 +20,247 @@ type AlaCarteServicesProps = {
   title?: string;
   subtitle?: string;
   services?: ServiceCard[];
-  ctaHref?: string; // where cards go
   id?: string;
   className?: string;
+  currencyLabel?: string;
+  flatPrice?: string;
+  disclaimer?: string;
+
+  // optional hook if you want to send to API from parent instead
+  onSubmitInquiry?: (payload: {
+    service: ConciergeService;
+    fullName: string;
+    email: string;
+    phone: string;
+    message: string;
+  }) => Promise<void> | void;
 };
 
 const DEFAULT_SERVICES: ServiceCard[] = [
   {
-    title: "Investment Strategy",
+    title: "Tax planning",
     description:
-      "Personalized portfolio design aligned with your risk tolerance, timeline, and values.",
-    priceNote: "From $250",
-    icon: LineChart,
-    serviceId: "asset-allocation",
+      "Help with taxes, filing readiness, and planning ahead to reduce avoidable surprises.",
+    serviceId: "tax",
   },
   {
-    title: "Portfolio Management",
+    title: "Debt management",
     description:
-      "Ongoing oversight, rebalancing, and optimization of your investment portfolio.",
-    priceNote: "Priced on complexity",
-    icon: PiggyBank,
-    serviceId: "asset-allocation",
+      "A clear payoff plan that balances progress with your monthly obligations.",
+    serviceId: "debt",
   },
   {
-    title: "Retirement Planning",
+    title: "Budget and spending plan",
     description:
-      "Long-term projections, drawdown strategies, and lifestyle planning for your future.",
-    priceNote: "From $400",
-    icon: Sun,
+      "A simple monthly plan so your money covers essentials, goals, and lifestyle.",
+    serviceId: "budget",
+  },
+  {
+    title: "Savings and emergency fund",
+    description:
+      "Build a safety buffer and a savings routine you can maintain long-term.",
+    serviceId: "savings",
+  },
+  {
+    title: "Investing setup",
+    description:
+      "Understand your options and set up a sensible approach based on your timeline and risk level.",
+    serviceId: "investing",
+  },
+  {
+    title: "Retirement planning",
+    description:
+      "Plan for later life with clear projections and practical next steps.",
     serviceId: "retirement",
   },
   {
-    title: "Property Planning",
+    title: "Property decision support",
     description:
-      "Guidance on major asset purchases, real estate strategy, and property optimization.",
-    priceNote: "From $300",
-    icon: Home,
-    serviceId: "real-estate",
+      "Make confident property decisions with clear numbers, trade-offs, and a plan.",
+    serviceId: "property",
   },
   {
-    title: "Business Advisory",
+    title: "Income and business support",
     description:
-      "Cash flow optimization, business structure planning, and entrepreneur-focused guidance.",
-    priceNote: "Priced on complexity",
-    icon: Building2,
-    serviceId: "income-growth",
-  },
-  {
-    title: "Legacy Planning",
-    description:
-      "Family wealth structuring, succession planning, and multi-generational strategy.",
-    priceNote: "From $500",
-    icon: Users,
-    serviceId: "estate",
+      "Improve cash flow and structure if you earn through a business or side income.",
+    serviceId: "income",
   },
 ];
 
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default function AlaCarteServices({
-  eyebrow = "BEYOND THE FIRST STEP",
-  title = "Services when you need them",
-  subtitle =
-    "Celerey uses a layered, modular approach. You only pay for what you need, when you need it. No bundles. No subscriptions you don't want.",
+  // eyebrow = "SERVICES",
+  title = "Support, where you need it",
+  subtitle = "Each service is a focused engagement with one clear fee.",
   services = DEFAULT_SERVICES,
-  ctaHref = "/subscribe/concierge",
   id = "services",
   className = "",
+  currencyLabel = "USD",
+  flatPrice = "600",
+  disclaimer = "Fee may increase if additional scope is required. Any change is confirmed in writing before work begins.",
+  onSubmitInquiry,
 }: AlaCarteServicesProps) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selected, setSelected] = React.useState<ConciergeService | null>(null);
+
+  function openInquiry(s: ServiceCard) {
+    const picked: ConciergeService = {
+      id: s.serviceId,
+      title: s.title,
+      subtitle: s.description,
+    };
+    setSelected(picked);
+    setDialogOpen(true);
+  }
+
   return (
-  <section id={id} className={`w-full bg-[#f4f3f] py-16 sm:py-24 ${className}`}>
+    <section
+      id={id}
+      className={cn("w-full bg-[#fbfaf8] py-16 sm:py-24", className)}
+    >
       <div className="mx-auto max-w-6xl px-6">
-        {/* Header */}
-        <div className="text-center">
-          <motion.p
+      {/* Header */}
+      <div className="max-w-3xl">
+        <motion.h2
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="mt-5 font-serif text-4xl leading-[1.08] text-neutral-900 sm:text-5xl"
+        >
+        {title}
+        </motion.h2>
+
+        <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ delay: 0.12, duration: 0.6 }}
+        className="mt-5 max-w-2xl text-sm leading-7 text-neutral-600 sm:text-base"
+        >
+        {subtitle}
+        </motion.p>
+
+        <div className="mt-7 flex flex-wrap items-end gap-x-4 gap-y-2">
+        <span className="text-neutral-300">|</span>
+        <p className="text-sm text-neutral-600">{disclaimer}</p>
+        </div>
+
+        <div className="mt-8 h-px w-24 bg-neutral-900/10" />
+      </div>
+
+      {/* List */}
+      <div className="mt-12 overflow-hidden rounded-[24px] border border-black/10 bg-white">
+        <div className="divide-y divide-black/10">
+        {services.map((s: ServiceCard, idx: number) => {
+          return (
+          <motion.div
+            key={s.serviceId}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80"
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{
+            duration: 0.45,
+            ease: "easeOut",
+            delay: idx * 0.03,
+            }}
           >
-            {eyebrow}
-          </motion.p>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="mt-6 font-serif text-4xl leading-[1.08] text-neutral-900 sm:text-5xl md:text-6xl"
-          >
-            {title}
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ delay: 0.12, duration: 0.6 }}
-            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-700 sm:text-lg"
-          >
-            {subtitle}
-          </motion.p>
-        </div>
-
-        {/* Cards */}
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((s, idx) => {
-            const Icon = s.icon;
-            const serviceLink = `${ctaHref}?service=${s.serviceId}`;
-
-            return (
-              <motion.div
-                key={s.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.05 }}
-              >
-                <Link
-                  href={serviceLink}
-                  className={[
-                    "group block h-full rounded-2xl bg-white/60 p-8",
-                    "shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-black/5",
-                    "transition hover:bg-white/80 hover:shadow-[0_18px_50px_rgba(0,0,0,0.07)]",
-                  ].join(" ")}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100/80 ring-1 ring-black/5">
-                      <Icon className="h-6 w-6 text-neutral-700" />
-                    </div>
-
-                    <span className="mt-1 inline-flex items-center gap-1 text-xs text-neutral-400 opacity-0 transition group-hover:opacity-100">
-                      Explore <ArrowUpRight className="h-4 w-4" />
-                    </span>
-                  </div>
-
-                  <h3 className="mt-6 text-base font-semibold text-neutral-900 sm:text-lg">
-                    {s.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm leading-relaxed text-neutral-700">
-                    {s.description}
-                  </p>
-
-                  <p className="mt-6 text-sm text-neutral-500">{s.priceNote}</p>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* How pricing works */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 0.65, ease: "easeOut" }}
-          className="mt-16 rounded-2xl bg-white/60 p-8 shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-black/5 sm:p-10"
-        >
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-            <div>
-              <h4 className="font-serif text-2xl text-neutral-900 sm:text-3xl">
-                How pricing works
-              </h4>
-              <p className="mt-4 max-w-lg text-sm leading-relaxed text-neutral-700 sm:text-base">
-                We believe in complete transparency. There are no hidden fees, no
-                bundled packages, and no pressure to buy services you don&apos;t
-                need.
+            <div
+            className={cn(
+              "group px-6 py-7 sm:px-8",
+              "transition hover:bg-black/[0.02]",
+            )}
+            >
+            <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+              <div className="min-w-0">
+              <h3 className="font-serif text-xl text-neutral-900">
+                {s.title}
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-neutral-600">
+                {s.description}
               </p>
+              </div>
+
+              <div className="flex items-start justify-end">
+              <p className="text-sm text-neutral-700">
+                {currencyLabel} {flatPrice}
+              </p>
+              </div>
             </div>
 
-            <ol className="space-y-4">
-              {[
-                "Select the service that matches your current need",
-                "Complete a short guided questionnaire",
-                "Receive clear pricing based on your specific situation",
-                "Decide when you're ready — no obligation",
-              ].map((item, i) => (
-                <li key={item} className="flex items-start gap-4">
-                  <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-xs font-semibold text-neutral-700 ring-1 ring-black/5">
-                    {i + 1}
-                  </span>
-                  <p className="text-sm leading-relaxed text-neutral-700 sm:text-base">
-                    {item}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </motion.div>
+            <div className="mt-5 flex items-center justify-between gap-3">
+              <p className="text-xs text-neutral-500">
+              Select to share your details and request this service.
+              </p>
+
+              <Button
+              type="button"
+              variant="ghost"
+              className="rounded-full px-4"
+              onClick={() => openInquiry(s)}
+              >
+              Continue
+              </Button>
+            </div>
+            </div>
+          </motion.div>
+          );
+        })}
+        </div>
       </div>
+
+      {/* How it works */}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="mt-12 grid gap-8 rounded-[24px] border border-black/10 bg-white p-8 sm:p-10 lg:grid-cols-2"
+      >
+        <div>
+        <h4 className="font-serif text-2xl text-neutral-900">
+          How it works
+        </h4>
+        <p className="mt-4 max-w-lg text-sm leading-7 text-neutral-600">
+          You select one service, share your details, and we confirm scope
+          before anything begins.
+        </p>
+        </div>
+
+        <ol className="space-y-4">
+        {[
+          "Choose the service that fits your situation",
+          "Submit your details and notes",
+          "Receive scope confirmation",
+          "Proceed when you are ready",
+        ].map((item: string, i: number) => (
+          <li key={item} className="flex items-start gap-4">
+          <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/[0.03] text-xs font-semibold text-neutral-700 ring-1 ring-black/10">
+            {i + 1}
+          </span>
+          <p className="text-sm leading-7 text-neutral-600">{item}</p>
+          </li>
+        ))}
+        </ol>
+      </motion.div>
+      </div>
+
+      {/* Dialog */}
+      <ServiceInquiryDialog
+      open={dialogOpen}
+      onOpenChange={setDialogOpen}
+      service={selected}
+      onSubmit={(payload) => {
+        // If parent provided handler, call it. Else just log for now.
+        if (onSubmitInquiry) {
+        return onSubmitInquiry(payload);
+        }
+        console.log("Service inquiry submitted:", payload);
+      }}
+      />
     </section>
   );
 }

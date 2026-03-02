@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, BarChart3 } from "lucide-react";
 import dashImage from "@/public/dash.jpg";
 
 type Feature = {
@@ -12,40 +11,41 @@ type Feature = {
 type ApproachSectionProps = {
   eyebrow?: string;
   titleTop?: string;
-  titleItalic?: string;
   description?: string;
   features?: Feature[];
   className?: string;
-  /** Optional: swap the right-side card content for an image */
   imageSrc?: string;
   imageAlt?: string;
+  imageCaption?: string;
 };
 
 const defaultFeatures: Feature[] = [
   {
-    title: "Holistic Understanding",
+    title: "Private-wealth level guidance",
     description:
-      "See your income, assets, liabilities, and goals in one clear view",
+      "Get access to certified advisors and structured thinking that is usually reserved for high-net-worth individuals.",
   },
   {
-    title: "Expert Partnership",
+    title: "A complete view, in one place",
     description:
-      "Work with globally certified advisors who understand your world",
+      "Bring income, spending, goals, and obligations into a single picture so decisions feel simple and grounded.",
   },
   {
-    title: "Evolving Support",
-    description: "As your life changes, Celerey adapts with you",
+    title: "Tech that keeps it practical",
+    description:
+      "Use smart tools that help you stay on track, spot blind spots early, and adjust as life changes.",
   },
 ];
 
 export default function ApproachSection({
   eyebrow = "THE CELEREY APPROACH",
-  titleTop = "Your complete financial\npicture. \nFinally clear.",
-  description = "We help you understand where you stand, define goals that matter, and build wealth over time with expert guidance at every step.",
+  titleTop = "The kind of guidance\nthe top 1% expect.",
+  description = "Celerey brings private-wealth style advisory to everyone, backed by technology that makes the plan clear, trackable, and easy to follow.",
   features = defaultFeatures,
   className = "",
   imageSrc,
   imageAlt = "Approach preview",
+  imageCaption = "Advisors + tools, working together to keep your plan clear.",
 }: ApproachSectionProps) {
   return (
     <section
@@ -56,15 +56,16 @@ export default function ApproachSection({
       ].join(" ")}
     >
       <div className="mx-auto w-full max-w-[1400px] px-6 md:px-10 lg:px-16">
-        <div className="grid items-center gap-16 lg:grid-cols-[1fr_1.1fr]">
+        <div className="grid items-start lg:items-center gap-14 lg:grid-cols-2 lg:gap-16">
           {/* Left */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-2xl"
           >
-            <p className="text-[11px] sm:text-xs tracking-[0.22em] text-neutral-600/80">
+            <p className="text-[11px] sm:text-xs tracking-[0.22em] text-[#b07d3d]">
               {eyebrow}
             </p>
 
@@ -80,27 +81,35 @@ export default function ApproachSection({
               {description}
             </p>
 
-            <ul className="mt-10 space-y-6">
-              {features.map((f) => (
-                <li key={f.title} className="flex items-start gap-4">
-                  <span className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full bg-neutral-200/70 text-neutral-900">
-                    <Check className="h-5 w-5" />
-                  </span>
+            {/* Softer “principles” list */}
+            <div className="mt-10 space-y-6">
+              {features.map((f, idx) => (
+                <div key={f.title} className="flex gap-5">
+                  <div className="pt-1">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-900 text-white text-xs font-semibold">
+                      {String(idx + 1).padStart(2, "0")}
+                    </div>
+                  </div>
 
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900 sm:text-base">
+                    <p className="text-base font-semibold text-neutral-900">
                       {f.title}
                     </p>
-                    <p className="mt-1 text-sm leading-relaxed text-neutral-700">
+                    <p className="mt-1 text-sm leading-relaxed text-neutral-700 sm:text-base">
                       {f.description}
                     </p>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
+
+            <p className="mt-10 max-w-xl text-sm text-neutral-600">
+              This is not generic content. It is guidance, supported by a system
+              that helps you apply it.
+            </p>
           </motion.div>
 
-          {/* Right Card */}
+          {/* Right: image frame */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -108,22 +117,28 @@ export default function ApproachSection({
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.05 }}
             className="flex justify-center lg:justify-end"
           >
-            <div className="w-full max-w-xl rounded-[28px] bg-white/70 p-1 shadow-[0_10px_30px_rgba(0,0,0,0.06)] ring-1 ring-black/5">
-              <div className="flex items-center justify-center rounded-[22px] bg-neutral-200/60 overflow-hidden">
-                {imageSrc ? (
-                  <img
-                    src={imageSrc}
-                    alt={imageAlt}
-                    className="w-full h-auto rounded-[22px] object-contain"
-                  />
-                ) : (
-                  <img
-                    src={dashImage.src}
-                    alt={imageAlt}
-                    className="w-full h-auto rounded-[22px] object-contain"
-                  />
-                )}
+            <div className="w-full max-w-xl">
+              <div className="relative overflow-hidden rounded-[28px] border border-black/10 bg-neutral-50 shadow-[0_30px_90px_rgba(0,0,0,0.10)]">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_10%,rgba(0,0,0,0.06),transparent_60%)]" />
+
+                <div className="relative p-3 sm:p-4">
+                  <div className="overflow-hidden rounded-[22px] bg-white">
+                    <img
+                      src={imageSrc ?? dashImage.src}
+                      alt={imageAlt}
+                      className="h-auto w-full object-cover"
+                    />
+                  </div>
+
+                  <p className="mt-4 px-1 text-sm text-neutral-600">
+                    {imageCaption}
+                  </p>
+                </div>
               </div>
+
+              <p className="mt-4 text-xs text-neutral-500">
+                Built for clarity and consistency, not complexity.
+              </p>
             </div>
           </motion.div>
         </div>

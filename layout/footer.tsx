@@ -10,198 +10,283 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 
+type FooterLink = { href: string; label: string };
+
+type FooterSection = {
+  title: string;
+  links: FooterLink[];
+};
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-const sections = [
-  {
-    title: "Tools",
-    links: [
-      { href: "/tools/budget-planner", label: "Budget Planner" },
-      { href: "/tools/money-manager", label: "Simple Money Manager" },
-      { href: "/tools/savings-calculator", label: "Savings Goals Calculator" },
-      { href: "/tools", label: "Explore All Tools" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { href: "/about", label: "Who we are" },
-      { href: "/advisors", label: "Our Advisors" },
-      { href: "/insights", label: "Resources" },
-    ],
-  },
-  {
-    title: "Support",
-    links: [
-      { href: "/contact", label: "Help & Support" },
-      { href: "/faqs", label: "FAQs" },
-      { href: "/privacy", label: "Privacy Policy" },
-      { href: "/terms", label: "Terms of Service" },
-    ],
-  },
-];
-
+  const sections: FooterSection[] = [
+    {
+      title: "Tools",
+      links: [
+        { href: "/tools/budget-planner", label: "Budget Planner" },
+        { href: "/tools/money-manager", label: "Simple Money Manager" },
+        {
+          href: "/tools/savings-calculator",
+          label: "Savings Goals Calculator",
+        },
+        { href: "/tools", label: "Explore All Tools" },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        { href: "/about", label: "Who we are" },
+        { href: "/advisors", label: "Our Advisors" },
+        { href: "/insights", label: "Resources" },
+      ],
+    },
+    {
+      title: "Support",
+      links: [
+        { href: "/contact", label: "Help & Support" },
+        { href: "/faqs", label: "FAQs" },
+        { href: "/privacy", label: "Privacy Policy" },
+        { href: "/terms", label: "Terms of Service" },
+      ],
+    },
+  ];
 
   return (
-    <footer className="bg-blue-950 text-white/80 py-16 border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Desktop Grid */}
-        <div className="hidden md:grid grid-cols-4 gap-12 mb-16">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="inline-block mb-4">
-              <Image
-                src="/logos/logoWhite.png"
-                alt="Celerey Logo"
-                width={150}
-                height={45}
-                priority
-              />
-            </Link>
-            <p className="text-sm text-white/70 max-w-sm">
-              Empowering you to turn income into strategy through expert
-              guidance and smart tools.
-            </p>
+    <div className="w-full bg-white flex">
+      <footer className="relative overflow-hidden bg-[#1a1856] py-20 text-white m-5 rounded-2xl mx-auto w-full max-w-[98vw] px-6 md:px-10 lg:px-16">
+        {/* Deep background wash (page color behind the bubble) */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_15%,rgba(255,255,255,0.08),transparent_55%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(59,130,246,0.14),transparent_60%)]" />
 
-         <div className="mt-6 flex items-center gap-4">
-  {/* LinkedIn */}
-  <Link
-    href="https://www.linkedin.com/company/celerey"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="hover:text-blue-500 transition-colors"
-  >
-    <Linkedin className="h-6 w-6" />
-  </Link>
+        <div className="relative mx-auto max-w-7xl px-6">
+          {/* Floating bubble container */}
+          <div className="relative overflow-hidden">
+            {/* inner soft sheen */}
 
-  {/* WhatsApp */}
-  <Link
-    href="https://wa.me/12272296921"
-    target="_blank"
-    className="inline-flex items-center gap-2 bg-[#27924e] hover:bg-[#1EBE5D] text-white rounded-full px-4 py-2 text-sm font-medium transition"
-  >
-    <span>WhatsApp</span>
-  </Link>
-</div>
+            <div className="relative px-8 py-14 sm:px-12">
+              {/* Top CTA row (matches reference) */}
+              <div className="text-center">
+                <h3 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                  Let’s get started on something great
+                </h3>
+                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-white/70 sm:text-base">
+                  Get clarity on your finances and take your next step with
+                  confidence.
+                </p>
 
-          </div>
+                <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link
+                    href="/contact"
+                    className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 bg-transparent px-6 text-sm font-medium text-white/90 transition hover:border-white/25 hover:bg-white/5"
+                  >
+                    Chat to us
+                  </Link>
+                  <Link
+                    href="/compass"
+                    className="inline-flex h-11 items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-[#050816] transition hover:bg-white/90"
+                  >
+                    Get started
+                  </Link>
+                </div>
+              </div>
 
-          {/* Desktop Columns */}
-          {sections.map((sec) => (
-            <div key={sec.title}>
-              <h3 className="text-white font-semibold text-lg mb-4">
-                {sec.title}
-              </h3>
-              <ul className="space-y-2 text-sm">
-                {sec.links.map((l) => (
-                  <li key={l.href}>
+              {/* Divider */}
+              <div className="mt-12 h-px w-full bg-white/10" />
+
+              {/* Links grid */}
+              <div className="mt-10 hidden gap-10 md:grid md:grid-cols-5">
+                {/* Brand column */}
+                <div className="md:col-span-1">
+                  <Link href="/" className="inline-flex items-center gap-3">
+                    <Image
+                      src="/logos/logoWhite.png"
+                      alt="Celerey Logo"
+                      width={140}
+                      height={44}
+                      priority
+                    />
+                  </Link>
+
+                  <p className="mt-4 text-sm leading-relaxed text-white/65">
+                    Democratizing financial guidance through simple tools and
+                    expert advice.
+                  </p>
+
+                  <div className="mt-6 flex items-center gap-3">
                     <Link
-                      href={l.href}
-                      className="hover:text-blue-400 transition-colors"
+                      href="https://www.linkedin.com/company/celerey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white/80 transition hover:border-white/20 hover:bg-white/10"
+                      aria-label="Celerey on LinkedIn"
                     >
-                      {l.label}
+                      <Linkedin className="h-5 w-5" />
                     </Link>
-                  </li>
+
+                    <Link
+                      href="https://wa.me/12272296921"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 items-center justify-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/85 transition hover:border-white/20 hover:bg-white/10"
+                    >
+                      WhatsApp
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Section columns */}
+                {sections.map((sec) => (
+                  <div key={sec.title}>
+                    <h4 className="text-sm font-semibold text-white">
+                      {sec.title}
+                    </h4>
+                    <ul className="mt-4 space-y-2 text-sm text-white/70">
+                      {sec.links.map((l) => (
+                        <li key={l.href}>
+                          <Link
+                            href={l.href}
+                            className="transition hover:text-white"
+                          >
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
-            </div>
-          ))}
-        </div>
 
-        {/* Mobile */}
-        <div className="md:hidden mb-16 space-y-4">
-          {/* Brand Section - Always visible */}
-          <div className="py-4 space-y-4">
-            <Image
-              src="/logos/logoWhite.png"
-              alt="Celerey Logo"
-              width={120}
-              height={40}
-            />
-            <p className="text-sm text-white/70">
-              Empowering you through expert guidance and smart tools.
-            </p>
-            <div className="flex space-x-4 pt-2">
-              <Link
-                href="https://www.linkedin.com/company/celerey"
-                target="_blank"
-                className="hover:text-blue-500"
-              >
-                <Linkedin className="h-6 w-6" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Other Sections in Accordion */}
-          <Accordion type="single" collapsible>
-            {sections.map((sec, index) => (
-              <AccordionItem key={index} value={`sec-${index}`}>
-                <AccordionTrigger className="text-white font-medium flex justify-between items-center">
-                  {sec.title}
-                  <svg
-                    className="h-5 w-5 transition-transform duration-300 accordion-chevron"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </AccordionTrigger>
-
-                <AccordionContent>
-                  <ul className="space-y-2 text-sm py-2">
-                    {sec.links.map((l) => (
-                      <li key={l.href}>
-                        <Link
-                          href={l.href}
-                          className="hover:text-blue-400 transition-colors block"
-                        >
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
+                {/* Legal column (to mimic reference having a separate column) */}
+                <div>
+                  <h4 className="text-sm font-semibold text-white">Legal</h4>
+                  <ul className="mt-4 space-y-2 text-sm text-white/70">
+                    <li>
+                      <Link
+                        href="/terms"
+                        className="transition hover:text-white"
+                      >
+                        Terms
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/privacy"
+                        className="transition hover:text-white"
+                      >
+                        Privacy
+                      </Link>
+                    </li>
                   </ul>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+                </div>
+              </div>
 
-        {/* New Minimal CTA */}
-        <div className="mt-10 bg-white/5 border border-white/10 rounded-3xl p-8 text-center backdrop-blur-sm">
-          <h4 className="text-2xl font-semibold text-white mb-3">
-            Discover{" "}
-            <span className="text-white/90 underline decoration-white/20">
-              The Compass
-            </span>
-          </h4>
-          <p className="text-white/60 text-sm max-w-lg mx-auto mb-4">
-            Your personalized roadmap for navigating career growth with clarity.
-          </p>
-          <Link
-            href="/compass"
-            className="inline-block px-6 py-2 rounded-full bg-white/10 hover:bg-white/20 transition text-white/90 text-sm font-medium"
-          >
-            Learn More
-          </Link>
-        </div>
+              {/* Mobile accordion */}
+              <div className="mt-10 md:hidden">
+                <div className="flex items-center justify-between">
+                  <Image
+                    src="/logos/logoWhite.png"
+                    alt="Celerey Logo"
+                    width={120}
+                    height={38}
+                  />
 
-        {/* Bottom */}
-        <div className="mt-12 border-t border-white/10 pt-6 text-center text-sm text-white/60 space-y-2">
-          <p>© {currentYear} Celerey. All rights reserved.</p>
-          <div className="space-x-4">
-            <Link href="/terms" className="hover:text-blue-400">
-              Terms of Service
-            </Link>
-            <span className="text-white/40">|</span>
-            <Link href="/privacy" className="hover:text-blue-400">
-              Privacy Policy
-            </Link>
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href="https://www.linkedin.com/company/celerey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/5 text-white/80"
+                      aria-label="Celerey on LinkedIn"
+                    >
+                      <Linkedin className="h-5 w-5" />
+                    </Link>
+                    <Link
+                      href="https://wa.me/12272296921"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 items-center justify-center rounded-full border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/85"
+                    >
+                      WhatsApp
+                    </Link>
+                  </div>
+                </div>
+
+                <p className="mt-4 text-sm leading-relaxed text-white/65">
+                  Turning income into strategy through guidance and simple
+                  tools.
+                </p>
+
+                <Accordion type="single" collapsible className="mt-8">
+                  {sections.map((sec, index) => (
+                    <AccordionItem key={sec.title} value={`sec-${index}`}>
+                      <AccordionTrigger className="text-white/90">
+                        {sec.title}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ul className="space-y-2 pb-2 text-sm text-white/70">
+                          {sec.links.map((l) => (
+                            <li key={l.href}>
+                              <Link
+                                href={l.href}
+                                className="block py-1 transition hover:text-white"
+                              >
+                                {l.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+
+                  <AccordionItem value="legal">
+                    <AccordionTrigger className="text-white/90">
+                      Legal
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <ul className="space-y-2 pb-2 text-sm text-white/70">
+                        <li>
+                          <Link
+                            href="/terms"
+                            className="block py-1 transition hover:text-white"
+                          >
+                            Terms
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href="/privacy"
+                            className="block py-1 transition hover:text-white"
+                          >
+                            Privacy
+                          </Link>
+                        </li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+
+              {/* Bottom row */}
+              <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-sm text-white/60 sm:flex-row">
+                <p>© {currentYear} Celerey. All rights reserved.</p>
+                <div className="flex items-center gap-4">
+                  <Link href="/terms" className="transition hover:text-white">
+                    Terms
+                  </Link>
+                  <span className="text-white/30">•</span>
+                  <Link href="/privacy" className="transition hover:text-white">
+                    Privacy
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* extra breathing room below bubble */}
+          <div className="h-10" />
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   );
 }

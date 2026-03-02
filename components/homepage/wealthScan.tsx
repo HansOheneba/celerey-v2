@@ -51,94 +51,89 @@ interface WealthHealthData {
 }
 
 
-
 const questions: Question[] = [
   {
-    question: "How predictable is your monthly income?",
+    question: "How steady is your monthly income?",
     options: [
-      "Very stable – I can plan ahead confidently", // 4
-      "Somewhat stable – it varies but manageable", // 3
-      "Irregular – my income changes month to month", // 2
-      "Unstable – I can't plan reliably", // 1
+      "Very steady. I can plan ahead with confidence",
+      "Mostly steady. It changes sometimes but I manage",
+      "It varies quite a bit from month to month",
+      "It feels unpredictable and hard to rely on",
     ],
-    why: "We ask this to understand how steady your cash flow feels, which helps shape guidance around planning and buffers.",
-    insight: "Insight Generated: Cash-flow stability and planning capacity.",
+    why: "This helps us understand how stable your cash flow feels.",
+    insight: "Income stability and planning flexibility.",
     pillar: "Income Stability",
     weight: 0.15,
   },
   {
     question:
-      "Roughly what portion of your income do you manage to save or invest each month?",
+      "How much of your income do you usually save or invest each month?",
     options: [
-      "Over 25%", // 4
-      "Between 10–25%", // 3
-      "Less than 10%", // 2
-      "None – I use most of what I earn", // 1
+      "More than 25%",
+      "Around 10 to 25%",
+      "Less than 10%",
+      "I usually spend most or all of it",
     ],
-    why: "This helps gauge how comfortably you balance today’s needs with future plans.",
-    insight: "Insight Generated: Savings rate and discipline score.",
+    why: "This gives a sense of how comfortably you balance today with the future.",
+    insight: "Savings consistency and long term discipline.",
     pillar: "Spending & Saving",
     weight: 0.2,
   },
   {
     question:
-      "If your main income stopped today, how long could you comfortably maintain your current lifestyle?",
+      "If your main income stopped today, how long could you cover your expenses?",
     options: [
-      "More than 6 months", // 4
-      "3–6 months", // 3
-      "1–3 months", // 2
-      "Less than a month", // 1
+      "More than 6 months",
+      "Around 3 to 6 months",
+      "About 1 to 3 months",
+      "Less than a month",
     ],
-    why: "This gives a sense of how well you could handle unexpected changes without stress.",
-    insight: "Insight Generated: Liquidity and emergency-fund strength.",
+    why: "This shows how prepared you are for unexpected changes.",
+    insight: "Emergency fund strength and resilience level.",
     pillar: "Resilience",
     weight: 0.2,
   },
   {
-    question: "How would you describe your current debt or credit position?",
+    question: "How would you describe your current debt situation?",
     options: [
-      "I have no debt", // 4
-      "I manage my debts easily", // 3
-      "I manage but it sometimes feels tight", // 2
-      "It's difficult or stressful to manage", // 1
+      "I do not have any debt",
+      "My debt feels manageable",
+      "It is manageable but sometimes tight",
+      "It feels stressful or difficult to handle",
     ],
-    why: "This offers insight into how comfortably your current borrowing fits into your financial picture.",
-    insight:
-      "Insight Generated: Debt-to-income comfort ratio and stress level.",
+    why: "This helps measure how comfortable your current obligations feel.",
+    insight: "Debt comfort level and financial pressure.",
     pillar: "Debt & Credit Health",
     weight: 0.15,
   },
   {
     question:
-      "How confident are you that you're saving or investing enough for future goals (retirement, business, home, etc.)?",
+      "How confident do you feel about your progress toward future goals?",
     options: [
-      "Very confident – I have a clear plan", // 4
-      "Fairly confident – I'm doing something but unsure if it's enough", // 3
-      "Not very confident – I've started but need direction", // 2
-      "Not confident – I haven't started planning yet", // 1
+      "Very confident. I have a clear plan in place",
+      "Somewhat confident but unsure if it is enough",
+      "Not very confident. I need more direction",
+      "I have not really started planning yet",
     ],
-    why: "This helps understand how confident you feel about the steps you're taking toward long-term goals.",
-    insight:
-      "Insight Generated: Investment readiness and goal-progress indicator.",
+    why: "This reflects how prepared you feel for long term goals.",
+    insight: "Goal clarity and investment readiness.",
     pillar: "Growth Readiness",
     weight: 0.15,
   },
   {
-    question:
-      "Which best describes how you currently approach your finances overall?",
+    question: "Which best describes how you generally manage your finances?",
     options: [
-      "I have a structured plan I follow", // 4
-      "I have ideas but no written plan", // 3
-      "I'm reactive – I deal with things as they come", // 2
-      "I avoid thinking about it until I have to", // 1
+      "I follow a structured plan",
+      "I have ideas but nothing written down",
+      "I handle things as they come up",
+      "I tend to avoid thinking about it",
     ],
-    why: "This helps us understand your general style when managing money, so the guidance feels more personalised.",
-    insight: "Insight Generated: Planning maturity and confidence index.",
+    why: "This shows your overall financial approach and habits.",
+    insight: "Planning style and financial maturity.",
     pillar: "Planning & Direction",
     weight: 0.15,
   },
 ];
-
 
 
 export default function WealthScan() {
@@ -421,223 +416,171 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
   return (
     <section
       id="wealth-scan"
-      className=" flex flex-col items-center justify-center bg-blue-950 px-6 py-24"
+      className="relative flex flex-col items-center justify-center overflow-hidden bg-[#08122B] px-6 py-24"
     >
-      <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-white">
-        Discover Your Financial Health
-      </h2>
-
-            {/* Subcopy */}
-        <p className="mx-auto mt-5 max-w-2xl text-center text-base leading-relaxed text-neutral-200 sm:text-lg">
-          Answer a few simple questions to see where you stand, identify your
-          strengths, and uncover the next best step to build with confidence.
-        </p>
-
-        {/* quick badges */}
-        <div className="mx-auto my-7 flex max-w-2xl flex-wrap items-center justify-center gap-3">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
-            <Clock3 className="h-4 w-4 text-neutral-600" />
-            3 minutes
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
-            <CheckCircle2 className="h-4 w-4 text-neutral-600" />
-            6 questions
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm text-neutral-900 ring-1 ring-black/10">
-            <Sparkles className="h-4 w-4 text-neutral-600" />
-            Free, no account needed
-          </span>
-        </div>
-
-      {/* Email Form Overlay */}
-      <AnimatePresence>
-        {showEmailForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl max-w-md w-full p-8"
-            >
-              <h3 className="text-2xl font-semibold text-[#1B1856] mb-4 text-center">
-                Almost There!
-              </h3>
-              <p className="text-gray-600 mb-6 text-center">
-                Enter your email to receive your personalized financial health
-                report and track your progress over time.
-              </p>
-
-              <form onSubmit={handleEmailSubmit} className="space-y-4">
-                <div>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    onClick={() => setShowEmailForm(false)}
-                    className="flex-1 "
-                    disabled={isSubmitting}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 "
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Processing..." : "See My Results"}
-                  </Button>
-                </div>
-
-                <p className="text-xs text-gray-500 text-center">
-                  We respect your privacy. Your email will only be used to see
-                  your results and occasional financial insights.
-                </p>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-{!started ? (
-  <motion.div
-    initial={{ opacity: 0, y: 16 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
-    className="w-full max-w-4xl"
-  >
-    {/* outer frame */}
-    <div className="relative overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
-      {/* soft background wash */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.12),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,rgba(15,23,42,0.06),transparent_55%)]" />
-
-      <div className="relative px-7 py-10 sm:px-12 sm:py-14">
-      
-        {/* Title */}
-        {/* <h2 className="mt-6 text-center font-serif text-4xl leading-[1.05] text-neutral-900 sm:text-5xl">
-          Discover your financial health
-          <span className="block italic text-neutral-700">
-            in under 3 minutes
-          </span>
-        </h2> */}
-
-        {/* Subcopy */}
-
-
-       
-        {/* benefits row */}
-        <div className="mx-auto mt-5 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            {
-              title: "Instant score",
-              desc: "A simple 0–100 view of your current position.",
-            },
-            {
-              title: "Pillar breakdown",
-              desc: "See what’s strong and what needs attention.",
-            },
-            {
-              title: "Next-step guidance",
-              desc: "Clear recommendations you can act on.",
-            },
-          ].map((b) => (
-            <div
-              key={b.title}
-              className="rounded-2xl bg-white/60 p-5 ring-1 ring-black/10"
-            >
-              <p className="text-sm font-semibold text-neutral-900">{b.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-700">
-                {b.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
-            onClick={() => setStarted(true)}
-            className="h-12 rounded-full px-7 text-white"
-          >
-            Begin Assessment
-          </Button>
-{/* 
-          <button
-            type="button"
-            onClick={() => {
-              const el = document.getElementById("wealth-scan");
-              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className="text-sm font-medium text-neutral-700 underline underline-offset-4 hover:text-neutral-900"
-          >
-            Learn what you’ll get
-          </button> */}
-        </div>
-
-        <p className="mt-5 text-center text-xs text-neutral-500">
-          You’ll be asked for your email only at the end to send your results.
-        </p>
+      {/* background wash */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1B3D] via-[#08122B] to-[#070A18]" />
+        <div className="absolute left-1/2 top-[-20%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/10 blur-[120px]" />
+        <div className="absolute left-[15%] top-[35%] h-[420px] w-[420px] rounded-full bg-blue-500/10 blur-[140px]" />
+        <div className="absolute right-[10%] top-[20%] h-[420px] w-[420px] rounded-full bg-indigo-500/10 blur-[160px]" />
       </div>
-    </div>
-  </motion.div>
-) : (
-        <div className="w-full max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
-          {/* Progress */}
-          <Progress
-            value={progress}
-            className="w-full mb-8 h-2 bg-gray-200 [&>div]:bg-blue-900"
-          />
 
-          {/* Question container */}
-          <AnimatePresence mode="wait">
+      <div className="relative w-full max-w-5xl">
+        <h2 className="text-2xl sm:text-4xl font-semibold text-center mb-2 text-white">
+          Not Sure Where to Start With Your Finances?
+        </h2>
+
+        <p className="mx-auto my-5 max-w-2xl text-center text-sm text-white/60">
+          A short check-in that helps you decide what to focus on next.
+        </p>
+
+        {/* Email Form Overlay */}
+        <AnimatePresence>
+          {showEmailForm && (
             <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="text-center px-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             >
-              <div className="min-h-[72px] flex items-center justify-center px-2">
-                <h3 className="text-base font-medium text-blue-950 text-center">
-                  {current.question}
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-white rounded-2xl max-w-md w-full p-8"
+              >
+                <h3 className="text-2xl font-semibold text-[#1B1856] mb-3 text-center">
+                  Save your results
                 </h3>
+
+                <p className="text-gray-600 mb-6 text-center">
+                  Enter your email and we will send you your results. You can
+                  also come back to them later.
+                </p>
+
+                <form onSubmit={handleEmailSubmit} className="space-y-4">
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full p-5 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant={"outline"}
+                      onClick={() => setShowEmailForm(false)}
+                      className="flex-1"
+                      disabled={isSubmitting}
+                    >
+                      <span>Not now</span>
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      className="flex-1"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Saving..." : "Send my results"}
+                    </Button>
+                  </div>
+
+                  <p className="text-xs text-gray-500 text-center">
+                    No spam. We only use your email to send your results and the
+                    occasional helpful note.
+                  </p>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {!started ? (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="mx-auto mt-12 w-full max-w-4xl"
+          >
+            <div className="rounded-[28px] bg-white px-8 py-10 shadow-[0_30px_90px_rgba(0,0,0,0.25)] sm:px-12 sm:py-12">
+              <h3 className="text-center text-2xl font-semibold text-slate-900 sm:text-3xl">
+                Get clarity in a few minutes.
+              </h3>
+
+              <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-slate-600 sm:text-base">
+                If you are not sure what to focus on, answer a few questions and
+                you will see what is working, what needs attention, and what to
+                improve next.
+              </p>
+
+              <p className="mt-7 text-center text-xs text-slate-500">
+                6 questions • about 3 minutes • results at the end
+              </p>
+
+              <div className="mt-8 flex justify-center">
+                <Button
+                  onClick={() => setStarted(true)}
+                  className="h-12 rounded-full px-8"
+                >
+                  Start the check-in
+                </Button>
               </div>
 
-              <div className="flex flex-col gap-3 mb-6 w-full">
-                {current.options.map((opt: string) => (
-                  <button
-                    key={opt}
-                    onClick={() => handleSelect(opt)}
-                    className={`w-full p-4 border rounded-xl text-sm sm:text-base transition-all duration-150
+              <p className="mt-4 text-center text-xs text-slate-500">
+                You will only be asked for your email at the end to save your
+                results.
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="w-full mx-auto max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
+            {/* Progress */}
+            <Progress
+              value={progress}
+              className="w-full mb-8 h-2 bg-gray-200 [&>div]:bg-blue-900"
+            />
+
+            {/* Question container */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="text-center px-2"
+              >
+                <div className="min-h-[72px] flex items-center justify-center px-2">
+                  <h3 className="md:text-lg text-base font-semibold text-blue-950 text-center">
+                    {current.question}
+                  </h3>
+                </div>
+
+                <div className="flex flex-col gap-3 mb-6 w-full">
+                  {current.options.map((opt: string) => (
+                    <button
+                      key={opt}
+                      onClick={() => handleSelect(opt)}
+                      className={`w-full p-4 border rounded-xl text-sm  transition-all duration-150
         ${
           answers[step] === opt
             ? "border-blue-900 bg-blue-950 text-white shadow-sm"
             : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
         }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
 
-              <div className="pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
-                {/* <div className="min-h-[70px] flex items-start">
+                <div className="pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
+                  {/* <div className="min-h-[70px] flex items-start">
                   <p>
                     <span className="font-medium text-blue-950">
                       Why we ask:
@@ -645,27 +588,32 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
                     {current.why}
                   </p>
                 </div> */}
-              </div>
-            </motion.div>
-          </AnimatePresence>
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
-          {/* Navigation buttons */}
-          <div className="flex justify-between mt-5 pb-2">
-            <Button
-              onClick={handlePrev}
-              disabled={step === 0}
-              className=""
-              variant={"outline"}
-            >
-              Previous
-            </Button>
+            {/* Navigation buttons */}
+            <div className="flex justify-between mt-5 pb-2">
+              <Button
+                onClick={handlePrev}
+                disabled={step === 0}
+                className=""
+                variant={"outline"}
+              >
+                Previous
+              </Button>
 
-            <Button onClick={handleNext} disabled={!answers[step]} className="">
-              {step === questions.length - 1 ? "Finish" : "Next"}
-            </Button>
+              <Button
+                onClick={handleNext}
+                disabled={!answers[step]}
+                className=""
+              >
+                {step === questions.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }
