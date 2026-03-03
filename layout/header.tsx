@@ -154,14 +154,17 @@ export default function Header() {
   }, [pathname]);
 
   const navigateToHash = (rawHref: string, closeSheet?: boolean) => {
-    const href = rawHref.startsWith("#") ? rawHref : `#${rawHref}`;
-    const id = href.replace(/^#/, "");
-    const isHome = pathname === "/";
+    const id = rawHref.replace(/^#/, "");
 
-    if (isHome) {
-      scrollToId(id);
+    if (pathname === "/") {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     } else {
-      window.sessionStorage.setItem("scrollToId", id);
       router.push(`/#${id}`);
     }
 
@@ -431,7 +434,7 @@ export default function Header() {
                     "absolute left-1/2 top-full mt-4 -translate-x-1/2",
                     panelWidth,
                     "rounded-[22px] border border-white/10",
-                    "bg-black/70 supports-[backdrop-filter]:bg-black/35",
+                    "bg-black/70 ",
                     "backdrop-blur-2xl",
                     "shadow-[0_28px_80px_rgba(0,0,0,0.45)]",
                     "transition-all duration-200",
@@ -465,7 +468,6 @@ export default function Header() {
                                     : "text-white/80 hover:bg-white/10 hover:text-white",
                                 )}
                               >
-                               
                                 <div className="text-sm font-semibold tracking-tight">
                                   {l.name}
                                 </div>
@@ -498,17 +500,13 @@ export default function Header() {
             );
           })}
 
-          {/* Anchor item kept separate */}
-          <a
-            href="#wealth-scan"
-            onClick={(e) => {
-              e.preventDefault();
-              navigateToHash("#wealth-scan");
-            }}
+          <button
+            type="button"
+            onClick={() => navigateToHash("#wealth-scan")}
             className="text-sm font-normal text-white/90 transition-colors hover:text-white"
           >
             Health Scan
-          </a>
+          </button>
         </nav>
 
         {/* Desktop CTA */}
