@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Linkedin } from "lucide-react";
+import { Instagram, Linkedin } from "lucide-react";
 import {
   Accordion,
   AccordionItem,
@@ -78,8 +78,7 @@ export default function Footer() {
 
   return (
     <footer className="w-full bg-white">
-      {/* OUTER: make it feel like a full-width footer block (less “tiny centered card”) */}
-      <div className="mx-auto w-full max-w-[98vw] px-4 pb-6 pt-4 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-[99vw] px-4 pb-6 pt-4 sm:px-6 lg:px-10">
         <div className="relative overflow-hidden rounded-2xl bg-[#1a1856] text-white shadow-[0_30px_110px_rgba(0,0,0,0.22)]">
           {/* Subtle wash */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.10),transparent_58%)]" />
@@ -92,10 +91,6 @@ export default function Footer() {
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
               {/* CTA left */}
               <div className="max-w-2xl">
-                <p className="text-[11px] tracking-[0.26em] text-white/70">
-                  GET STARTED
-                </p>
-
                 <h3 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                   Get started today
                 </h3>
@@ -111,13 +106,13 @@ export default function Footer() {
                     href="/contact"
                     className="inline-flex h-11 items-center justify-center rounded-full border border-white/18 bg-transparent px-6 text-sm font-medium text-white/90 transition hover:border-white/28 hover:bg-white/5"
                   >
-                    Chat to us
+                    Chat with us
                   </Link>
                   <Link
-                    href="/compass"
+                    href="/#wealth-scan"
                     className="inline-flex h-11 items-center justify-center rounded-full bg-white px-6 text-sm font-medium text-[#050816] transition hover:bg-white/90"
                   >
-                    Get started
+                    Take Free Financial Scan
                   </Link>
                 </div>
               </div>
@@ -160,12 +155,24 @@ export default function Footer() {
                     >
                       <Linkedin className="h-5 w-5" />
                     </Link>
+                    <Link
+                      href="https://www.instagram.com/celerey.co/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/14 bg-white/6 text-white/85 transition hover:border-white/22 hover:bg-white/10"
+                      aria-label="Celerey on Instagram"
+                      title="Instagram"
+                    >
+                      <Instagram className="h-5 w-5" />
+                    </Link>
 
                     <Link
                       href="https://wa.me/12272296921"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex h-10 items-center justify-center rounded-full border border-white/14 bg-white/6 px-4 text-sm font-medium text-white/85 transition hover:border-white/22 hover:bg-white/10"
+                      aria-label="Celerey on WhatsApp"
+                      title="WhatsApp"
                     >
                       WhatsApp
                     </Link>
@@ -198,8 +205,6 @@ export default function Footer() {
                         Submit
                       </button>
                     </div>
-
-                    
                   </form>
                 </div>
               </div>
