@@ -9,6 +9,7 @@ import Community from "@/components/homepage/community";
 import ChallengeSection from "@/components/homepage/challenge";
 import ApproachSection from "@/components/homepage/approach";
 import AlaCarteServices from "@/components/homepage/concierge";
+import TestimonialsSection from "@/components/homepage/testimonials";
 
 export default function Home() {
   return (
@@ -18,22 +19,19 @@ export default function Home() {
       <ApproachSection />
         <ChallengeSection />
 
-      {/* Philosophy / Challenge section — target: #challenge */}
+<TestimonialsSection />
       <WealthScan />
       <div id="challenge">
       </div>
 
-      {/* Pricing / Entry point — target: #entry-pricing */}
-      {/* <div id="entry-pricing"> */}
-        {/* <Pricing id="entry-pricing" /> */}
-      {/* </div> */}
 
-      {/* A la carte services — target: #ala-carte */}
+        {/* <Pricing id="entry-pricing" /> */}
+
       <InsightsSection />
       <FeaturesSection />
-      {/* <div id="ala-carte">
+
         <AlaCarteServices />
-      </div> */}
+
 
       <Community />
       {/* <Advisors /> */}

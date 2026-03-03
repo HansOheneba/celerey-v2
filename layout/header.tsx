@@ -512,7 +512,7 @@ export default function Header() {
         {/* Desktop CTA */}
         <div className="hidden items-center gap-3 md:flex">
           <Button
-            onClick={handleScrollToPricing}
+            onClick={() => router.push("/pricing")}
             className="h-10 px-4 text-sm cursor-pointer"
           >
             Start for Free
