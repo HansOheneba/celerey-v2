@@ -26,7 +26,7 @@ export default function TestimonialsControlled() {
     <section className="bg-white py-14 sm:py-16">
       <div className="mx-auto w-full max-w-6xl px-6">
         {/* Header */}
-        <div className="max-w-2xl">
+        <div className="max-w-2xl flex mx-auto flex-col items-center text-center">
           <h2 className="font-serif text-3xl leading-[1.08] text-neutral-900 sm:text-4xl">
             Discreet outcomes,
             <span className="text-neutral-500"> served globally.</span>
@@ -45,7 +45,7 @@ export default function TestimonialsControlled() {
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
             className={[
-              "max-w-3xl",
+              "max-w-3xl mx-auto",
               "rounded-2xl bg-white",
               "border border-black/10",
               "shadow-[0_18px_55px_rgba(0,0,0,0.06)]",
