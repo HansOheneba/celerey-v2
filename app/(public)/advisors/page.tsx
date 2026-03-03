@@ -152,8 +152,6 @@ export default function AdvisorsPage() {
         </Link>
       </div>
 
-      {/* Header */}
-      {/* Header */}
       <div className="max-w-3xl">
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -170,7 +168,7 @@ export default function AdvisorsPage() {
           transition={{ duration: 0.6, delay: 0.05 }}
           className="mt-5 font-serif text-4xl leading-[1.05] text-neutral-900 sm:text-5xl"
         >
-          An International Standard of Expertise
+          Global expertise, made accessible
         </motion.h1>
 
         <motion.p
@@ -179,10 +177,10 @@ export default function AdvisorsPage() {
           transition={{ delay: 0.15, duration: 0.6 }}
           className="mt-5 text-sm leading-7 text-neutral-600"
         >
-          Celerey’s advisory council comprises globally certified professionals
-          with experience across private banking, capital markets, institutional
-          finance, corporate law, executive leadership, and international
-          property investment.
+          Celerey is built to democratize access to high-quality financial
+          advisory. The kind of guidance that is typically reserved for private
+          banking and the most connected circles is being made available through
+          a simpler, more transparent experience.
         </motion.p>
 
         <motion.p
@@ -191,11 +189,11 @@ export default function AdvisorsPage() {
           transition={{ delay: 0.22, duration: 0.6 }}
           className="mt-4 text-sm leading-7 text-neutral-600"
         >
-          Many have held senior leadership roles within regulated global
-          institutions and maintain active professional certifications
-          recognised across multiple jurisdictions. Their mandate is simple:
-          protect capital, create structure, and guide long-term wealth with
-          discipline.
+          Our advisory council brings globally certified experience across
+          private banking, capital markets, institutional finance, corporate
+          law, executive leadership, and international property. Their role is
+          to help shape our standards, strengthen our frameworks, and keep our
+          advice grounded in real-world discipline.
         </motion.p>
 
         <motion.p
@@ -205,9 +203,10 @@ export default function AdvisorsPage() {
           className="mt-6 text-sm leading-7 text-neutral-900"
         >
           <span className="font-medium">
-            We do not believe in local perspective alone.
+            You are getting global-grade guidance without needing an elite
+            network.
           </span>{" "}
-          Wealth today demands global standards.
+          That is the point.
         </motion.p>
 
         <div className="mt-8 h-px w-24 bg-neutral-900/10" />
@@ -216,8 +215,6 @@ export default function AdvisorsPage() {
       {/* Cards with NO background, editorial style (like your screenshot) */}
       <div className="mt-14 grid gap-14 md:grid-cols-2 md:gap-x-16">
         {orderedAdvisors.map((advisor, i) => {
-          
-
           const tags = (advisor.expertise ?? []).slice(0, 3);
 
           return (
@@ -237,7 +234,6 @@ export default function AdvisorsPage() {
 
               {/* Meta */}
               <div className="mt-6">
-                
                 <h2 className="mt-3 font-serif text-2xl leading-snug text-neutral-900 sm:text-3xl">
                   {advisor.name}
                 </h2>

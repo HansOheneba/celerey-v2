@@ -190,15 +190,10 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
             <div className="mt-7 h-px w-full bg-black/10" />
           </div>
 
-          {/* NEW LAYOUT:
-              - Image spans full width
-              - Description is a wide “editorial” column
-              - Expertise + CTA sits in a right sidebar on lg, stacks on mobile
-          */}
+          {/* Top section: Image + Sidebar */}
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             {/* Left column */}
-            <div className="space-y-10">
-              {/* Image full-width */}
+            <div>
               <motion.div
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -222,35 +217,9 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
                   </Link>
                 </div>
               </motion.div>
-
-              {/* Overview as wide editorial text */}
-              <motion.div
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.05 }}
-                className="rounded-[24px] border border-black/10 bg-white p-8 shadow-[0_18px_55px_rgba(0,0,0,0.06)]"
-              >
-                <p className="text-sm font-semibold text-[#b07d3d]">Overview</p>
-
-                <div className="mt-4 max-w-none">
-                  <p className="text-sm leading-8 text-neutral-700">
-                    {advisor.bio}
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Experience as wide section */}
-              <div className="rounded-[24px] border border-black/10 bg-white p-8 text-left shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
-                <p className="text-sm font-semibold text-[#b07d3d]">
-                  Experience
-                </p>
-                <p className="mt-4 text-sm leading-8 text-neutral-700">
-                  {advisor.experience}
-                </p>
-              </div>
             </div>
 
-            {/* Right column (sticky on large screens) */}
+            {/* Right sidebar */}
             <motion.aside
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -294,6 +263,33 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
                 </div>
               </div>
             </motion.aside>
+          </div>
+
+          {/* Full-width Overview */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.05 }}
+            className="mt-14 rounded-[24px] border border-black/10 bg-white p-10 shadow-[0_18px_55px_rgba(0,0,0,0.06)]"
+          >
+            <p className="text-sm font-semibold text-[#b07d3d]">Overview</p>
+
+            <div className="mt-6 max-w-3xl">
+              <p className="text-[15px] leading-8 text-neutral-700">
+                {advisor.bio}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Full-width Experience */}
+          <div className="mt-10 rounded-[24px] border border-black/10 bg-white p-10 shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
+            <p className="text-sm font-semibold text-[#b07d3d]">Experience</p>
+
+            <div className="mt-6 max-w-3xl">
+              <p className="text-[15px] leading-8 text-neutral-700">
+                {advisor.experience}
+              </p>
+            </div>
           </div>
         </div>
       </div>

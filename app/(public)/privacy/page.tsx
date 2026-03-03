@@ -482,10 +482,7 @@ export default function Page() {
               <a className="underline underline-offset-4" href="/terms">
                 Terms of Service
               </a>{" "}
-              ·{" "}
-              <a className="underline underline-offset-4" href="/privacy">
-                Privacy Policy
-              </a>
+            
             </p>
           </article>
         </div>

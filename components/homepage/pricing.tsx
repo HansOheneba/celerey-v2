@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { BeginJourneyModal } from "./beginModal";
 
@@ -90,8 +91,6 @@ function PriceLine({
         )}
       >
         {cadenceText}
-     
-  
       </p>
     </div>
   );
@@ -145,6 +144,7 @@ export default function EntryPointPricing({
 }: EntryPointPricingProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPaymentUrl, setSelectedPaymentUrl] = useState("");
+  const router = useRouter();
 
   const defaultTiers: Tier[] = useMemo(
     () => [
@@ -308,6 +308,11 @@ export default function EntryPointPricing({
                     <div className="mt-auto pt-10">
                       <Button
                         onClick={() => {
+                          if (isCore) {
+                            router.push("/coming-soon");
+                            return;
+                          }
+
                           setSelectedPaymentUrl(t.paymentUrl);
                           setModalOpen(true);
                         }}
