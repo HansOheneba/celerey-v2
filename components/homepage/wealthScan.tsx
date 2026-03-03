@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Clock3, Shield, Sparkles } from "lucide-react";
 
 interface Question {
   question: string;
@@ -20,7 +19,7 @@ interface Question {
 interface PillarScore {
   score: number;
   answer: string;
-  rawValue: number; // 1-4 scale
+  rawValue: number;
 }
 
 interface PillarScores {
@@ -49,7 +48,6 @@ interface WealthHealthData {
   email: string;
   submittedAt: string;
 }
-
 
 const questions: Question[] = [
   {
@@ -135,19 +133,21 @@ const questions: Question[] = [
   },
 ];
 
-
 export default function WealthScan() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [email, setEmail] = useState("");
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
   const [started, setStarted] = useState(false);
 
+  const router = useRouter();
 
   const progress = ((step + 1) / questions.length) * 100;
   const current = questions[step];
+
+  // Match footer base color
+  const FOOTER_BLUE = "#1a1856";
 
   const handleSelect = (opt: string) => {
     const updated = [...answers];
@@ -161,12 +161,12 @@ export default function WealthScan() {
     answers.forEach((answer, index) => {
       const question = questions[index];
       const optionIndex = question.options.indexOf(answer);
-      const answerValue = 4 - optionIndex; // 4 for first option, 1 for last option
+      const answerValue = 4 - optionIndex;
       const weightedScore = answerValue * question.weight;
       totalScore += weightedScore;
     });
 
-    return Math.min(Math.floor(totalScore * 25), 100); // Scale to 0-100
+    return Math.min(Math.floor(totalScore * 25), 100);
   };
 
   const getPillarScores = (): PillarScores => {
@@ -175,16 +175,15 @@ export default function WealthScan() {
     answers.forEach((answer, index) => {
       const question = questions[index];
       const optionIndex = question.options.indexOf(answer);
-      const answerValue = 4 - optionIndex; // 4 for best, 1 for worst
+      const answerValue = 4 - optionIndex;
 
-      // Calculate pillar score as percentage (0-100)
-      const maxPossibleScore = 4 * question.weight * 25; // Maximum possible for this pillar
-      const actualScore = answerValue * question.weight * 25; // Actual score for this pillar
+      const maxPossibleScore = 4 * question.weight * 25;
+      const actualScore = answerValue * question.weight * 25;
       const pillarPercentage = (actualScore / maxPossibleScore) * 100;
 
       pillarScores[question.pillar] = {
         score: Math.round(pillarPercentage),
-        answer: answer,
+        answer,
         rawValue: answerValue,
       };
     });
@@ -222,45 +221,43 @@ export default function WealthScan() {
     const recommendations: string[] = [];
     const lowScoreThreshold = 50;
 
-    // Check each pillar and generate recommendations for low scores
     Object.entries(pillarScores).forEach(([pillar, data]) => {
       if (data.score < lowScoreThreshold) {
         switch (pillar) {
           case "Income Stability":
             recommendations.push(
-              "Build a larger emergency fund to handle income variability"
+              "Build a larger emergency fund to handle income variability",
             );
             break;
           case "Spending & Saving":
             recommendations.push(
-              "Gradually increase your savings rate by 1–2% each month"
+              "Gradually increase your savings rate by 1–2% each month",
             );
             break;
           case "Resilience":
             recommendations.push(
-              "Build an emergency fund covering 3–6 months of essential expenses"
+              "Build an emergency fund covering 3–6 months of essential expenses",
             );
             break;
           case "Debt & Credit Health":
             recommendations.push(
-              "Develop a debt management strategy to reduce financial stress"
+              "Develop a debt management strategy to reduce financial stress",
             );
             break;
           case "Growth Readiness":
             recommendations.push(
-              "Create a clear investment plan aligned with your long-term goals"
+              "Create a clear investment plan aligned with your long-term goals",
             );
             break;
           case "Planning & Direction":
             recommendations.push(
-              "Establish a proactive financial planning routine"
+              "Establish a proactive financial planning routine",
             );
             break;
         }
       }
     });
 
-    // If all scores are good, provide maintenance recommendations
     if (recommendations.length === 0) {
       return [
         "Maintain your current healthy financial habits",
@@ -269,60 +266,41 @@ export default function WealthScan() {
       ];
     }
 
-    return recommendations.slice(0, 3); // Return top 3 recommendations
+    return recommendations.slice(0, 3);
   };
 
   const getTopAndBottomPillars = (
-    pillarScores: PillarScores
+    pillarScores: PillarScores,
   ): TopBottomPillars => {
-    const sortedPillars = Object.entries(pillarScores).sort(
-      ([, a], [, b]) => b.score - a.score
+    const sorted = Object.entries(pillarScores).sort(
+      ([, a], [, b]) => b.score - a.score,
     );
-
     return {
-      top: sortedPillars.slice(0, 2).map(([pillar]) => pillar),
-      bottom: sortedPillars.slice(-2).map(([pillar]) => pillar),
+      top: sorted.slice(0, 2).map(([pillar]) => pillar),
+      bottom: sorted.slice(-2).map(([pillar]) => pillar),
     };
   };
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-const saveLeadToDatabase = async (email: string): Promise<boolean> => {
-  try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/leads/`;
-    console.log("Attempting to save lead to:", apiUrl);
+  const validateEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        source: "wealth_scan",
-      }),
-    });
+  const saveLeadToDatabase = async (leadEmail: string): Promise<boolean> => {
+    try {
+      const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/leads/`;
 
-    console.log("Response status:", response.status);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: leadEmail, source: "wealth_scan" }),
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Server response error:", errorText);
-      throw new Error(
-        `Failed to save lead: ${response.status} ${response.statusText}`
-      );
+      if (!response.ok) return false;
+      await response.json();
+      return true;
+    } catch {
+      return false;
     }
-
-    const result = await response.json();
-    console.log("Lead saved successfully:", result);
-    return true;
-  } catch (error) {
-    console.error("Error saving lead to database:", error);
-    return false;
-  }
-};
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -335,42 +313,8 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
     setIsSubmitting(true);
 
     try {
-      // First, save the lead to the database
-      const leadSaved = await saveLeadToDatabase(email);
+      await saveLeadToDatabase(email);
 
-      if (!leadSaved) {
-        console.warn(
-          "Failed to save lead to database, but continuing with results..."
-        );
-      }
-
-      // Calculate results
-      const score = calculateScore();
-      const pillarScores = getPillarScores();
-      const category = getScoreCategory(score);
-      const { top, bottom } = getTopAndBottomPillars(pillarScores);
-
-      const data: WealthHealthData = {
-        score,
-        category,
-        answers,
-        pillarScores,
-        recommendations: generateRecommendations(pillarScores),
-        topPillars: top,
-        bottomPillars: bottom,
-        email,
-        submittedAt: new Date().toISOString(),
-      };
-
-      // Optional: If you want to save the full results to another endpoint
-      // You can add that here if you have a separate results API
-
-      // Store in session storage and redirect
-      sessionStorage.setItem("wealthHealthResults", JSON.stringify(data));
-      router.push("/wealth-health");
-    } catch (error) {
-      console.error("Error processing results:", error);
-      // Fallback: still store locally even if API calls fail
       const score = calculateScore();
       const pillarScores = getPillarScores();
       const category = getScoreCategory(score);
@@ -396,34 +340,31 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
   };
 
   const handleNext = () => {
-    if (step < questions.length - 1) {
-      setStep(step + 1);
-    } else {
-      // Show email form instead of immediately redirecting
-      setShowEmailForm(true);
-    }
+    if (step < questions.length - 1) setStep(step + 1);
+    else setShowEmailForm(true);
   };
 
   const handlePrev = () => setStep((s) => Math.max(0, s - 1));
 
-  if (questions.length === 0)
+  if (questions.length === 0) {
     return (
       <div className="h-screen flex items-center justify-center text-gray-500">
         <p>Add questions to begin the wealth scan.</p>
       </div>
     );
+  }
 
   return (
     <section
       id="wealth-scan"
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-[#08122B] px-6 py-24"
+      className="relative flex flex-col items-center justify-center overflow-hidden px-6 py-24"
+      style={{ backgroundColor: FOOTER_BLUE }}
     >
-      {/* background wash */}
+      {/* Background wash: same “family” as footer */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A1B3D] via-[#08122B] to-[#070A18]" />
-        <div className="absolute left-1/2 top-[-20%] h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/10 blur-[120px]" />
-        <div className="absolute left-[15%] top-[35%] h-[420px] w-[420px] rounded-full bg-blue-500/10 blur-[140px]" />
-        <div className="absolute right-[10%] top-[20%] h-[420px] w-[420px] rounded-full bg-indigo-500/10 blur-[160px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.10),transparent_58%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_30%,rgba(99,102,241,0.18),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_55%_90%,rgba(168,85,247,0.14),transparent_55%)]" />
       </div>
 
       <div className="relative w-full max-w-5xl">
@@ -431,7 +372,7 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
           Not Sure Where to Start With Your Finances?
         </h2>
 
-        <p className="mx-auto my-5 max-w-2xl text-center text-sm text-white/60">
+        <p className="mx-auto my-5 max-w-2xl text-center text-sm text-white/70">
           A short check-in that helps you decide what to focus on next.
         </p>
 
@@ -442,60 +383,68 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
+              {/* backdrop */}
+              <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" />
+
               <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white rounded-2xl max-w-md w-full p-8"
+                initial={{ scale: 0.96, opacity: 0, y: 10 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.98, opacity: 0, y: 10 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-white shadow-[0_30px_90px_rgba(0,0,0,0.30)]"
               >
-                <h3 className="text-2xl font-semibold text-[#1B1856] mb-3 text-center">
-                  Save your results
-                </h3>
+                {/* subtle header tint to keep it “on brand” */}
+                <div
+                  style={{ backgroundColor: FOOTER_BLUE }}
+                  className="px-8 py-5"
+                >
+                  <h3 className="text-lg font-semibold text-white">
+                    Save your results
+                  </h3>
+                  <p className="mt-1 text-sm text-white/75">
+                    Enter your email and we will send you your results.
+                  </p>
+                </div>
 
-                <p className="text-gray-600 mb-6 text-center">
-                  Enter your email and we will send you your results. You can
-                  also come back to them later.
-                </p>
-
-                <form onSubmit={handleEmailSubmit} className="space-y-4">
-                  <div>
+                <div className="p-8">
+                  <form onSubmit={handleEmailSubmit} className="space-y-4">
                     <Input
                       type="email"
                       placeholder="Enter your email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-5 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="h-12 rounded-full"
                       required
                     />
-                  </div>
 
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      variant={"outline"}
-                      onClick={() => setShowEmailForm(false)}
-                      className="flex-1"
-                      disabled={isSubmitting}
-                    >
-                      <span>Not now</span>
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowEmailForm(false)}
+                        className="flex-1"
+                        disabled={isSubmitting}
+                      >
+                        Not now
+                      </Button>
 
-                    <Button
-                      type="submit"
-                      className="flex-1"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Saving..." : "Send my results"}
-                    </Button>
-                  </div>
+                      <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Saving..." : "Send my results"}
+                      </Button>
+                    </div>
 
-                  <p className="text-xs text-gray-500 text-center">
-                    No spam. We only use your email to send your results and the
-                    occasional helpful note.
-                  </p>
-                </form>
+                    <p className="text-xs text-gray-500 text-center">
+                      No spam. We use your email to send your results and the
+                      occasional helpful note.
+                    </p>
+                  </form>
+                </div>
               </motion.div>
             </motion.div>
           )}
@@ -540,13 +489,11 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
           </motion.div>
         ) : (
           <div className="w-full mx-auto max-w-2xl bg-white border border-gray-100 rounded-3xl shadow-sm p-8">
-            {/* Progress */}
             <Progress
               value={progress}
               className="w-full mb-8 h-2 bg-gray-200 [&>div]:bg-blue-900"
             />
 
-            {/* Question container */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}
@@ -563,51 +510,33 @@ const saveLeadToDatabase = async (email: string): Promise<boolean> => {
                 </div>
 
                 <div className="flex flex-col gap-3 mb-6 w-full">
-                  {current.options.map((opt: string) => (
+                  {current.options.map((opt) => (
                     <button
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full p-4 border rounded-xl text-sm  transition-all duration-150
-        ${
-          answers[step] === opt
-            ? "border-blue-900 bg-blue-950 text-white shadow-sm"
-            : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
-        }`}
+                      className={`w-full p-4 border rounded-xl text-sm transition-all duration-150 ${
+                        answers[step] === opt
+                          ? "border-blue-900 bg-blue-950 text-white shadow-sm"
+                          : "border-gray-300 hover:border-blue-800 hover:bg-blue-50"
+                      }`}
                     >
                       {opt}
                     </button>
                   ))}
                 </div>
-
-                <div className="pt-3 mt-6 text-left text-xs text-gray-600 leading-snug">
-                  {/* <div className="min-h-[70px] flex items-start">
-                  <p>
-                    <span className="font-medium text-blue-950">
-                      Why we ask:
-                    </span>{" "}
-                    {current.why}
-                  </p>
-                </div> */}
-                </div>
               </motion.div>
             </AnimatePresence>
 
-            {/* Navigation buttons */}
             <div className="flex justify-between mt-5 pb-2">
               <Button
                 onClick={handlePrev}
                 disabled={step === 0}
-                className=""
-                variant={"outline"}
+                variant="outline"
               >
                 Previous
               </Button>
 
-              <Button
-                onClick={handleNext}
-                disabled={!answers[step]}
-                className=""
-              >
+              <Button onClick={handleNext} disabled={!answers[step]}>
                 {step === questions.length - 1 ? "Finish" : "Next"}
               </Button>
             </div>
