@@ -477,7 +477,7 @@ export default function WealthScan() {
                   onClick={() => setStarted(true)}
                   className="h-12 rounded-full px-8"
                 >
-                  Start the check-in
+                  Start
                 </Button>
               </div>
 
