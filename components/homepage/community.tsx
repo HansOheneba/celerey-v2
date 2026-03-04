@@ -83,7 +83,7 @@ export default function Community() {
           className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-700 sm:text-lg"
         >
           You&apos;ve worked hard for what you have. Now it&apos;s time to ensure
-          it works hard for you — with a community that shares the journey.
+          it works hard for you with a community that shares the journey.
         </motion.p>
 
         {/* CTA row (email + button) */}

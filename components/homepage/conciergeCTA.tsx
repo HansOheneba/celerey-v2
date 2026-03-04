@@ -53,7 +53,7 @@ export default function ConciergeCTAFullBleed({
               transition={{ duration: 0.65, ease: "easeOut" }}
               className="font-serif text-4xl leading-[1.05] text-neutral-900 sm:text-5xl"
             >
-              If you could fix <span className="text-[#b07d3d]">one</span> money
+              If you could fix <span className="text-[#b07d3d]">one</span> financial
               problem right now,
               <span className="block text-neutral-500">What would it be?</span>
             </motion.h2>

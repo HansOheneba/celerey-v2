@@ -83,7 +83,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 
 export default function AlaCarteServices({
   title = "Support, where you need it",
-  subtitle = "Six focused offerings. One clear fee. Matched by fit and scope.",
+  subtitle = "Focused offerings. Matched by fit and scope.",
   services = DEFAULT_SERVICES,
   id = "services",
   className = "",
@@ -146,10 +146,10 @@ export default function AlaCarteServices({
             {subtitle}
           </motion.p>
 
-          <div className="mt-6 flex flex-wrap items-start gap-x-4 gap-y-2">
+          {/* <div className="mt-6 flex flex-wrap items-start gap-x-4 gap-y-2">
             <span className="text-[#b07d3d]">•</span>
             <p className="text-sm text-neutral-600">{disclaimer}</p>
-          </div>
+          </div> */}
 
           <div className="mt-8 h-px w-24 bg-neutral-900/10" />
         </div>
@@ -181,9 +181,9 @@ export default function AlaCarteServices({
                     </div>
 
                     <div className="flex items-center justify-between gap-3 sm:justify-end">
-                      <p className="text-sm text-neutral-700">
+                      {/* <p className="text-sm text-neutral-700">
                         {currencyLabel} {flatPrice}
-                      </p>
+                      </p> */}
 
                       <Button
                         type="button"
