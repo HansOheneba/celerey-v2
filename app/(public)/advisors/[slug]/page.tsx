@@ -1,32 +1,14 @@
+// app/(public)/advisors/[slug]/page.tsx
 "use client";
 
-import { useEffect, useMemo, useState, use } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-interface Advisor {
-  id: number;
-  slug: string;
-  name: string;
-  title: string;
-  bio: string;
-  experience: string;
-  expertise: string[];
-  image?: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface AdvisorPageProps {
-  params: Promise<{ slug: string }>;
-}
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
+import { ADVISORS } from "@/lib/advisor-data";
 
 function SoftSpinner({ label }: { label: string }) {
   return (
@@ -54,7 +36,7 @@ function AdvisorImage({ src, alt }: { src?: string; alt: string }) {
       alt={alt}
       fill
       className="object-cover"
-      sizes="(min-width: 1024px) 900px, 100vw"
+      sizes="(min-width: 1024px) 60vw, 100vw"
       onError={() => setImgSrc(fallback)}
       priority
     />
@@ -64,15 +46,16 @@ function AdvisorImage({ src, alt }: { src?: string; alt: string }) {
 function DetailSkeleton() {
   return (
     <section className="min-h-screen bg-[#fbfaf8]">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-        <div className="mx-auto max-w-6xl">
+      {/* Wider container */}
+      <div className="mx-auto w-full max-w-[90rem] px-6 py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-[84rem]">
           <div className="space-y-10">
             <div className="h-4 w-24 animate-pulse rounded bg-black/[0.06]" />
             <div className="h-10 w-3/4 animate-pulse rounded bg-black/[0.06]" />
             <div className="h-4 w-1/3 animate-pulse rounded bg-black/[0.06]" />
 
             <div className="overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.08)]">
-              <div className="relative h-80 w-full">
+              <div className="relative h-96 w-full">
                 <div className="absolute inset-0 animate-pulse bg-black/[0.06]" />
               </div>
               <div className="p-6">
@@ -99,60 +82,40 @@ function DetailSkeleton() {
   );
 }
 
-export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
-  const [advisor, setAdvisor] = useState<Advisor | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+export default function AdvisorDetailsPage() {
   const router = useRouter();
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const slug = use(params).slug;
+  const params = useParams<{ slug?: string }>();
+  const slug = params?.slug ? String(params.slug) : "";
+
+  const advisor = useMemo(() => {
+    if (!slug) return null;
+    return ADVISORS.find((a) => a.slug === slug) ?? null;
+  }, [slug]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setIsLoading(false), 150);
+    return () => window.clearTimeout(t);
+  }, [slug]);
 
   const pageTitle = useMemo(
     () => advisor?.name ?? "Advisor Profile",
     [advisor],
   );
 
-  useEffect(() => {
-    const fetchAdvisor = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const res = await fetch(`${apiBase}/advisors/${slug}`);
-
-        if (!res.ok) {
-          if (res.status === 404) {
-            setError("Advisor not found.");
-            return;
-          }
-          throw new Error(`Failed to fetch advisor: ${res.status}`);
-        }
-
-        const data = (await res.json()) as Advisor;
-        setAdvisor(data);
-      } catch (err) {
-        console.error("Error fetching advisor:", err);
-        setError("We could not load this advisor. Please try again shortly.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAdvisor();
-  }, [slug, apiBase]);
-
   if (isLoading) return <DetailSkeleton />;
 
-  if (error || !advisor) {
+  if (!advisor) {
     return (
       <section className="min-h-screen bg-[#fbfaf8]">
-        <div className="mx-auto max-w-3xl px-6 py-20 sm:py-24 text-center">
+        {/* Wider container */}
+        <div className="mx-auto w-full max-w-[90rem] px-6 py-20 sm:py-24 text-center">
           <p className="text-[11px] tracking-[0.22em] text-[#b07d3d]">
             ADVISOR PROFILE
           </p>
           <h1 className="mt-5 font-serif text-3xl text-neutral-900">
-            {error || "Advisor unavailable."}
+            Advisor not found.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-600">
             Please return to the advisory list and select another profile.
@@ -173,8 +136,10 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
 
   return (
     <section className="min-h-screen bg-[#fbfaf8]">
-      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
-        <div className="mx-auto max-w-5xl">
+      {/* Wider page container */}
+      <div className="mx-auto w-full max-w-[90rem] px-6 py-20 sm:py-24">
+        {/* Wider inner container */}
+        <div className="mx-auto w-full max-w-[84rem]">
           {/* Top */}
           <div className="mb-10">
             <p className="text-[11px] tracking-[0.22em] text-[#b07d3d]">
@@ -191,7 +156,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
           </div>
 
           {/* Top section: Image + Sidebar */}
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+          <div className="grid gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-start">
             {/* Left column */}
             <div>
               <motion.div
@@ -200,7 +165,8 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
                 transition={{ duration: 0.55 }}
                 className="overflow-hidden rounded-[24px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.08)]"
               >
-                <div className="relative aspect-[16/10] w-full sm:aspect-[16/9]">
+                {/* Taller visual for wide layout */}
+                <div className="relative h-[420px] w-full sm:h-[520px]">
                   <AdvisorImage src={advisor.image} alt={advisor.name} />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0 opacity-80" />
                 </div>
@@ -242,7 +208,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
                   ))}
                 </div>
 
-                <div className="mt-10">
+                {/* <div className="mt-10">
                   <Button className="h-11 w-full rounded-full bg-[#1a1856] text-white hover:bg-[#1a1856]/90">
                     Book a Session
                   </Button>
@@ -250,7 +216,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
                   <p className="mt-3 text-center text-xs text-neutral-500">
                     Availability is being confirmed after request.
                   </p>
-                </div>
+                </div> */}
 
                 <div className="mt-8 h-px w-full bg-black/10" />
 
@@ -274,7 +240,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
           >
             <p className="text-sm font-semibold text-[#b07d3d]">Overview</p>
 
-            <div className="mt-6 max-w-3xl">
+            <div className="mt-6 max-w-4xl">
               <p className="text-[15px] leading-8 text-neutral-700">
                 {advisor.bio}
               </p>
@@ -285,7 +251,7 @@ export default function AdvisorDetailsPage({ params }: AdvisorPageProps) {
           <div className="mt-10 rounded-[24px] border border-black/10 bg-white p-10 shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
             <p className="text-sm font-semibold text-[#b07d3d]">Experience</p>
 
-            <div className="mt-6 max-w-3xl">
+            <div className="mt-6 max-w-4xl">
               <p className="text-[15px] leading-8 text-neutral-700">
                 {advisor.experience}
               </p>
