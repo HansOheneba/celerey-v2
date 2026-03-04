@@ -31,10 +31,14 @@ export default function ConciergeCTAFullBleed({
 }: ConciergeCTAProps) {
   return (
     <section className="relative min-h-screen overflow-hidden bg-[#fbfaf8]">
-      {/* soft paper + purple wash (subtle, not “badgey”) */}
+      {/* soft paper + purple wash + subtle gold accent */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(26,24,86,0.10),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(26,24,86,0.08),transparent_60%)]" />
+
+        {/* gold glow to complement the brand (very subtle) */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_72%,rgba(176,125,61,0.10),transparent_55%)]" />
+
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.00),rgba(0,0,0,0.02))]" />
       </div>
 
@@ -49,7 +53,8 @@ export default function ConciergeCTAFullBleed({
               transition={{ duration: 0.65, ease: "easeOut" }}
               className="font-serif text-4xl leading-[1.05] text-neutral-900 sm:text-5xl"
             >
-              If you could fix one money problem right now,
+              If you could fix <span className="text-[#b07d3d]">one</span> money
+              problem right now,
               <span className="block text-neutral-500">What would it be?</span>
             </motion.h2>
 
@@ -64,8 +69,11 @@ export default function ConciergeCTAFullBleed({
               problem, and you leave with a clear, structured plan.
             </motion.p>
 
-            {/* minimal divider */}
-            <div className="mt-10 h-px w-24 bg-black/10" />
+            {/* minimal divider with gold hint */}
+            <div className="mt-10 flex items-center gap-3">
+              <div className="h-px w-16 bg-black/10" />
+              <div className="h-px w-8 bg-[#b07d3d]/40" />
+            </div>
 
             {/* quiet list */}
             <motion.div
@@ -82,12 +90,17 @@ export default function ConciergeCTAFullBleed({
                     className="flex items-center justify-between gap-4 border-b border-black/10 py-2"
                   >
                     <Link
-                      href={`/services`}
-                      className="text-sm text-neutral-700 hover:text-neutral-900 flex justify-between w-full hover:underline underline-offset-4"
+                      href="/services"
+                      className={cn(
+                        "flex w-full items-center justify-between",
+                        "text-sm text-neutral-700 hover:text-neutral-900",
+                        "hover:underline underline-offset-4",
+                      )}
                     >
-                      {s}
+                      <span>{s}</span>
 
-                      <span className="text-xs text-neutral-400">→</span>
+                      {/* gold arrow for a refined accent */}
+                      <span className="text-xs text-[#b07d3d]">→</span>
                     </Link>
                   </div>
                 ))}
@@ -97,11 +110,11 @@ export default function ConciergeCTAFullBleed({
                 <Link href="/services">
                   <Button className="h-11 rounded-full bg-[#1a1856] px-6 text-white hover:bg-[#1a1856]/90">
                     Explore concierge services
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4 text-[#b07d3d]" />
                   </Button>
                 </Link>
 
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-[#b07d3d]/80">
                   Focused, paid engagements with defined scope
                 </p>
               </div>
@@ -130,19 +143,21 @@ export default function ConciergeCTAFullBleed({
                 sizes="(min-width: 1024px) 560px, 100vw"
                 priority={false}
               />
-              {/* minimal film wash */}
+
+              {/* film wash with a touch of gold warmth */}
               <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(26,24,86,0.25),rgba(0,0,0,0.0)_55%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_18%,rgba(176,125,61,0.16),transparent_55%)]" />
             </div>
 
-            {/* tiny caption (optional but tasteful) */}
+            {/* tiny caption */}
             <div className="flex items-center justify-between gap-4 px-6 py-5">
               <p className="text-xs text-neutral-500">
                 Concierge advisory, designed for one clear outcome.
               </p>
               <Link
                 href="/services"
-                className="text-xs text-neutral-600 hover:text-neutral-900 underline-offset-4 hover:underline"
+                className="text-xs text-[#b07d3d] hover:text-neutral-900 underline-offset-4 hover:underline"
               >
                 View services
               </Link>
