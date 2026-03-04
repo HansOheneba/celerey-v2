@@ -10,6 +10,7 @@ import ChallengeSection from "@/components/homepage/challenge";
 import ApproachSection from "@/components/homepage/approach";
 import AlaCarteServices from "@/components/homepage/concierge";
 import TestimonialsSection from "@/components/homepage/testimonials";
+import ConciergeCTA from "@/components/homepage/conciergeCTA";
 
 export default function Home() {
   return (
@@ -19,18 +20,16 @@ export default function Home() {
       <ApproachSection />
         <ChallengeSection />
 
-<TestimonialsSection />
+     <ConciergeCTA />
       <WealthScan />
-      <div id="challenge">
-      </div>
+<TestimonialsSection />
+     
+      <FeaturesSection />
+      <InsightsSection />
+
 
 
         {/* <Pricing id="entry-pricing" /> */}
-
-      <InsightsSection />
-      <FeaturesSection />
-
-        <AlaCarteServices />
 
 
       <Community />

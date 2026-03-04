@@ -77,8 +77,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[99vw] px-4 pb-6 pt-4 sm:px-6 lg:px-10">
+    <footer className="w-full bg-transparent">
+      <div className="mx-auto w-full px-4">
         <div className="relative overflow-hidden rounded-2xl bg-[#1a1856] text-white shadow-[0_30px_110px_rgba(0,0,0,0.22)]">
           {/* Subtle wash */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.10),transparent_58%)]" />
@@ -88,13 +88,21 @@ export default function Footer() {
           {/* INNER: reduce empty space by making content occupy the width */}
           <div className="relative mx-auto w-full max-w-8xl px-6 py-14 sm:px-10 sm:py-16 lg:px-14">
             {/* Top row: CTA + quick actions (more like the reference layout) */}
-            <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-              {/* CTA left */}
-              <div className="max-w-2xl">
-                <h3 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Get started today
-                </h3>
+           
 
+            {/* Middle: Brand + Links + FAQ (fills space better) */}
+            <div className="mt-12 grid gap-12 lg:grid-cols-[1.05fr_1fr_1.05fr] lg:items-start">
+              {/* Brand */}
+              <div className="max-w-sm">
+                <Link href="/" className="inline-flex items-center gap-3">
+                  <Image
+                    src="/logos/logoWhite.png"
+                    alt="Celerey Logo"
+                    width={140}
+                    height={44}
+                    priority
+                  />
+                </Link>
                 <p className="mt-4 text-sm leading-7 text-white/70 sm:text-base">
                   Democratizing financial guidance through simple tools and
                   expert advice. Start with a quick scan, explore tools, or talk
@@ -117,8 +125,29 @@ export default function Footer() {
                 </div>
               </div>
 
-              {/* Right: Contact + Stay up to date */}
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1">
+              {/* Links */}
+              <div className="grid gap-10 sm:grid-cols-2">
+                {sections.map((sec) => (
+                  <div key={sec.title}>
+                    <p className="text-[11px] tracking-[0.26em] text-white/70">
+                      {sec.title.toUpperCase()}
+                    </p>
+
+                    <ul className="mt-4 space-y-2 text-sm text-white/70">
+                      {sec.links.map((l) => (
+                        <li key={l.href}>
+                          <Link
+                            href={l.href}
+                            className="transition hover:text-white"
+                          >
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
                 <div>
                   <p className="text-[11px] tracking-[0.26em] text-white/70">
                     CONTACT
@@ -177,122 +206,6 @@ export default function Footer() {
                       WhatsApp
                     </Link>
                   </div>
-                </div>
-
-                <div>
-                  <p className="text-[11px] tracking-[0.26em] text-white/70">
-                    STAY UP TO DATE
-                  </p>
-
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      // TODO: wire to your newsletter endpoint
-                    }}
-                    className="mt-4"
-                  >
-                    <div className="flex items-center gap-2 rounded-full border border-white/14 bg-white/5 p-1">
-                      <input
-                        type="email"
-                        required
-                        placeholder="you@company.com"
-                        className="h-10 w-full bg-transparent px-4 text-sm text-white placeholder:text-white/45 focus:outline-none"
-                      />
-                      <button
-                        type="submit"
-                        className="h-10 rounded-full bg-white px-5 text-sm font-semibold text-[#050816] transition hover:bg-white/90"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div className="mt-14 h-px w-full bg-white/10" />
-
-            {/* Middle: Brand + Links + FAQ (fills space better) */}
-            <div className="mt-12 grid gap-12 lg:grid-cols-[1.05fr_1fr_1.05fr] lg:items-start">
-              {/* Brand */}
-              <div className="max-w-sm">
-                <Link href="/" className="inline-flex items-center gap-3">
-                  <Image
-                    src="/logos/logoWhite.png"
-                    alt="Celerey Logo"
-                    width={140}
-                    height={44}
-                    priority
-                  />
-                </Link>
-
-                <p className="mt-5 text-sm leading-7 text-white/70">
-                  Celerey is helping more people access structured guidance that
-                  improves decision-making, protects cashflow, and builds
-                  discipline over time.
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-2 text-xs text-white/60">
-                  <span className="rounded-full border border-white/14 bg-white/5 px-3 py-1">
-                    Tools
-                  </span>
-                  <span className="rounded-full border border-white/14 bg-white/5 px-3 py-1">
-                    Guidance
-                  </span>
-                  <span className="rounded-full border border-white/14 bg-white/5 px-3 py-1">
-                    Advisory
-                  </span>
-                </div>
-              </div>
-
-              {/* Links */}
-              <div className="grid gap-10 sm:grid-cols-2">
-                {sections.map((sec) => (
-                  <div key={sec.title}>
-                    <p className="text-[11px] tracking-[0.26em] text-white/70">
-                      {sec.title.toUpperCase()}
-                    </p>
-
-                    <ul className="mt-4 space-y-2 text-sm text-white/70">
-                      {sec.links.map((l) => (
-                        <li key={l.href}>
-                          <Link
-                            href={l.href}
-                            className="transition hover:text-white"
-                          >
-                            {l.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-
-                {/* Legal */}
-                <div>
-                  <p className="text-[11px] tracking-[0.26em] text-white/70">
-                    LEGAL
-                  </p>
-
-                  <ul className="mt-4 space-y-2 text-sm text-white/70">
-                    <li>
-                      <Link
-                        href="/terms"
-                        className="transition hover:text-white"
-                      >
-                        Terms
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/privacy"
-                        className="transition hover:text-white"
-                      >
-                        Privacy
-                      </Link>
-                    </li>
-                  </ul>
                 </div>
               </div>
 

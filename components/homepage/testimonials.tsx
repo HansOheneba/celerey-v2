@@ -20,7 +20,6 @@ const testimonials: Testimonial[] = [
 ];
 
 export default function TestimonialsControlled() {
-  const total = testimonials.length;
 
   return (
     <section className="bg-white py-14 sm:py-16">

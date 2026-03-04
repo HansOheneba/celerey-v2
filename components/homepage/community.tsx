@@ -119,7 +119,7 @@ export default function Community() {
               disabled={isSubmitting}
               className="h-12 rounded-full px-7 text-white"
             >
-              {isSubmitting ? "Joining..." : "Join Community"}
+              {isSubmitting ? "Joining..." : "Join The Community"}
             </Button>
           </form>
 
