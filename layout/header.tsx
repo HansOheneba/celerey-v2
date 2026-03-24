@@ -25,14 +25,6 @@ type MegaLink = {
   description?: string;
 };
 
-type MegaCard = {
-  title: string;
-  href: string;
-  description: string;
-  imageSrc: string;
-  imageAlt: string;
-};
-
 type MegaSection = {
   heading: string;
   links: MegaLink[];
@@ -43,7 +35,6 @@ type MegaMenu = {
   label: string;
   href?: string;
   sections: MegaSection[];
-  // cards?: MegaCard[];
 };
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -51,10 +42,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 function isActivePath(pathname: string, href: string): boolean {
-  // Do not highlight any nav items when on the homepage
   if (pathname === "/") return false;
-
-  // treat hash links as active when the base path matches
   const [pathOnly] = href.split("#");
   if (pathOnly === "/") return pathname === "/";
   return pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
@@ -68,14 +56,15 @@ export default function Header() {
   const [mounted, setMounted] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [visible, setVisible] = React.useState(true);
+  const [isHoveringNav, setIsHoveringNav] = React.useState(false);
 
   const [modalOpen, setModalOpen] = React.useState(false);
-
   const [megaOpen, setMegaOpen] = React.useState<MegaKey | null>(null);
   const closeTimerRef = React.useRef<number | null>(null);
 
   React.useEffect(() => setMounted(true), []);
 
+  // Scroll behavior
   React.useEffect(() => {
     let lastScrollY = window.scrollY;
     let ticking = false;
@@ -116,62 +105,19 @@ export default function Header() {
     };
   }, []);
 
-  const openMega = React.useCallback((key: MegaKey) => {
+  const openMega = (key: MegaKey) => {
     if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
     setMegaOpen(key);
-  }, []);
+    setIsHoveringNav(true);
+  };
 
-  const closeMegaSoon = React.useCallback(() => {
+  const closeMegaSoon = () => {
     if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
-    closeTimerRef.current = window.setTimeout(() => setMegaOpen(null), 140);
-  }, []);
-
-  const scrollToId = (id: string) => {
-    let tries = 0;
-    const maxTries = 30;
-
-    const tick = () => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-      tries += 1;
-      if (tries < maxTries) window.setTimeout(tick, 50);
-    };
-
-    tick();
+    closeTimerRef.current = window.setTimeout(() => {
+      setMegaOpen(null);
+      setIsHoveringNav(false);
+    }, 140);
   };
-
-  React.useEffect(() => {
-    if (pathname !== "/") return;
-
-    const stored = window.sessionStorage.getItem("scrollToId");
-    if (!stored) return;
-
-    window.sessionStorage.removeItem("scrollToId");
-    scrollToId(stored);
-  }, [pathname]);
-
-  const navigateToHash = (rawHref: string, closeSheet?: boolean) => {
-    const id = rawHref.replace(/^#/, "");
-
-    if (pathname === "/") {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    } else {
-      router.push(`/#${id}`);
-    }
-
-    if (closeSheet) setOpen(false);
-  };
-
-  const handleScrollToPricing = () => navigateToHash("#entry-pricing");
 
   const megaMenus: MegaMenu[] = React.useMemo(
     () => [
@@ -300,197 +246,107 @@ export default function Header() {
     [],
   );
 
-  const mobileGroups = React.useMemo(
-    () => [
-      {
-        heading: "Engage",
-        items: [
-          { name: "Pricing", href: "/pricing" },
-          { name: "Services", href: "/services" },
-          { name: "Free consultation", href: "/contact" },
-        ],
-      },
-      {
-        heading: "Company",
-        items: [
-          { name: "Who we are", href: "/about" },
-          { name: "Our advisors", href: "/advisors" },
-          { name: "FAQs", href: "/faqs" },
-        ],
-      },
-      {
-        heading: "Resources",
-        items: [
-          { name: "Insights", href: "/resources/insights" },
-          { name: "Stories", href: "/resources/stories" },
-          { name: "Podcasts", href: "/resources/podcasts" },
-          { name: "Tools", href: "/tools" },
-        ],
-      },
-    ],
-    [],
-  );
-
-  function getPanelCols(m: MegaMenu): 1 | 2 | 3 {
-    const base = Math.min(3, Math.max(1, m.sections.length));
-    return base as 1 | 2 | 3;
-  }
-
-  function getPanelWidthClass(cols: 1 | 2 | 3): string {
-    if (cols === 1) return "w-[420px]";
-    if (cols === 2) return "w-[640px]";
-    return "w-[860px]";
-  }
-
-  function getColsClass(cols: 1 | 2 | 3): string {
-    if (cols === 1) return "md:grid-cols-1";
-    if (cols === 2) return "md:grid-cols-2";
-    return "md:grid-cols-3";
-  }
-
   if (!mounted) return null;
 
-  const headerBg = isScrolled ? "bg-black/50 py-2" : "bg-black/50 py-6";
+  const isOnHome = pathname === "/";
+  const isActiveHeader = !isOnHome || isScrolled || isHoveringNav;
+
+  const headerBg = isActiveHeader
+    ? "bg-white/95 backdrop-blur-xl py-3 shadow-sm"
+    : "bg-transparent py-3";
 
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out",
-        // important: when visible, avoid transform so backdrop blur can render correctly
+        isActiveHeader ? "text-black" : "text-white",
         visible
           ? "pointer-events-auto"
           : "-translate-y-full pointer-events-none",
         headerBg,
       )}
-      style={{ willChange: "transform" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center transition-opacity duration-300 hover:opacity-80"
-        >
+        <Link href="/" className="flex items-center">
           <Image
-            src="/logos/logoWhite.png"
+            src={
+              isActiveHeader ? "/logos/logoDark.png" : "/logos/logoWhite.png"
+            }
             alt="Celerey Logo"
-            width={110}
-            height={30}
+            width={90}
+            height={20}
             priority
-            className="h-auto w-20 md:w-[110px]"
+            className="h-auto w-20 md:w-[90px]"
           />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav
+          className="hidden items-center gap-7 md:flex"
+          onMouseLeave={closeMegaSoon}
+        >
           {megaMenus.map((m) => {
-            const isActive =
-              (m.href && isActivePath(pathname, m.href)) ||
-              m.sections.some((s) =>
-                s.links.some((l) => isActivePath(pathname, l.href)),
-              );
-
             const isOpen = megaOpen === m.key;
-
-            const cols = getPanelCols(m);
-            const panelWidth = getPanelWidthClass(cols);
-            const colsClass = getColsClass(cols);
 
             return (
               <div key={m.key} className="relative">
                 <button
-                  type="button"
-                  onMouseEnter={() => openMega(m.key)}
-                  onMouseLeave={closeMegaSoon}
-                  onFocus={() => openMega(m.key)}
-                  onClick={() =>
-                    setMegaOpen((prev) => (prev === m.key ? null : m.key))
-                  }
+                  onMouseEnter={() => openMega(m.key as MegaKey)}
                   className={cn(
-                    "group relative inline-flex items-center gap-1 text-sm font-normal text-white/90 transition-colors hover:text-white",
+                    "group inline-flex items-center gap-1 text-sm transition",
+                    isActiveHeader
+                      ? "text-black/80 hover:text-black"
+                      : "text-white/90 hover:text-white",
                   )}
-                  aria-haspopup="menu"
-                  aria-expanded={isOpen}
                 >
                   {m.label}
                   <ChevronDown
                     className={cn(
-                      "h-4 w-4 opacity-80 transition-transform duration-200",
-                      isOpen ? "rotate-180" : "",
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "absolute -bottom-1 left-0 h-0.5 bg-white transition-all duration-300",
-                      isActive ? "w-full" : "w-0 group-hover:w-full",
+                      "h-4 w-4 transition-transform",
+                      isOpen && "rotate-180",
                     )}
                   />
                 </button>
 
-                {/* Mega panel */}
+                {/* Mega menu */}
                 <div
-                  onMouseEnter={() => openMega(m.key)}
-                  onMouseLeave={closeMegaSoon}
+                  onMouseEnter={() => openMega(m.key as MegaKey)}
                   className={cn(
-                    "absolute left-1/2 top-full mt-4 -translate-x-1/2",
-                    panelWidth,
-                    "rounded-[22px] border border-white/10",
-                    "bg-black/70 ",
-                    "backdrop-blur-2xl",
-                    "shadow-[0_28px_80px_rgba(0,0,0,0.45)]",
+                    "absolute left-1/2 top-full mt-4 -translate-x-1/2 w-[700px]",
+                    "rounded-[20px] bg-white text-black",
                     "transition-all duration-200",
                     isOpen
-                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-2 pointer-events-none",
                   )}
-                  role="menu"
                 >
-                  <div className={cn("grid gap-10 p-8", colsClass)}>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-2 p-6">
                     {m.sections.map((sec) => (
                       <div key={sec.heading}>
-                        <p className="text-[11px] tracking-[0.24em] text-white/50">
-                          {sec.heading.toUpperCase()}
+                        <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+                          {sec.heading}
                         </p>
-
-                        <div className="mt-5 space-y-2">
-                          {sec.links.map((l) => {
-                            const active = isActivePath(pathname, l.href);
-
-                            return (
-                              <Link
-                                key={l.href}
-                                href={l.href}
-                                onClick={() => setMegaOpen(null)}
-                                className={cn(
-                                  "group relative block rounded-xl px-3 py-3 transition",
-                                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
-                                  active
-                                    ? "bg-white/10 text-white"
-                                    : "text-white/80 hover:bg-white/10 hover:text-white",
-                                )}
-                              >
-                                <div className="text-sm font-semibold tracking-tight">
-                                  {l.name}
-                                </div>
-
-                                {l.description && (
-                                  <div
-                                    className={cn(
-                                      "mt-1 text-xs leading-5 transition-colors",
-                                      active
-                                        ? "text-white/70"
-                                        : "text-white/50 group-hover:text-white/70",
-                                    )}
-                                  >
-                                    {l.description}
-                                  </div>
-                                )}
-
-                                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40 opacity-0 transition-opacity group-hover:opacity-100">
-                                  <FontAwesomeIcon icon={faArrowRight} />
+                        <div className="space-y-1">
+                          {sec.links.map((l) => (
+                            <Link
+                              key={l.href}
+                              href={l.href}
+                              className={cn(
+                                "group flex flex-col rounded-xl px-3 py-2.5 transition-colors hover:bg-gray-50",
+                                isActivePath(pathname, l.href) && "bg-gray-50",
+                              )}
+                            >
+                              <span className="text-sm font-medium text-gray-900 group-hover:text-black">
+                                {l.name}
+                              </span>
+                              {l.description && (
+                                <span className="mt-0.5 text-xs leading-snug text-gray-400">
+                                  {l.description}
                                 </span>
-                              </Link>
-                            );
-                          })}
+                              )}
+                            </Link>
+                          ))}
                         </div>
                       </div>
                     ))}
@@ -501,19 +357,25 @@ export default function Header() {
           })}
 
           <button
-            type="button"
-            onClick={() => navigateToHash("#wealth-scan")}
-            className="text-sm font-normal text-white/90 transition-colors hover:text-white"
+            onClick={() => router.push("/#wealth-scan")}
+            className={cn(
+              "text-sm",
+              isActiveHeader
+                ? "text-black/80 hover:text-black"
+                : "text-white/90 hover:text-white",
+            )}
           >
             Health Scan
           </button>
         </nav>
 
-        {/* Desktop CTA */}
-        <div className="hidden items-center gap-3 md:flex">
+        {/* CTA */}
+        <div className="hidden md:flex">
           <Button
             onClick={() => router.push("/pricing")}
-            className="h-10 px-4 text-sm cursor-pointer"
+            className={cn(
+              isActiveHeader ? "" : "bg-white/10 text-white hover:bg-white/20",
+            )}
           >
             Start for Free
           </Button>
@@ -526,78 +388,31 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full p-2 text-white transition-all duration-300 hover:bg-white/10"
+                className={cn(isActiveHeader ? "text-black" : "text-white")}
               >
-                <Menu className="h-7 w-7" />
+                <Menu />
               </Button>
             </SheetTrigger>
 
-            <SheetContent
-              side="top"
-              className="
-                fixed inset-0 h-screen border-0 bg-white p-8 text-gray-800
-                data-[state=open]:animate-in data-[state=open]:slide-in-from-top
-                data-[state=closed]:animate-out data-[state=closed]:slide-out-to-top
-                duration-500
-              "
-            >
-              <div className="mb-10 flex items-center justify-between">
+            <SheetContent side="top" className="h-screen bg-white p-6">
+              <div className="flex justify-between mb-6">
                 <Image
                   src="/logos/logoDark.png"
-                  alt="Celerey Logo"
-                  width={110}
+                  alt="Logo"
+                  width={100}
                   height={30}
                 />
-
-                <SheetClose asChild>
-                  <button className="rounded-full p-2 transition hover:bg-gray-200">
-                    <X className="h-6 w-6 text-gray-700" />
-                  </button>
+                <SheetClose>
+                  <X />
                 </SheetClose>
               </div>
 
-              <SheetTitle className="sr-only">Navigation</SheetTitle>
-
-              <div className="space-y-8">
-                {mobileGroups.map((g) => (
-                  <div key={g.heading}>
-                    <p className="text-[11px] tracking-[0.22em] text-neutral-500">
-                      {g.heading.toUpperCase()}
-                    </p>
-                    <div className="mt-3 space-y-1">
-                      {g.items.map((it) => (
-                        <button
-                          key={it.href}
-                          type="button"
-                          onClick={() => {
-                            setOpen(false);
-                            router.push(it.href);
-                          }}
-                          className="w-full border-b border-neutral-100 py-3 text-left text-base text-neutral-900 hover:text-neutral-700"
-                        >
-                          {it.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => navigateToHash("#wealth-scan", true)}
-                    className="w-full border-b border-neutral-100 py-3 text-left text-base text-neutral-900 hover:text-neutral-700"
-                  >
-                    Health Scan
-                  </button>
-                </div>
-
-                <div className="pt-4 space-y-3">
-                  <Button onClick={handleScrollToPricing} className="w-full">
-                    Start for Free
-                  </Button>
-                </div>
-              </div>
+              <Button
+                onClick={() => router.push("/pricing")}
+                className="w-full"
+              >
+                Start for Free
+              </Button>
             </SheetContent>
           </Sheet>
         </div>
