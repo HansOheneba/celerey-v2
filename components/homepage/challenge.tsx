@@ -13,7 +13,7 @@ type ChallengeSectionProps = {
 
 export default function ChallengeSection({
   eyebrow = "THE CHALLENGE",
-  title = "There is plenty of advice.\nNot enough direction.",
+  title = "There is plenty of advice, Not enough direction.",
   subtitle = "Money gets loud fast. Opinions, rules, products, and noise. What you really need is a clear path you can trust.",
   body = "Celerey helps you understand where you are, what matters next, and how to move forward with confidence. Simple guidance that connects today’s choices to tomorrow’s outcomes.",
   emphasis = "Clarity first. Strategy second. Momentum always.",
