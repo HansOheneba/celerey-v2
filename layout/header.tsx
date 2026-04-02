@@ -253,7 +253,8 @@ export default function Header() {
               {
                 name: "Money Manager",
                 href: "/tools/money-manager",
-                description: "Holistic view of income, outgoings, and net worth",
+                description:
+                  "Holistic view of income, outgoings, and net worth",
               },
             ],
           },
@@ -339,20 +340,24 @@ export default function Header() {
                       : "opacity-0 translate-y-2 pointer-events-none",
                   )}
                 >
-                  <div className={cn(
-                    "grid gap-x-8 gap-y-2 p-6",
-                    m.sections.length === 1 ? "grid-cols-1" : "grid-cols-2",
-                  )}>
+                  <div
+                    className={cn(
+                      "grid gap-x-8 gap-y-2 p-6",
+                      m.sections.length === 1 ? "grid-cols-1" : "grid-cols-2",
+                    )}
+                  >
                     {m.sections.map((sec) => (
                       <div key={sec.heading}>
                         <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
                           {sec.heading}
                         </p>
-                        <div className={cn(
-                          m.sections.length === 1
-                            ? "grid grid-cols-2 gap-x-2"
-                            : "space-y-1",
-                        )}>
+                        <div
+                          className={cn(
+                            m.sections.length === 1
+                              ? "grid grid-cols-2 gap-x-2"
+                              : "space-y-1",
+                          )}
+                        >
                           {sec.links.map((l) => (
                             <Link
                               key={l.href}
@@ -419,7 +424,10 @@ export default function Header() {
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="left" className="w-full max-w-sm bg-white p-0 overflow-y-auto">
+            <SheetContent
+              side="left"
+              className="w-full max-w-sm bg-white p-0 overflow-y-auto"
+            >
               <SheetTitle className="sr-only">Navigation</SheetTitle>
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -437,13 +445,20 @@ export default function Header() {
               {/* Nav links */}
               <nav className="px-4 py-4 space-y-1">
                 {megaMenus.map((m) => (
-                  <MobileNavSection key={m.key} menu={m} onClose={() => setOpen(false)} />
+                  <MobileNavSection
+                    key={m.key}
+                    menu={m}
+                    onClose={() => setOpen(false)}
+                  />
                 ))}
 
                 {/* Health Scan standalone link */}
                 <SheetClose asChild>
                   <button
-                    onClick={() => { router.push("/#wealth-scan"); setOpen(false); }}
+                    onClick={() => {
+                      router.push("/#wealth-scan");
+                      setOpen(false);
+                    }}
                     className="w-full flex items-center px-3 py-3 rounded-xl text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
                   >
                     Health Scan
@@ -477,7 +492,15 @@ function MobileNavSection({
   menu,
   onClose,
 }: {
-  menu: { key: string; label: string; href?: string; sections: { heading: string; links: { name: string; href: string; description?: string }[] }[] };
+  menu: {
+    key: string;
+    label: string;
+    href?: string;
+    sections: {
+      heading: string;
+      links: { name: string; href: string; description?: string }[];
+    }[];
+  };
   onClose: () => void;
 }) {
   const [expanded, setExpanded] = React.useState(false);
@@ -512,9 +535,13 @@ function MobileNavSection({
                       onClick={onClose}
                       className="flex flex-col px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
                     >
-                      <span className="text-sm font-medium text-gray-900">{l.name}</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {l.name}
+                      </span>
                       {l.description && (
-                        <span className="text-xs text-gray-400 leading-snug mt-0.5">{l.description}</span>
+                        <span className="text-xs text-gray-400 leading-snug mt-0.5">
+                          {l.description}
+                        </span>
                       )}
                     </Link>
                   </SheetClose>

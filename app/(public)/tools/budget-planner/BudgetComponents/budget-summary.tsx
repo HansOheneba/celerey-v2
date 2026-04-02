@@ -56,7 +56,7 @@ export default function BudgetSummary({
 
   const hasIncome = totalIncome > 0;
   const hasExpenses = expenseCategories.some((category) =>
-    category.items.some((item) => item.amount > 0)
+    category.items.some((item) => item.amount > 0),
   );
   const hasData = hasIncome || hasExpenses;
 
@@ -66,7 +66,7 @@ export default function BudgetSummary({
         const converted = convertToFrequency(
           item.amount,
           item.frequency,
-          frequency
+          frequency,
         );
         return sum + converted;
       }, 0);
@@ -122,21 +122,21 @@ export default function BudgetSummary({
     if (balance < 0) {
       return {
         message: `You're spending about ${Math.abs(savingsRate).toFixed(
-          1
+          1,
         )}% more than you earn — Celerey can help you rebalance your finances.`,
         type: "danger",
       };
     } else if (savingsRate >= 20) {
       return {
         message: `Impressive — you're saving ${savingsRate.toFixed(
-          1
+          1,
         )}% of your income. Let's explore ways Celerey can help grow those savings.`,
         type: "success",
       };
     } else if (savingsRate >= 10) {
       return {
         message: `Good discipline — ${savingsRate.toFixed(
-          1
+          1,
         )}% of your income is being saved. Let's look at how Celerey can stretch that further.`,
         type: "success",
       };
@@ -158,8 +158,8 @@ export default function BudgetSummary({
     if (balance > 0) {
       return {
         title: "Surplus",
-        description: `You have $${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} left ${prettyFrequency(
-          frequency
+        description: `You have $${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} left ${prettyFrequency(
+          frequency,
         )}.`,
         color: "text-emerald-600",
         bgColor: "bg-green-50",
@@ -168,7 +168,7 @@ export default function BudgetSummary({
     } else if (balance < 0) {
       return {
         title: "Deficit",
-        description: `You're overspending by $${Math.abs(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${prettyFrequency(frequency)}.`,
+        description: `You're overspending by $${Math.abs(balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${prettyFrequency(frequency)}.`,
         color: "text-rose-600",
         bgColor: "bg-rose-50",
         borderColor: "border-rose-300",
@@ -177,7 +177,7 @@ export default function BudgetSummary({
       return {
         title: "Balanced",
         description: `Your income and expenses are evenly matched ${prettyFrequency(
-          frequency
+          frequency,
         )}.`,
         color: "text-blue-600",
         bgColor: "bg-blue-50",
@@ -235,7 +235,7 @@ export default function BudgetSummary({
                       border: "1px solid #E5E7EB",
                     }}
                     formatter={(value) => [
-                      `$${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                      `$${Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                       "Amount",
                     ]}
                   />
@@ -286,7 +286,7 @@ export default function BudgetSummary({
                         border: "1px solid #E5E7EB",
                       }}
                       formatter={(value: number, name: string) => [
-                        `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${(
+                        `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${(
                           (value / totalIncome) *
                           100
                         ).toFixed(1)}%)`,
@@ -318,7 +318,7 @@ export default function BudgetSummary({
                 const converted = convertToFrequency(
                   item.amount,
                   item.frequency,
-                  frequency
+                  frequency,
                 );
                 return sum + converted;
               }, 0);
@@ -344,7 +344,11 @@ export default function BudgetSummary({
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-gray-800">
-                      ${categoryTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      $
+                      {categoryTotal.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </div>
                     <div className="text-xs text-gray-500">
                       {percentage.toFixed(1)}% of income
@@ -376,7 +380,11 @@ export default function BudgetSummary({
             </div>
             <div className="text-right">
               <div className={`text-3xl font-bold ${balanceMessage.color}`}>
-                ${Math.abs(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                $
+                {Math.abs(balance).toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
               <div className="text-sm text-gray-500">
                 {prettyFrequency(frequency)}
@@ -409,7 +417,7 @@ export default function BudgetSummary({
 function convertToFrequency(
   amount: number,
   fromFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually",
-  toFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually"
+  toFreq: "Weekly" | "Quarterly" | "Monthly" | "Annually",
 ): number {
   let annualAmount = amount;
   switch (fromFreq) {

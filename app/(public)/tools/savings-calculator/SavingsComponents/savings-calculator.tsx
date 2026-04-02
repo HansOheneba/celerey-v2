@@ -145,9 +145,13 @@ export default function SavingsCalculator() {
               <input
                 type="text"
                 inputMode="numeric"
-                value={targetAmount > 0 ? targetAmount.toLocaleString('en-US') : ""}
+                value={
+                  targetAmount > 0 ? targetAmount.toLocaleString("en-US") : ""
+                }
                 onChange={(e) =>
-                  setTargetAmount(Math.max(0, Number(e.target.value.replace(/,/g, '')) || 0))
+                  setTargetAmount(
+                    Math.max(0, Number(e.target.value.replace(/,/g, "")) || 0),
+                  )
                 }
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-[#1B1856]/40 focus:outline-none"
                 placeholder="$552"
@@ -185,9 +189,15 @@ export default function SavingsCalculator() {
               <input
                 type="text"
                 inputMode="numeric"
-                value={startingBalance > 0 ? startingBalance.toLocaleString('en-US') : ""}
+                value={
+                  startingBalance > 0
+                    ? startingBalance.toLocaleString("en-US")
+                    : ""
+                }
                 onChange={(e) =>
-                  setStartingBalance(Math.max(0, Number(e.target.value.replace(/,/g, '')) || 0))
+                  setStartingBalance(
+                    Math.max(0, Number(e.target.value.replace(/,/g, "")) || 0),
+                  )
                 }
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-[#1B1856]/40 focus:outline-none"
                 placeholder="$0"
@@ -202,7 +212,7 @@ export default function SavingsCalculator() {
                 value={interestRate}
                 onChange={(e) =>
                   setInterestRate(
-                    Math.min(10, Math.max(0, Number(e.target.value) || 0))
+                    Math.min(10, Math.max(0, Number(e.target.value) || 0)),
                   )
                 }
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-[#1B1856]/40 focus:outline-none"
@@ -220,9 +230,18 @@ export default function SavingsCalculator() {
                 <input
                   type="text"
                   inputMode="numeric"
-                  value={regularSavings > 0 ? regularSavings.toLocaleString('en-US') : ""}
+                  value={
+                    regularSavings > 0
+                      ? regularSavings.toLocaleString("en-US")
+                      : ""
+                  }
                   onChange={(e) =>
-                    setRegularSavings(Math.max(1, Number(e.target.value.replace(/,/g, '')) || 0))
+                    setRegularSavings(
+                      Math.max(
+                        1,
+                        Number(e.target.value.replace(/,/g, "")) || 0,
+                      ),
+                    )
                   }
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-[#1B1856]/40 focus:outline-none"
                   placeholder="$22"
@@ -236,7 +255,7 @@ export default function SavingsCalculator() {
                   value={savingsFrequency}
                   onChange={(e) =>
                     setSavingsFrequency(
-                      e.target.value as "Weekly" | "Fortnightly" | "Monthly"
+                      e.target.value as "Weekly" | "Fortnightly" | "Monthly",
                     )
                   }
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-2 focus:ring-[#1B1856]/40 focus:outline-none"
@@ -257,21 +276,24 @@ export default function SavingsCalculator() {
               <>
                 <p className="text-blue-100 text-sm">You can save</p>
                 <p className="text-3xl sm:text-4xl font-bold">
-                  ${Math.round(finalData.total).toLocaleString('en-US')}
+                  ${Math.round(finalData.total).toLocaleString("en-US")}
                 </p>
                 <p className="text-blue-100 text-sm">
-                  saving ${Math.round(effectiveMonthlyAmount).toLocaleString('en-US')} monthly for{" "}
-                  {totalMonths} months
+                  saving $
+                  {Math.round(effectiveMonthlyAmount).toLocaleString("en-US")}{" "}
+                  monthly for {totalMonths} months
                 </p>
               </>
             ) : (
               <>
                 <p className="text-blue-100 text-sm">You need to save</p>
                 <p className="text-3xl sm:text-4xl font-bold">
-                  ${Math.round(effectiveMonthlyAmount).toLocaleString('en-US')} per month
+                  ${Math.round(effectiveMonthlyAmount).toLocaleString("en-US")}{" "}
+                  per month
                 </p>
                 <p className="text-blue-100 text-sm">
-                  to reach ${Math.round(targetAmount).toLocaleString('en-US')} in {totalMonths} months
+                  to reach ${Math.round(targetAmount).toLocaleString("en-US")}{" "}
+                  in {totalMonths} months
                 </p>
               </>
             )}
@@ -284,21 +306,30 @@ export default function SavingsCalculator() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-500">Starting balance</p>
-                <p className="font-semibold">${Math.round(startingBalance).toLocaleString('en-US')}</p>
+                <p className="font-semibold">
+                  ${Math.round(startingBalance).toLocaleString("en-US")}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">Regular savings</p>
                 <p className="font-semibold">
-                  ${Math.round(effectiveMonthlyAmount * totalMonths).toLocaleString('en-US')}
+                  $
+                  {Math.round(
+                    effectiveMonthlyAmount * totalMonths,
+                  ).toLocaleString("en-US")}
                 </p>
               </div>
               <div>
                 <p className="text-gray-500">Interest</p>
-                <p className="font-semibold">${Math.round(totalInterest).toLocaleString('en-US')}</p>
+                <p className="font-semibold">
+                  ${Math.round(totalInterest).toLocaleString("en-US")}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">Total</p>
-                <p className="font-semibold">${Math.round(finalData.total).toLocaleString('en-US')}</p>
+                <p className="font-semibold">
+                  ${Math.round(finalData.total).toLocaleString("en-US")}
+                </p>
               </div>
             </div>
 
@@ -315,7 +346,9 @@ export default function SavingsCalculator() {
                       borderRadius: "8px",
                       color: "#334155",
                     }}
-                    formatter={(value: number) => `$${Math.round(value).toLocaleString('en-US')}`}
+                    formatter={(value: number) =>
+                      `$${Math.round(value).toLocaleString("en-US")}`
+                    }
                   />
                   <Legend />
                   <Bar dataKey="total" fill="#1B1856" name="Total Savings" />
@@ -333,7 +366,7 @@ export default function SavingsCalculator() {
                 <span className="text-[#1B1856]">•</span>
                 <span>
                   Set up a direct transfer of $
-                  {Math.round(effectiveMonthlyAmount).toLocaleString('en-US')}{" "}
+                  {Math.round(effectiveMonthlyAmount).toLocaleString("en-US")}{" "}
                   {saveType === "specific-amount" ? "" : "monthly"} into your
                   savings account
                 </span>
@@ -355,13 +388,13 @@ export default function SavingsCalculator() {
                     Celerey advisor
                   </Link>{" "}
                   to reach your goals faster — speak to one today for{" "}
-                  
                   <Link
                     href="/pricing"
                     className="text-[#1B1856] font-medium underline underline-offset-2"
                   >
                     free
-                  </Link>.
+                  </Link>
+                  .
                 </span>
               </li>
             </ul>

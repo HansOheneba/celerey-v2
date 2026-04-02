@@ -26,7 +26,7 @@ interface MoneyCategoryProps {
     categoryId: string,
     itemId: string,
     amount: number,
-    frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    frequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually",
   ) => void;
   onAddItem: (categoryId: string, label: string) => void;
   onDeleteItem: (categoryId: string, itemId: string) => void;
@@ -67,16 +67,16 @@ export default function MoneyCategory({
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     itemId: string,
-    currentFrequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
+    currentFrequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually",
   ) => {
-    const amount = Number.parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    const amount = Number.parseFloat(e.target.value.replace(/,/g, "")) || 0;
     onUpdateItem(category.id, itemId, amount, currentFrequency);
   };
 
   const handleFrequencyChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     itemId: string,
-    currentAmount: number
+    currentAmount: number,
   ) => {
     const newFrequency = e.target.value as
       | "Weekly"
@@ -96,7 +96,7 @@ export default function MoneyCategory({
         <div className="flex items-center gap-3">
           <div
             className={`w-2.5 h-2.5 rounded-full ${getColorClass(
-              category.color
+              category.color,
             )}`}
           />
           <span className="text-gray-800 font-medium tracking-tight">
@@ -105,7 +105,11 @@ export default function MoneyCategory({
         </div>
         <div className="flex items-center gap-4">
           <span className={`font-semibold ${getTextColor(category.type)}`}>
-            {category.type === "in" ? "+" : "-"}${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {category.type === "in" ? "+" : "-"}$
+            {total.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
           <ChevronDown
             size={18}
@@ -135,7 +139,9 @@ export default function MoneyCategory({
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <input
                   type="text"
-                  value={item.amount > 0 ? item.amount.toLocaleString('en-US') : ""}
+                  value={
+                    item.amount > 0 ? item.amount.toLocaleString("en-US") : ""
+                  }
                   onChange={(e) =>
                     handleAmountChange(e, item.id, item.frequency)
                   }

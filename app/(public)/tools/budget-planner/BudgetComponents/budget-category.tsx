@@ -24,7 +24,7 @@ interface BudgetCategoryProps {
     categoryId: string,
     itemId: string,
     amount: number,
-    frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
+    frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually",
   ) => void;
   total: number;
   frequency: "Weekly" | "Quarterly" | "Monthly" | "Annually";
@@ -54,16 +54,16 @@ export default function BudgetCategory({
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     itemId: string,
-    currentFrequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
+    currentFrequency: "Weekly" | "Quarterly" | "Monthly" | "Annually",
   ) => {
-    const amount = Number.parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    const amount = Number.parseFloat(e.target.value.replace(/,/g, "")) || 0;
     onUpdateItem(category.id, itemId, amount, currentFrequency);
   };
 
   const handleFrequencyChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     itemId: string,
-    currentAmount: number
+    currentAmount: number,
   ) => {
     const newFrequency = e.target.value as
       | "Weekly"
@@ -83,7 +83,7 @@ export default function BudgetCategory({
         <div className="flex items-center gap-3">
           <div
             className={`w-2.5 h-2.5 rounded-full ${getColorDot(
-              category.color
+              category.color,
             )}`}
           />
           <span className="text-gray-900 font-medium tracking-tight">
@@ -92,7 +92,11 @@ export default function BudgetCategory({
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-800 font-semibold">
-            ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            $
+            {total.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
           <ChevronDown
             size={18}
@@ -122,7 +126,9 @@ export default function BudgetCategory({
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <input
                   type="text"
-                  value={item.amount > 0 ? item.amount.toLocaleString('en-US') : ""}
+                  value={
+                    item.amount > 0 ? item.amount.toLocaleString("en-US") : ""
+                  }
                   onChange={(e) =>
                     handleAmountChange(e, item.id, item.frequency)
                   }
