@@ -113,7 +113,7 @@ export default function MoneyManagerSummary({
                   color: "#111827",
                 }}
                 formatter={(value) => [
-                  `₵${Number(value).toFixed(2)}`,
+                  `₵${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                   "Amount",
                 ]}
               />
@@ -143,7 +143,7 @@ export default function MoneyManagerSummary({
                   dataKey="value"
                   label={(props: PieLabelRenderProps) => {
                     const data = props.payload as ExpenseDataItem;
-                    return `${data.name}: ₵${data.value.toFixed(0)}`;
+                    return `${data.name}: ₵${Math.round(data.value).toLocaleString('en-US')}`;
                   }}
                 >
                   {expenseData.map((entry, i) => (
@@ -157,7 +157,7 @@ export default function MoneyManagerSummary({
                     color: "#111827",
                   }}
                   formatter={(value) => [
-                    `₵${Number(value).toFixed(2)}`,
+                    `₵${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                     "Amount",
                   ]}
                 />
@@ -172,13 +172,13 @@ export default function MoneyManagerSummary({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Total Income"
-          value={`₵${totalMoneyIn.toFixed(2)}`}
+          value={`₵${totalMoneyIn.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           subtitle={`per ${frequency.toLowerCase()}`}
           color="emerald"
         />
         <StatCard
           title="Total Expenses"
-          value={`₵${totalMoneyOut.toFixed(2)}`}
+          value={`₵${totalMoneyOut.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           subtitle={`per ${frequency.toLowerCase()}`}
           color="rose"
         />
@@ -216,7 +216,7 @@ export default function MoneyManagerSummary({
           </div>
           <div className="text-right">
             <div className={`text-3xl font-bold ${netFlowMessage.color}`}>
-              {netFlow >= 0 ? "+" : "-"}₵{Math.abs(netFlow).toFixed(2)}
+              {netFlow >= 0 ? "+" : "-"}₵{Math.abs(netFlow).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <div className="text-sm text-gray-500">Net Flow</div>
           </div>
@@ -262,9 +262,7 @@ function getNetFlowMessage(netFlow: number, frequency: string) {
   if (netFlow > 0) {
     return {
       title: "Positive Cash Flow",
-      message: `You’re saving about ₵${netFlow.toFixed(
-        2
-      )} ${period}. Keep it up — small gains compound fast.`,
+      message: `You're saving about ₵${netFlow.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${period}. Keep it up — small gains compound fast.`,
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",
       borderColor: "border-emerald-200",
@@ -272,9 +270,7 @@ function getNetFlowMessage(netFlow: number, frequency: string) {
   } else if (netFlow < 0) {
     return {
       title: "Negative Cash Flow",
-      message: `You’re spending ₵${Math.abs(netFlow).toFixed(
-        2
-      )} more than you earn ${period}. Let’s rebalance your budget.`,
+      message: `You're spending ₵${Math.abs(netFlow).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} more than you earn ${period}. Let's rebalance your budget.`,
       color: "text-rose-600",
       bgColor: "bg-rose-50",
       borderColor: "border-rose-200",

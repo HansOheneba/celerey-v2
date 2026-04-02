@@ -17,7 +17,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { usePathname, useRouter } from "next/navigation";
 import { BeginJourneyModal } from "@/components/homepage/beginModal";
 
-type MegaKey = "services" | "company" | "resources";
+type MegaKey = "services" | "company" | "resources" | "tools";
 
 type MegaLink = {
   name: string;
@@ -225,18 +225,35 @@ export default function Header() {
               },
             ],
           },
+        ],
+      },
+      {
+        key: "tools",
+        label: "Tools",
+        href: "/tools",
+        sections: [
           {
-            heading: "Tools",
+            heading: "Financial Tools",
             links: [
               {
-                name: "Tools overview",
+                name: "Tools Overview",
                 href: "/tools",
-                description: "Simple tools that build better habits",
+                description: "See all available tools in one place",
               },
               {
-                name: "Budget planner",
+                name: "Budget Planner",
                 href: "/tools/budget-planner",
-                description: "A clear starting point for control",
+                description: "Track spending and set category limits",
+              },
+              {
+                name: "Savings Calculator",
+                href: "/tools/savings-calculator",
+                description: "Project how your savings grow over time",
+              },
+              {
+                name: "Money Manager",
+                href: "/tools/money-manager",
+                description: "Holistic view of income, outgoings, and net worth",
               },
             ],
           },
@@ -313,21 +330,29 @@ export default function Header() {
                 <div
                   onMouseEnter={() => openMega(m.key as MegaKey)}
                   className={cn(
-                    "absolute left-1/2 top-full mt-4 -translate-x-1/2 w-[700px]",
-                    "rounded-[20px] bg-white text-black",
+                    "absolute left-1/2 top-full mt-4 -translate-x-1/2",
+                    m.sections.length === 1 ? "w-[520px]" : "w-[700px]",
+                    "rounded-[20px] bg-white text-black shadow-xl",
                     "transition-all duration-200",
                     isOpen
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-2 pointer-events-none",
                   )}
                 >
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-2 p-6">
+                  <div className={cn(
+                    "grid gap-x-8 gap-y-2 p-6",
+                    m.sections.length === 1 ? "grid-cols-1" : "grid-cols-2",
+                  )}>
                     {m.sections.map((sec) => (
                       <div key={sec.heading}>
                         <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-gray-400">
                           {sec.heading}
                         </p>
-                        <div className="space-y-1">
+                        <div className={cn(
+                          m.sections.length === 1
+                            ? "grid grid-cols-2 gap-x-2"
+                            : "space-y-1",
+                        )}>
                           {sec.links.map((l) => (
                             <Link
                               key={l.href}
@@ -394,25 +419,49 @@ export default function Header() {
               </Button>
             </SheetTrigger>
 
-            <SheetContent side="top" className="h-screen bg-white p-6">
-              <div className="flex justify-between mb-6">
+            <SheetContent side="left" className="w-full max-w-sm bg-white p-0 overflow-y-auto">
+              <SheetTitle className="sr-only">Navigation</SheetTitle>
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <Image
                   src="/logos/logoDark.png"
                   alt="Logo"
-                  width={100}
-                  height={30}
+                  width={90}
+                  height={24}
                 />
-                <SheetClose>
-                  <X />
+                <SheetClose className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  <X className="w-5 h-5 text-gray-600" />
                 </SheetClose>
               </div>
 
-              <Button
-                onClick={() => router.push("/pricing")}
-                className="w-full"
-              >
-                Start for Free
-              </Button>
+              {/* Nav links */}
+              <nav className="px-4 py-4 space-y-1">
+                {megaMenus.map((m) => (
+                  <MobileNavSection key={m.key} menu={m} onClose={() => setOpen(false)} />
+                ))}
+
+                {/* Health Scan standalone link */}
+                <SheetClose asChild>
+                  <button
+                    onClick={() => { router.push("/#wealth-scan"); setOpen(false); }}
+                    className="w-full flex items-center px-3 py-3 rounded-xl text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+                  >
+                    Health Scan
+                  </button>
+                </SheetClose>
+              </nav>
+
+              {/* CTA */}
+              <div className="px-6 pb-8 pt-4 border-t border-gray-100 mt-2">
+                <SheetClose asChild>
+                  <Button
+                    onClick={() => router.push("/pricing")}
+                    className="w-full bg-[#1B1856] hover:bg-[#1B1856]/90 text-white"
+                  >
+                    Start for Free
+                  </Button>
+                </SheetClose>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -420,5 +469,61 @@ export default function Header() {
 
       <BeginJourneyModal open={modalOpen} onOpenChange={setModalOpen} />
     </header>
+  );
+}
+
+// ---- Mobile nav accordion section ----
+function MobileNavSection({
+  menu,
+  onClose,
+}: {
+  menu: { key: string; label: string; href?: string; sections: { heading: string; links: { name: string; href: string; description?: string }[] }[] };
+  onClose: () => void;
+}) {
+  const [expanded, setExpanded] = React.useState(false);
+
+  return (
+    <div>
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+      >
+        {menu.label}
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 text-gray-500 transition-transform duration-200",
+            expanded && "rotate-180",
+          )}
+        />
+      </button>
+
+      {expanded && (
+        <div className="ml-3 mt-1 mb-2 space-y-4">
+          {menu.sections.map((sec) => (
+            <div key={sec.heading}>
+              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+                {sec.heading}
+              </p>
+              <div className="space-y-0.5">
+                {sec.links.map((l) => (
+                  <SheetClose key={l.href} asChild>
+                    <Link
+                      href={l.href}
+                      onClick={onClose}
+                      className="flex flex-col px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-sm font-medium text-gray-900">{l.name}</span>
+                      {l.description && (
+                        <span className="text-xs text-gray-400 leading-snug mt-0.5">{l.description}</span>
+                      )}
+                    </Link>
+                  </SheetClose>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

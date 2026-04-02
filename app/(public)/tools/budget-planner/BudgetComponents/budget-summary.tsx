@@ -158,7 +158,7 @@ export default function BudgetSummary({
     if (balance > 0) {
       return {
         title: "Surplus",
-        description: `You have $${balance.toFixed(2)} left ${prettyFrequency(
+        description: `You have $${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} left ${prettyFrequency(
           frequency
         )}.`,
         color: "text-emerald-600",
@@ -168,9 +168,7 @@ export default function BudgetSummary({
     } else if (balance < 0) {
       return {
         title: "Deficit",
-        description: `You're overspending by $${Math.abs(balance).toFixed(
-          2
-        )} ${prettyFrequency(frequency)}.`,
+        description: `You're overspending by $${Math.abs(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${prettyFrequency(frequency)}.`,
         color: "text-rose-600",
         bgColor: "bg-rose-50",
         borderColor: "border-rose-300",
@@ -237,7 +235,7 @@ export default function BudgetSummary({
                       border: "1px solid #E5E7EB",
                     }}
                     formatter={(value) => [
-                      `$${Number(value).toFixed(2)}`,
+                      `$${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                       "Amount",
                     ]}
                   />
@@ -288,7 +286,7 @@ export default function BudgetSummary({
                         border: "1px solid #E5E7EB",
                       }}
                       formatter={(value: number, name: string) => [
-                        `$${value.toFixed(2)} (${(
+                        `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${(
                           (value / totalIncome) *
                           100
                         ).toFixed(1)}%)`,
@@ -346,7 +344,7 @@ export default function BudgetSummary({
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-gray-800">
-                      ${categoryTotal.toFixed(2)}
+                      ${categoryTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <div className="text-xs text-gray-500">
                       {percentage.toFixed(1)}% of income
@@ -378,7 +376,7 @@ export default function BudgetSummary({
             </div>
             <div className="text-right">
               <div className={`text-3xl font-bold ${balanceMessage.color}`}>
-                ${Math.abs(balance).toFixed(2)}
+                ${Math.abs(balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
               <div className="text-sm text-gray-500">
                 {prettyFrequency(frequency)}

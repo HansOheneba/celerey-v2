@@ -15,9 +15,10 @@ export default function IncomeInput({ income, setIncome }: IncomeInputProps) {
       <div className="flex items-center gap-2">
         <span className="text-2xl font-bold text-slate-900">USD</span>
         <Input
-          type="number"
-          value={income || ""}
-          onChange={(e) => setIncome(Number(e.target.value) || 0)}
+          type="text"
+          inputMode="numeric"
+          value={income > 0 ? income.toLocaleString('en-US') : ""}
+          onChange={(e) => setIncome(Number(e.target.value.replace(/,/g, '')) || 0)}
           placeholder="Enter your monthly income"
           className="text-2xl font-bold border-slate-300 focus:border-blue-500"
         />

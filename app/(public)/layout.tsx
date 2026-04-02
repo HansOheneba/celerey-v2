@@ -13,7 +13,6 @@ export default function PublicLayout({
    
   
      
-      {/* Main content */}
       <main className="">{children}</main>
 
   

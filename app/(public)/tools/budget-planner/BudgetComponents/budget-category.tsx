@@ -56,7 +56,7 @@ export default function BudgetCategory({
     itemId: string,
     currentFrequency: "Weekly" | "Quarterly" | "Monthly" | "Annually"
   ) => {
-    const amount = Number.parseFloat(e.target.value) || 0;
+    const amount = Number.parseFloat(e.target.value.replace(/,/g, '')) || 0;
     onUpdateItem(category.id, itemId, amount, currentFrequency);
   };
 
@@ -92,7 +92,7 @@ export default function BudgetCategory({
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-800 font-semibold">
-            ${total.toFixed(2)}
+            ${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <ChevronDown
             size={18}
@@ -122,7 +122,7 @@ export default function BudgetCategory({
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <input
                   type="text"
-                  value={item.amount || ""}
+                  value={item.amount > 0 ? item.amount.toLocaleString('en-US') : ""}
                   onChange={(e) =>
                     handleAmountChange(e, item.id, item.frequency)
                   }

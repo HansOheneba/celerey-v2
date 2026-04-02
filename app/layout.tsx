@@ -129,7 +129,7 @@ export default function RootLayout({
          <Header />
              
               {/* Main content */}
-              <main className="mx-auto pt-24">{children}</main>
+              <main className="mx-auto pt-18">{children}</main>
         
               {/* Footer*/}
               <Footer />

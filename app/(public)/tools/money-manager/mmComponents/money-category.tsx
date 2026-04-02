@@ -69,7 +69,7 @@ export default function MoneyCategory({
     itemId: string,
     currentFrequency: "Weekly" | "Fortnightly" | "Monthly" | "Annually"
   ) => {
-    const amount = Number.parseFloat(e.target.value) || 0;
+    const amount = Number.parseFloat(e.target.value.replace(/,/g, '')) || 0;
     onUpdateItem(category.id, itemId, amount, currentFrequency);
   };
 
@@ -105,7 +105,7 @@ export default function MoneyCategory({
         </div>
         <div className="flex items-center gap-4">
           <span className={`font-semibold ${getTextColor(category.type)}`}>
-            {category.type === "in" ? "+" : "-"}${total.toFixed(2)}
+            {category.type === "in" ? "+" : "-"}${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <ChevronDown
             size={18}
@@ -135,7 +135,7 @@ export default function MoneyCategory({
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <input
                   type="text"
-                  value={item.amount || ""}
+                  value={item.amount > 0 ? item.amount.toLocaleString('en-US') : ""}
                   onChange={(e) =>
                     handleAmountChange(e, item.id, item.frequency)
                   }
